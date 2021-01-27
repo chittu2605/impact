@@ -1,0 +1,6 @@
+export const USER_NAME_TEXT = "Username"
+export const PASSWORD_TEXT = "Password"
+export const LOGIN_TEXT = "Log in"
+export const FORGOT_PASSWORD_TEXT = "Forgot your password?"
+export const ALREADY_HAVE_ACCOUNT_TEXT = "Already have an account? "
+export const LOGIN_NOW_TEXT = "Log in now"

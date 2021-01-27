@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="%PUBLIC_URL%/apple-icon.png"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json" /> -->
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <!--     Fonts and icons     -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://use.fontawesome.com/releases/v5.0.6/css/all.css"
+      rel="stylesheet"
+    />
+    <title>Impact</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="application/javascript">
+      if (window.location.origin === "http://43.231.127.39:4000") {
+        window.API_URL = "http://43.231.127.39:4000/adp";
+        window.API_URL_v2 = "http://43.231.127.39:4000";
+      } 
+      else if (window.location.origin === "http://localhost:3002" || window.location.origin === "http://localhost:3001" || window.location.origin === "http://localhost:3000" || window.location.origin === "http://localhost:4000" ) {
+          window.API_URL = "http://localhost:4000/adp";
+          window.API_URL_v2 = "http://localhost:4000";
+      } else if (window.location.origin === "https://impact-node-app.herokuapp.com" || window.location.origin === "http://impact-node-app.herokuapp.com") {
+          window.API_URL = "https://impact-node-app.herokuapp.com/adp";
+          window.API_URL_v2 = "https://impact-node-app.herokuapp.com";
+      } else if (window.location.origin === "http://iloveimpact.store:4000") {
+        window.API_URL = "http://iloveimpact.store:4000/adp";
+        window.API_URL_v2 = "http://iloveimpact.store:4000";
+      } else if (window.location.origin === "http://iloveimpact.store") {
+        window.API_URL = "http://iloveimpact.store/adp";
+        window.API_URL_v2 = "http://iloveimpact.store";
+      } else if (window.location.origin === "https://iloveimpact.store:4000") {
+        window.API_URL = "https://iloveimpact.store:4000/adp";
+        window.API_URL_v2 = "https://iloveimpact.store:4000";
+      } else if (window.location.origin === "https://iloveimpact.store") {
+        window.API_URL = "https://iloveimpact.store/adp";
+        window.API_URL_v2 = "https://iloveimpact.store";
+      }
+ 
+    </script>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
