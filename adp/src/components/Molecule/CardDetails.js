@@ -8,7 +8,7 @@ const CardDetails = ({ card }) => {
   }, []);
   const fetchCycles = async () => {
     try {
-      const res = await apiHandler.get(`/adp/get-card-cycles/${card.id}`);
+      const res = await apiHandler.get(`/get-card-cycles/${card.id}`);
       setCycles(res.data);
     } catch (error) {
       console.log(error);

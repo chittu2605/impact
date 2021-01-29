@@ -309,7 +309,7 @@ class BuyProducts extends React.Component {
       totalSmartMartDiscount,
     };
     if (getTotal(cart) > this.state.balance) {
-      alert("You sont have enough funds in wallet");
+      alert("You dont have enough funds in wallet");
       return;
     }
     addAdp(body).then((response) => {
@@ -342,7 +342,7 @@ class BuyProducts extends React.Component {
     };
 
     if (getTotal(cart) > this.state.balance) {
-      alert("You sont have enough funds in wallet");
+      alert("You dont have enough funds in wallet");
       return;
     }
 

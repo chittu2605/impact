@@ -248,7 +248,7 @@ export default TableList;
 
 
 function updateAdp (adpId, phone, email, password ) {
-    return apiHandler.put("update-adp", {
+    return apiHandler.put("/update-adp", {
         adpId,
         phone,
         email,

@@ -11,7 +11,7 @@ const Voucher = () => {
 
   const fetchVouchers = async () => {
     try {
-      const res = await apiHandler.get(`/adp/get-vouchers`);
+      const res = await apiHandler.get(`/get-vouchers`);
       setVouchers(res.data);
     } catch (error) {
       console.log(error);

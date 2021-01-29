@@ -31,7 +31,7 @@ const OnePlusCard = () => {
 
   const fetchCards = async () => {
     try {
-      const res = await apiHandler.get(`/adp/get-cards`);
+      const res = await apiHandler.get(`/get-cards`);
       setCards(res.data);
     } catch (error) {
       console.log(error);

@@ -798,11 +798,11 @@ export default withRouter(AddAdp);
 
 
 function getAdpName (adp_id) {
-    return apiHandler.get("get-adp-name", {params:{adp_id}})
+    return apiHandler.get("/get-adp-name", {params:{adp_id}})
 }
 
 function addAdp (body) {
-    return apiHandler.post("add-adp", body)
+    return apiHandler.post("/add-adp", body)
 }
 
 function fetchIfscDetails (ifscCode) {

@@ -5,11 +5,11 @@ import { createBrowserHistory } from "history";
 import { BrowserRouter, Router, Route, Switch, Redirect } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "assets/scss/now-ui-dashboard.scss?v1.4.0";
-import "assets/css/demo.css";
+import "./assets/scss/now-ui-dashboard.scss?v1.4.0";
+import "./assets/css/demo.css";
 
-import AdpLayout from "layouts/Adp.js";
-import Login from "views/Login";
+import AdpLayout from "./layouts/Adp.js";
+import Login from "./views/Login"
 
 import configureStore from "./redux/store/configureStore";
 import { Provider } from "react-redux";

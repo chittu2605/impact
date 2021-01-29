@@ -109,7 +109,7 @@ const GET_ADP_NAME_BY_ADP_ID = (adp_id) => {
 
 const LIST_ADP = (pageNumber) => {
   return `SELECT adp_id, firstname, email, mobile, success, (SELECT COUNT(*) as pages from tbl_adp) as count   FROM tbl_adp LIMIT ${
-    pageNumber ? 100 * (pageNumber - 1) : 1
+    pageNumber ? 100 * (pageNumber - 1) : 0
   },100 `;
 };
 

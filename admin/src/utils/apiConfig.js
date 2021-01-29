@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const apiHandler = axios.create();
+export const apiHandler = axios.create({rootUrl:"/"});
 apiHandler.defaults.withCredentials = true;
 apiHandler.interceptors.request.use(
   function (config) {

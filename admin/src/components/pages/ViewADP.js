@@ -174,7 +174,7 @@ export default ViewADP;
 
 
 function listAdp (pageNumber) {
-    return apiHandler.get("get-adp-list", {
+    return apiHandler.get("/get-adp-list", {
         params: {
             pageNumber: pageNumber ? pageNumber : 1
         }

@@ -26,10 +26,11 @@ const getSprintQualified = (adpId) =>
 const getAdpZone = (adpId) => {
   return new Promise(async (resolve, reject) => {
     getAdpBv(adpId).then((bvData) => {
-      getPlanZone().then((allZone) => {
-        let zone = allZone.filter(async (elm, i) => {
+      getPlanZone().then(async (allZone) => {
+        for(let elm of allZone){
           if (bvData.bvTillDate == 0 && elm.min_value == 1) {
             resolve(elm);
+            break;
           } else if (
             bvData.bvTillDate >= elm.min_value &&
             (bvData.bvTillDate <= elm.max_value || elm.max_value == 0)
@@ -37,7 +38,7 @@ const getAdpZone = (adpId) => {
             if (elm.min_value === 1) {
               try {
                 const isSprintQualified = await getSprintQualified(adpId);
-                if (isSprintQualified) {
+                if (isSprintQualified == 1) {
                   elm = allZone[i + 1];
                 }
               } catch (error) {
@@ -45,8 +46,9 @@ const getAdpZone = (adpId) => {
               }
             }
             resolve(elm);
+            break;
           }
-        });
+        }
       });
     });
   });

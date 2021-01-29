@@ -28,7 +28,7 @@ const ADPStatement = () => {
 
   const fetchCycleHistory = async () => {
     try {
-      const res = await apiHandler.get(`/adp/get-cylces`);
+      const res = await apiHandler.get(`/get-cylces`);
       setCycleHistory(res.data);
     } catch (error) {
       console.log(error);
@@ -37,7 +37,7 @@ const ADPStatement = () => {
 
   const fetchADPData = async () => {
     try {
-      const res = await apiHandler.get(`/adp/details`);
+      const res = await apiHandler.get(`/details`);
       setADPData(res.data);
     } catch (error) {
       console.log(error);
@@ -46,7 +46,7 @@ const ADPStatement = () => {
 
   const fetchStatementData = async (id) => {
     try {
-      const res = await apiHandler.get(`/adp/cycle/${id}`);
+      const res = await apiHandler.get(`/cycle/${id}`);
       console.log(res.data);
       setStatementData(res.data);
       if (res.data.adpDetails.bv) {
