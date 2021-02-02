@@ -63,14 +63,22 @@ const getChampionEarnings = (
 ) =>
   new Promise(async (resolve, reject) => {
     const championData = await getChampionDataForAdp(adpId);
-    if (championData) {
+    if (
+      championData &&
+      championData.gbv >= 20000 &&
+      championData.no_of_frontlines > 2
+    ) {
       const availableAmount = monthMoney * (chapionPercent / 100);
       const amtPerPoint = availableAmount / championPoints;
       let adpPoints =
         championData.current_month_pbv >= 5000
           ? championData.current_month_pbv
           : 0;
-      adpPoints += championData.bv >= 8000 ? championData.bv : 0;
+      adpPoints +=
+        championData.current_month_gbv >= 8000 &&
+        championData.new_co_sponsored > 4
+          ? championData.current_month_gbv
+          : 0;
       resolve(Math.round(amtPerPoint * adpPoints));
     } else {
       resolve(0);

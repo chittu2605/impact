@@ -185,6 +185,33 @@ const GET_VOUCHERS_BY_ADP_ID = (adpID) =>
 const GET_NO_FRONT_LINES = (adpID) =>
   `SELECT count(tp.adp_id) AS frontLines FROM tbl_pbv tp WHERE tp.sponsor_id = ${adpID}`;
 
+const GET_PERSONAL_NEW_JOININGS = (
+  adpId
+) => `SELECT count(adp_id) AS personal_new_joining FROM tbl_adp
+WHERE sponsor_id = ${adpId}
+AND date_created > 
+IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
+
+const GET_TOTAL_NEW_JOININGS = (adpId) => `WITH RECURSIVE 
+link AS (
+	SELECT adp_id, sponsor_id,date_created FROM tbl_adp
+	UNION ALL
+	SELECT ta.adp_id, l.sponsor_id,ta.date_created FROM tbl_adp ta JOIN link l ON ta.sponsor_id = l.adp_id
+)
+SELECT count(adp_id) AS team_new_joining FROM link WHERE sponsor_id = ${adpId} AND date_created > 
+IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
+
+const GET_TEAM_SIZE = (adpId) => `WITH RECURSIVE 
+link AS (
+	SELECT adp_id, sponsor_id,date_created FROM tbl_adp
+	UNION ALL
+	SELECT ta.adp_id, l.sponsor_id,ta.date_created FROM tbl_adp ta JOIN link l ON ta.sponsor_id = l.adp_id
+)
+SELECT count(adp_id) AS team_size FROM link WHERE sponsor_id = ${adpId}`;
+
+const GET_NO_CO_SPONSORED = (adpId) =>
+  `SELECT count(adp_id) AS no_co_sponsored FROM tbl_adp WHERE co_sponsor_id = ${adpId}`;
+
 module.exports.SELECT_ADP_BY_ADP_ID = SELECT_ADP_BY_ADP_ID;
 module.exports.SELECT_ADP_NAME_BY_ADP_ID = SELECT_ADP_NAME_BY_ADP_ID;
 module.exports.ADD_ADP = ADD_ADP;
@@ -201,3 +228,7 @@ module.exports.INSERT_ADP_UP_LINE = INSERT_ADP_UP_LINE;
 module.exports.ADD_ADP_LINE_2 = ADD_ADP_LINE_2;
 module.exports.GET_VOUCHERS_BY_ADP_ID = GET_VOUCHERS_BY_ADP_ID;
 module.exports.GET_NO_FRONT_LINES = GET_NO_FRONT_LINES;
+module.exports.GET_PERSONAL_NEW_JOININGS = GET_PERSONAL_NEW_JOININGS;
+module.exports.GET_TOTAL_NEW_JOININGS = GET_TOTAL_NEW_JOININGS;
+module.exports.GET_TEAM_SIZE = GET_TEAM_SIZE;
+module.exports.GET_NO_CO_SPONSORED = GET_NO_CO_SPONSORED;

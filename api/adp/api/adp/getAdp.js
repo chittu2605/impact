@@ -2,6 +2,10 @@ const {
   GET_ADP_BY_PHONE,
   GET_CHILD_ADP,
   GET_NO_FRONT_LINES,
+  GET_PERSONAL_NEW_JOININGS,
+  GET_TOTAL_NEW_JOININGS,
+  GET_TEAM_SIZE,
+  GET_NO_CO_SPONSORED,
 } = require("../../adpQuery/adp/adp");
 const { getSprinterData } = require("../../../functions/sprinter");
 const { getLeadersDataForAdp } = require("../../../functions/runCycleHelper");
@@ -105,8 +109,7 @@ module.exports = (app) => {
       async (error, results, fields) => {
         console.log(error);
         if (error) return res.sendStatus("401");
-        // if (results.length === 0) return res.sendStatus("404");
-
+        if (results.length === 0) return res.sendStatus("404");
         return res.json({
           result: results,
         });
@@ -125,6 +128,48 @@ module.exports = (app) => {
     connection.query(GET_NO_FRONT_LINES(adpId), (error, results, fields) => {
       if (!error && results.length) {
         res.json({ frontLines: results[0].frontLines });
+      }
+    });
+  });
+
+  app.get("/adp/no-co-sponsored", async (req, res) => {
+    const adpId = req.user.adp_id;
+    connection.query(GET_NO_CO_SPONSORED(adpId), (error, results, fields) => {
+      if (!error && results.length) {
+        res.json({ noCoSponsored: results[0].no_co_sponsored });
+      }
+    });
+  });
+
+  app.get("/adp/personal-new-joining", async (req, res) => {
+    const adpId = req.user.adp_id;
+    connection.query(
+      GET_PERSONAL_NEW_JOININGS(adpId),
+      (error, results, fields) => {
+        if (!error && results.length) {
+          res.json({ personalNewJoining: results[0].personal_new_joining });
+        }
+      }
+    );
+  });
+
+  app.get("/adp/team-new-joining", async (req, res) => {
+    const adpId = req.user.adp_id;
+    connection.query(
+      GET_TOTAL_NEW_JOININGS(adpId),
+      (error, results, fields) => {
+        if (!error && results.length) {
+          res.json({ teamNewJoin: results[0].team_new_joining });
+        }
+      }
+    );
+  });
+
+  app.get("/adp/team-size", async (req, res) => {
+    const adpId = req.user.adp_id;
+    connection.query(GET_TEAM_SIZE(adpId), (error, results, fields) => {
+      if (!error && results.length) {
+        res.json({ teamSize: results[0].team_size });
       }
     });
   });

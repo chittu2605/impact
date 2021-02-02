@@ -53,6 +53,8 @@ module.exports = (app) => {
         async (error, results, fields) => {
           if (!error && results.length > 0) {
             res.json({ balance: results[0].balance });
+          } else if (error) {
+            res.send(404);
           }
         }
       );

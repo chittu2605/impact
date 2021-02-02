@@ -45,8 +45,8 @@ class FamilyTree extends React.Component {
 
     let { treeData } = JSON.parse(JSON.stringify(this.state));
     let { adpId } = this.props;
-
     await this.getSprinterData();
+    console.log(this.state);
     if (this.state.sprintsUnder.includes(adpId.toString())) {
       treeData[0].name += " (SPRINT)";
     } else if (this.state.sprintersUnder.includes(adpId.toString())) {
@@ -58,9 +58,15 @@ class FamilyTree extends React.Component {
         response.data.result.forEach((user) => {
           let obj = {};
           obj.name = `${user.firstname} ${user.lastname}`;
-          if (this.state.sprinterFrontLines.includes(user.adp_id.toString())) {
+          console.log(this.state.sprintsFrontLines);
+          console.log(user.adp_id.toString());
+          if (
+            this.state.sprintersUnder.includes(user.adp_id.toString()) ||
+            this.state.sprinterFrontLines.includes(user.adp_id.toString())
+          ) {
             obj.name += " (SPRINTER LEG)";
           } else if (
+            this.state.sprintsUnder.includes(user.adp_id.toString()) ||
             this.state.sprintsFrontLines.includes(user.adp_id.toString())
           ) {
             obj.name += " (SPRINT LEG)";
@@ -145,7 +151,6 @@ class FamilyTree extends React.Component {
     for (var i = 0; i < depth; i++) {
       lineList = this.findnode(firstLine, adpId, children);
     }
-    console.log(lineList);
     treeData[0].children = lineList;
     let originalTreeData = JSON.stringify(this.state.treeData);
     if (originalTreeData != JSON.stringify(treeData)) {

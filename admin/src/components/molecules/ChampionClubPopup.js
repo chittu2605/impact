@@ -55,7 +55,7 @@ export const ChampionClubPopup = ({ open, onClose, rows }) => {
                   PBV
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  No Joinee
+                  New Joinee
                 </TableCell>
                 <TableCell component="th" scope="row">
                   Joinee BV
@@ -78,9 +78,11 @@ export const ChampionClubPopup = ({ open, onClose, rows }) => {
                         {row.current_month_pbv}
                       </TableCell>
                       <TableCell style={{ width: 160 }}>
-                        {row.no_joinees}
+                        {row.new_co_sponsored}
                       </TableCell>
-                      <TableCell style={{ width: 160 }}>{row.bv}</TableCell>
+                      <TableCell style={{ width: 160 }}>
+                        {row.current_month_gbv}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

@@ -22,9 +22,16 @@ class DashboardDefitiateCard extends React.Component {
     frontLines: 0,
     cardOverflow: 0,
     totalOnePlusCards: 0,
-    leadersLine1Deficit: 0,
-    leadersLine2Deficit: 0,
-    leadersLine3Deficit: 0,
+    personalNewJoining: 0,
+    teamNewJoin: 0,
+    teamSize: 0,
+    leadersLine1BV: 0,
+    leaderBV1Color: "red",
+    leadersLine2BV: 0,
+    leaderBV2Color: "red",
+    leadersLine3BV: 0,
+    leaderBV3Color: "red",
+    noCoSponsored: 0,
   };
 
   componentDidMount = () => {
@@ -38,6 +45,10 @@ class DashboardDefitiateCard extends React.Component {
     this.fetchBlueCardOverflow();
     this.fetchTop3frontlines();
     this.fetchTotalOnePlusCards();
+    this.getPersonalNewJoining();
+    this.getTeamNewJoining();
+    this.getTotalTeamSize();
+    this.getNoCoSponsered();
   };
 
   getPbvDetails = () => {
@@ -107,9 +118,48 @@ class DashboardDefitiateCard extends React.Component {
     });
   };
 
+  getNoCoSponsered = () => {
+    getNoCoSponsered().then((response) => {
+      if (response && response.data && response.data.noCoSponsored) {
+        this.setState({
+          noCoSponsored: response.data.noCoSponsored,
+        });
+      }
+    });
+  };
+
+  getPersonalNewJoining = () => {
+    getPersonalNewJoining().then((response) => {
+      if (response && response.data && response.data.personalNewJoining) {
+        this.setState({
+          personalNewJoining: response.data.personalNewJoining,
+        });
+      }
+    });
+  };
+
+  getTeamNewJoining = () => {
+    getTeamNewJoining().then((response) => {
+      if (response && response.data && response.data.teamNewJoin) {
+        this.setState({
+          teamNewJoin: response.data.teamNewJoin,
+        });
+      }
+    });
+  };
+
+  getTotalTeamSize = () => {
+    getTotalTeamSize().then((response) => {
+      if (response && response.data && response.data.teamSize) {
+        this.setState({
+          teamSize: response.data.teamSize,
+        });
+      }
+    });
+  };
+
   getDeficitZone = () => {
     getDeficitZone().then((response) => {
-      console.log(response.data);
       if (response && response.data && response.data.deficitZone === false) {
         this.setState({
           showDeficitZone: false,
@@ -158,19 +208,23 @@ class DashboardDefitiateCard extends React.Component {
         const line1Amt = response.data[0] ? response.data[0].bv : 0;
         const line2Amt = response.data[1] ? response.data[1].bv : 0;
         const line3Amt = response.data[2] ? response.data[2].bv : 0;
-        const line1Deficit = line1Amt > 40000 ? 0 : 40000 - line1Amt;
-        const line2Deficit =
-          line1Deficit === 0
-            ? (line1Amt * 70) / 100 - line2Amt
-            : 28000 - line2Amt;
-        const line3Deficit =
-          line1Deficit === 0
-            ? (line1Amt * 40) / 100 - line3Amt
-            : 16000 - line3Amt;
+        let line1Color = "red";
+        let line2BaseValue = 28000;
+        let line3BaseValue = 16000;
+        if (line1Amt >= 40000) {
+          line1Color = "green";
+          line2BaseValue = (70 * line1Amt) / 100;
+          line3BaseValue = (40 * line1Amt) / 100;
+        }
+        const line2Color = line2Amt < line2BaseValue ? "red" : "green";
+        const line3Color = line3Amt < line2BaseValue ? "red" : "green";
         this.setState({
-          leadersLine1Deficit: line1Deficit,
-          leadersLine2Deficit: line2Deficit > 0 ? line2Deficit : 0,
-          leadersLine3Deficit: line3Deficit > 0 ? line3Deficit : 0,
+          leadersLine1BV: line1Amt,
+          leaderBV1Color: line1Color,
+          leadersLine2BV: line2Amt,
+          leaderBV2Color: line2Color,
+          leadersLine3BV: line3Amt,
+          leaderBV3Color: line3Color,
         });
       }
     });
@@ -199,6 +253,7 @@ class DashboardDefitiateCard extends React.Component {
   render() {
     let {
       pbv,
+      bv,
       totalPbv,
       gbv,
       totalGbv,
@@ -214,20 +269,31 @@ class DashboardDefitiateCard extends React.Component {
       bvTillDate,
       cardOverflow,
       totalOnePlusCards,
-      leadersLine1Deficit,
-      leadersLine2Deficit,
-      leadersLine3Deficit,
+      leadersLine1BV,
+      leadersLine2BV,
+      leadersLine3BV,
+      leaderBV1Color,
+      leaderBV2Color,
+      leaderBV3Color,
+      personalNewJoining,
+      teamNewJoin,
+      teamSize,
+      noCoSponsored,
     } = this.state;
-    const displayChampionDeficit = totalGbv >= 20000 && frontLines > 2;
-    const championDifference = 5000 - pbv;
-    let championDeficit;
-    let champDeficitColor;
-    if (championDifference > 0) {
-      championDeficit = championDifference + " BV";
+    let championDifference =
+      totalGbv < 20000 ? 20000 - totalGbv + " GBV" : 5000 - pbv + " PBV";
+    let champDeficitColor = "green";
+    if ((totalGbv < 20000) | (frontLines < 3) | (pbv < 5000)) {
       champDeficitColor = "red";
     } else {
-      championDeficit = "Qualified";
-      champDeficitColor = "green";
+      championDifference = "Qualified";
+    }
+    if (frontLines < 3) {
+      if (totalGbv < 20000) {
+        championDifference += " and " + (3 - frontLines) + " frontline(s)";
+      } else {
+        championDifference = 3 - frontLines + " frontlines(s)";
+      }
     }
     return (
       <Card className="">
@@ -237,12 +303,20 @@ class DashboardDefitiateCard extends React.Component {
         </CardHeader>
         <CardBody>
           <div className="">
-            <p>PERSONAL NEW JOINING : own</p>
-            <p>CURRENT MONTH TEAM NEW JOINING : own + total downline</p>
-            <p>TEAM SIZE : own + total downline</p>
+            <p>PERSONAL NEW JOINING : {personalNewJoining}</p>
+            <p>CURRENT MONTH TEAM NEW JOINING : {teamNewJoin}</p>
+            <p>TEAM SIZE : {teamSize}</p>
             <p>FRONT LINES : {frontLines}</p>
-            <p>REPURCHASE PER MEMBER : CURRENT MONTH BV / TEAM SIZE</p>
-            <p>JOINING PER MEMBER : CURRENT MONTH NEW JOINING / TEAM SIZE</p>
+            <p>
+              REPURCHASE PER MEMBER :{" "}
+              {parseFloat(teamSize === 0 ? 0 : bv / teamSize).toFixed(2)}
+            </p>
+            <p>
+              JOINING PER MEMBER :{" "}
+              {parseFloat(teamSize === 0 ? 0 : teamNewJoin / teamSize).toFixed(
+                2
+              )}
+            </p>
             <p>RETAIL PROFIT : Rs{" " + total_retail_profit}</p>
             <p>CO SPONSOR ROYALTY : Rs {" " + coSponsorIncome}</p>
             {showDeficitZone && (
@@ -258,22 +332,36 @@ class DashboardDefitiateCard extends React.Component {
                 </span>
               </p>
             )}
-            {displayChampionDeficit && (
-              <p>
-                DEFICIT FOR CHAMPIONS CLUB :{" "}
-                <span style={{ color: champDeficitColor }}>
-                  {" " + championDeficit}
-                </span>
-              </p>
-            )}
+            <p>
+              DEFICIT FOR CHAMPIONS CLUB :{" "}
+              <span style={{ color: champDeficitColor }}>
+                {" " + championDifference}
+              </span>
+            </p>
             <p>
               DEFICIT FOR BLUE CARD : {11000 - cardOverflow} BV{" "}
-              <span style={{ color: "red" }}>(3 cosponsor)</span>
+              {noCoSponsored < 3 ? (
+                <span style={{ color: "red" }}>
+                  ({3 - noCoSponsored} cosponsor required)
+                </span>
+              ) : (
+                <span />
+              )}
             </p>
             <p>TOTAL 1+1 CARD THIS MONTH : {totalOnePlusCards}</p>
             <p>
-              LEADER'S CLUB DEFICIT :{" "}
-              {`${leadersLine1Deficit} | ${leadersLine2Deficit} | ${leadersLine3Deficit}`}
+              LEADER'S CLUB :{" "}
+              <span style={{ color: leaderBV1Color }}>
+                {leadersLine1BV + " BV"}
+              </span>{" "}
+              |{" "}
+              <span style={{ color: leaderBV2Color }}>
+                {leadersLine2BV + " BV"}
+              </span>{" "}
+              |{" "}
+              <span style={{ color: leaderBV3Color }}>
+                {leadersLine3BV + " BV"}
+              </span>
             </p>
             <p>MEB DEFICIT : </p>
             <p>INCOME FROM PULL : </p>
@@ -314,7 +402,21 @@ function getDeficitZone() {
 function getNoFrontLines() {
   return apiHandler.get("/no-front-lines");
 }
+function getNoCoSponsered() {
+  return apiHandler.get("/no-co-sponsored");
+}
 
+function getPersonalNewJoining() {
+  return apiHandler.get("/personal-new-joining");
+}
+
+function getTeamNewJoining() {
+  return apiHandler.get("/team-new-joining");
+}
+
+function getTotalTeamSize() {
+  return apiHandler.get("/team-size");
+}
 function getBv() {
   return apiHandler.get("/bv");
 }
