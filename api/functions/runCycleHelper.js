@@ -47,7 +47,7 @@ const getCoSponsorRoyality = (adpId) =>
       GET_CO_SPONSOR_ROYALITY(adpId),
       (error, results, fields) => {
         if (!error && results.length > 0) {
-          resolve(results[0].co_sponsor_royality);
+          resolve(Math.round((results[0].co_sponsor_royality*8)/100));
         } else {
           reject(error);
         }
@@ -90,7 +90,6 @@ const getLeadersEarnings = (
   adpId,
   leadersPoints,
   leadersPercent,
-  gbv
 ) =>
   new Promise(async (resolve, reject) => {
     const leadersData = await getLeadersDataForAdp(adpId);
@@ -102,7 +101,7 @@ const getLeadersEarnings = (
       if (l1 > 40000 && l2 >= (70 * l1) / 100 && l3 >= (40 * l1) / 100) {
         const availableAmount = monthMoney * (leadersPercent / 100);
         const amtPerPoint = availableAmount / leadersPoints;
-        resolve(Math.round(amtPerPoint * gbv.gbv));
+        resolve(Math.round(amtPerPoint *l1));
       }
     }
     resolve(leadersAmount);

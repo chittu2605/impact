@@ -17,7 +17,7 @@ const getSprintQualified = (adpId) =>
   new Promise((resolve, reject) => {
     connection.query(IS_SPRINT_QUALIFIED(adpId), (error, results, filelds) => {
       if (!error && results.length > 0) {
-        resolve(results[0]);
+        resolve(results[0].sprint_qualified);
       }
       resolve(false);
     });
@@ -27,6 +27,7 @@ const getAdpZone = (adpId) => {
   return new Promise(async (resolve, reject) => {
     getAdpBv(adpId).then((bvData) => {
       getPlanZone().then(async (allZone) => {
+        let i=0;
         for(let elm of allZone){
           if (bvData.bvTillDate == 0 && elm.min_value == 1) {
             resolve(elm);
@@ -48,6 +49,7 @@ const getAdpZone = (adpId) => {
             resolve(elm);
             break;
           }
+          i++;
         }
       });
     });
@@ -64,16 +66,17 @@ const getDeficitZone = (adpId) => {
             bvData.bvTillDate >= elm.min_value &&
             bvData.bvTillDate <= elm.max_value
           ) {
+            let adder =1
             if(elm.min_value===1){
-              let adder =1
+        
               const sprintQualified = await getSprintQualified(adpId)
               if(sprintQualified == 1){
                 ++adder;
               }
+            }
               const deficitZone = allZone[i + adder].name;
               const deficitValue = allZone[i + adder].min_value - bvData.bvTillDate;
-              resolve({ deficitZone, deficitValue });
-            }
+              resolve({ deficitZone, deficitValue })
           } else if (bvData.bvTillDate >= elm.min_value && elm.max_value == 0) {
             resolve({ deficitZone: false });
           }

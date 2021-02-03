@@ -13,7 +13,7 @@ class DashboardDefitiateCard extends React.Component {
     total_retail_profit: 0,
     deficitZone: "",
     deficitValue: 0,
-    showDeficitZone: true,
+    deficitZoneColor: 'red',
     showSprintDeficit: false,
     sprintDeficit: 0,
     sprintDeficitColor: "red",
@@ -162,13 +162,14 @@ class DashboardDefitiateCard extends React.Component {
     getDeficitZone().then((response) => {
       if (response && response.data && response.data.deficitZone === false) {
         this.setState({
-          showDeficitZone: false,
+          deficitZoneColor: 'green',
+          deficitZone:'',
+          deficitValue: 'QUALIFIED',
         });
       } else {
         this.setState({
-          showDeficitZone: true,
           deficitZone: response.data.deficitZone,
-          deficitValue: response.data.deficitValue,
+          deficitValue: response.data.deficitValue + ' BV',
         });
       }
     });
@@ -259,7 +260,7 @@ class DashboardDefitiateCard extends React.Component {
       totalGbv,
       coSponsorIncome,
       total_retail_profit,
-      showDeficitZone,
+      deficitZoneColor,
       showSprintDeficit,
       deficitZone,
       deficitValue,
@@ -319,16 +320,16 @@ class DashboardDefitiateCard extends React.Component {
             </p>
             <p>RETAIL PROFIT : Rs{" " + total_retail_profit}</p>
             <p>CO SPONSOR ROYALTY : Rs {" " + coSponsorIncome}</p>
-            {showDeficitZone && (
+            {
               <p>
-                DEFICIT FOR {deficitZone} ZONE : {deficitValue} BV
+                DEFICIT FOR {deficitZone} ZONE : <span style={{color:deficitZoneColor}}>{deficitValue}</span>
               </p>
-            )}
+            }
             {showSprintDeficit && (
               <p>
                 SPRINT DEFICIT :
                 <span style={{ color: sprintDeficitColor }}>
-                  {" " + sprintDeficit} BV
+                  {" " + sprintDeficit}
                 </span>
               </p>
             )}

@@ -134,7 +134,7 @@ JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp
 JOIN line2 l2 ON tp.sponsor_id = l2.adp_id WHERE tp.adp_id != l2.line1_adp
 AND tp.adp_id != l2.line2_adp AND b.bv >= (l2.line1_bv * 40/100))max_line3 ON tp.sponsor_id = max_line3.sponsor_id 
 AND max_line3.bv = b.bv GROUP BY tp.sponsor_id)
-SELECT SUM(gbv) AS total_points FROM gbv JOIN line3 ON line3.adp_id = gbv.sponsor_id`;
+select IFNULL(SUM(line1_BV),0) AS total_points from line3`;
 
 const GET_LEADERS_FUND_PERCENT = () =>
   `SELECT value FROM tbl_planmanagement WHERE plan_name = "leaders_club"`;

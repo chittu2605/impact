@@ -73,8 +73,7 @@ const updateCycleData = async () => {
         monthMoney,
         adp,
         leadersPoints,
-        leadersPercent,
-        gbv
+        leadersPercent
       );
       dbRows.push([
         adp,

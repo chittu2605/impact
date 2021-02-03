@@ -175,7 +175,7 @@ const ADPStatement = () => {
                             </td>
                             <td>
                               <span style={{ color: adpStatementColor }}>
-                                {adpCommision}
+                                {Math.round(adpCommision)}
                               </span>
                             </td>
                           </tr>
@@ -195,7 +195,7 @@ const ADPStatement = () => {
                                 <td>{child.zone_value}%</td>
                                 <td>{child.bv}</td>
                                 <td>{difference}%</td>
-                                <td>{commision}</td>
+                                <td>{Math.round(commision)}</td>
                               </tr>
                             );
                           })}
@@ -205,7 +205,7 @@ const ADPStatement = () => {
                             <td></td>
                             <th>{childBVTotal}</th>
                             <td></td>
-                            <th>{adpCommision + comissionTotal}</th>
+                            <th>{Math.round(adpCommision + comissionTotal)}</th>
                           </tr>
                         </tbody>
                       </table>
@@ -219,13 +219,13 @@ const ADPStatement = () => {
                           <div className="row mb-1">
                             <div className="col">Retail Profit</div>
                             <div className="col">
-                              : {adpCommision + comissionTotal} Rs
+                              : {0} Rs
                             </div>
                           </div>
                         </div>
                         <div className="col container">
                           <div className="row mb-1">
-                            <div className="col">Co-Sponsor Royality</div>
+                            <div className="col">Co-Sponsor Royalty</div>
                             <div className="col">
                               : {statementData.adpDetails.co_sponsor_royality}{" "}
                               Rs
@@ -271,12 +271,12 @@ const ADPStatement = () => {
                       <div className="row mb-3">
                         <div className="col font-weight-bold">
                           Total:{" "}
-                          {statementData.adpDetails.co_sponsor_royality +
+                          {Math.round(statementData.adpDetails.co_sponsor_royality +
                             statementData.adpDetails.champion_earnings +
                             statementData.adpDetails.oneplus_earnings +
                             statementData.adpDetails.leaders_earnings +
                             adpCommision +
-                            comissionTotal}{" "}
+                            comissionTotal)}{" "}
                           Rs
                         </div>
                       </div>
