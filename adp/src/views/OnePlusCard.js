@@ -16,6 +16,7 @@ import CardDetails from "components/Molecule/CardDetails";
 
 const OnePlusCard = () => {
   const [cards, setCards] = useState([]);
+  const [noCosponsor, setNoCosponsor] = useState(0);
   const [modelOpen, setModelOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   useEffect(() => {
@@ -37,6 +38,16 @@ const OnePlusCard = () => {
       console.log(error);
     }
   };
+
+  const getNoCoSponsered = async () => {
+    try {
+      const res = await apiHandler.get(`/no-co-sponsored`);
+      setNoCosponsor(res.data.noCoSponsored);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <PanelHeader size="sm" />
@@ -73,7 +84,7 @@ const OnePlusCard = () => {
                             ? card.valid_till + " Cycles"
                             : "NA"}
                         </td>
-                        <td>{card.expiry_cycle ? "INACTIVE" : "ACTIVE"}</td>
+                        <td>{card.expiry_cycle && noCosponsor< 3 ?  <span style={{ color: 'red' }}>INACTIVE</span>: "ACTIVE"}</td>
                         <td>
                           <Button onClick={() => openDetails(card)}>
                             Details

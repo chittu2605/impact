@@ -387,7 +387,7 @@ class BuyProducts extends React.Component {
       balance: response.data.balance,
     });
   };
-
+  
   render() {
     const {
       categoryOptions,
@@ -587,7 +587,7 @@ function calcBvWeightage(totalBv, bvWeightageList) {
   let bvWeightage = 0;
   bvWeightageList &&
     bvWeightageList.forEach((elm) => {
-      if (elm.min_value <= totalBv && elm.max_value > totalBv) {
+      if (elm.min_value <= totalBv && elm.max_value >= totalBv) {
         bvWeightage = elm.value;
       } else if (elm.min_value <= totalBv && elm.max_value == 0) {
         bvWeightage = elm.value;

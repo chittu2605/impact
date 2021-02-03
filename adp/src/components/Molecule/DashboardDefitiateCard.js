@@ -152,7 +152,7 @@ class DashboardDefitiateCard extends React.Component {
     getTotalTeamSize().then((response) => {
       if (response && response.data && response.data.teamSize) {
         this.setState({
-          teamSize: response.data.teamSize,
+          teamSize: (response.data.teamSize)+1,
         });
       }
     });
@@ -217,7 +217,7 @@ class DashboardDefitiateCard extends React.Component {
           line3BaseValue = (40 * line1Amt) / 100;
         }
         const line2Color = line2Amt < line2BaseValue ? "red" : "green";
-        const line3Color = line3Amt < line2BaseValue ? "red" : "green";
+        const line3Color = line3Amt < line3BaseValue ? "red" : "green";
         this.setState({
           leadersLine1BV: line1Amt,
           leaderBV1Color: line1Color,
@@ -283,16 +283,16 @@ class DashboardDefitiateCard extends React.Component {
     let championDifference =
       totalGbv < 20000 ? 20000 - totalGbv + " GBV" : 5000 - pbv + " PBV";
     let champDeficitColor = "green";
-    if ((totalGbv < 20000) | (frontLines < 3) | (pbv < 5000)) {
+    if ((totalGbv < 20000) | (frontLines < 2) | (pbv < 5000)) {
       champDeficitColor = "red";
     } else {
       championDifference = "Qualified";
     }
-    if (frontLines < 3) {
+    if (frontLines < 2) {
       if (totalGbv < 20000) {
-        championDifference += " and " + (3 - frontLines) + " frontline(s)";
+        championDifference += " and " + (2 - frontLines) + " frontlines";
       } else {
-        championDifference = 3 - frontLines + " frontlines(s)";
+        championDifference = 2 - frontLines + " frontline";
       }
     }
     return (
@@ -303,13 +303,13 @@ class DashboardDefitiateCard extends React.Component {
         </CardHeader>
         <CardBody>
           <div className="">
-            <p>PERSONAL NEW JOINING : {personalNewJoining}</p>
+            <p>PERSONAL CO-SPONSORED : {personalNewJoining}</p>
             <p>CURRENT MONTH TEAM NEW JOINING : {teamNewJoin}</p>
             <p>TEAM SIZE : {teamSize}</p>
             <p>FRONT LINES : {frontLines}</p>
             <p>
               REPURCHASE PER MEMBER :{" "}
-              {parseFloat(teamSize === 0 ? 0 : bv / teamSize).toFixed(2)}
+              {Math.round(teamSize === 0 ? 0 : bv / teamSize)}
             </p>
             <p>
               JOINING PER MEMBER :{" "}

@@ -57,21 +57,28 @@ const getAdpZone = (adpId) => {
 const getDeficitZone = (adpId) => {
   return new Promise(async (resolve, reject) => {
     getAdpBv(adpId).then((bvData) => {
-      getPlanZone().then((allZone) => {
-        let zone = allZone.filter(async (elm, i) => {
+      getPlanZone().then(async (allZone) => {
+        let i=0;
+        for (let elm of allZone) {
           if (
             bvData.bvTillDate >= elm.min_value &&
             bvData.bvTillDate <= elm.max_value
           ) {
-            const adder =
-              elm.min_value === 1 && (await getSprintQualified(adpId)) ? 2 : 1;
-            let deficitZone = allZone[i + adder].name;
-            let deficitValue = allZone[i + adder].min_value - bvData.bvTillDate;
-            resolve({ deficitZone, deficitValue });
+            if(elm.min_value===1){
+              let adder =1
+              const sprintQualified = await getSprintQualified(adpId)
+              if(sprintQualified == 1){
+                ++adder;
+              }
+              const deficitZone = allZone[i + adder].name;
+              const deficitValue = allZone[i + adder].min_value - bvData.bvTillDate;
+              resolve({ deficitZone, deficitValue });
+            }
           } else if (bvData.bvTillDate >= elm.min_value && elm.max_value == 0) {
             resolve({ deficitZone: false });
           }
-        });
+          i++;
+        }
       });
     });
   });

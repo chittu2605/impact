@@ -188,7 +188,7 @@ const GET_NO_FRONT_LINES = (adpID) =>
 const GET_PERSONAL_NEW_JOININGS = (
   adpId
 ) => `SELECT count(adp_id) AS personal_new_joining FROM tbl_adp
-WHERE sponsor_id = ${adpId}
+WHERE co_sponsor_id = ${adpId}
 AND date_created > 
 IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
 
