@@ -69,7 +69,7 @@ const getChampionEarnings = (
       championData.no_of_frontlines > 2
     ) {
       const availableAmount = monthMoney * (chapionPercent / 100);
-      const amtPerPoint = availableAmount / championPoints;
+      const amtPerPoint = championPoints == 0 ? 0 : availableAmount / championPoints;
       let adpPoints =
         championData.current_month_pbv >= 5000
           ? championData.current_month_pbv
