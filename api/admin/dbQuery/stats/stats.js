@@ -91,7 +91,7 @@ line1 AS (
 SELECT tp.sponsor_id AS adp_id, min(tp.adp_id) AS line1_adp, max_line1.bv AS line1_bv FROM tbl_pbv tp
 JOIN bv b USING (adp_id)
 JOIN (SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) GROUP BY sponsor_id
-HAVING bv > 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
+HAVING bv >= 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
 line2 AS (SELECT tp.sponsor_id AS adp_id, l1.line1_adp, l1.line1_bv, min(tp.adp_id) AS line2_adp, max_line2.bv AS line2_bv 
 FROM tbl_pbv tp JOIN bv b USING (adp_id) JOIN line1 l1 ON tp.sponsor_id = l1.adp_id
 JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) 
@@ -120,7 +120,7 @@ line1 AS (
 SELECT tp.sponsor_id AS adp_id, min(tp.adp_id) AS line1_adp, max_line1.bv AS line1_bv FROM tbl_pbv tp
 JOIN bv b USING (adp_id)
 JOIN (SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) GROUP BY sponsor_id
-HAVING bv > 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
+HAVING bv >= 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
 line2 AS (SELECT tp.sponsor_id AS adp_id, l1.line1_adp, l1.line1_bv, min(tp.adp_id) AS line2_adp, max_line2.bv AS line2_bv 
 FROM tbl_pbv tp JOIN bv b USING (adp_id) JOIN line1 l1 ON tp.sponsor_id = l1.adp_id
 JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) 

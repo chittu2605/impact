@@ -98,7 +98,7 @@ const getLeadersEarnings = (
       const l1 = leadersData[0].bv;
       const l2 = leadersData[1].bv;
       const l3 = leadersData[2].bv;
-      if (l1 > 40000 && l2 >= (70 * l1) / 100 && l3 >= (40 * l1) / 100) {
+      if (l1 >= 40000 && l2 >= (70 * l1) / 100 && l3 >= (40 * l1) / 100) {
         const availableAmount = monthMoney * (leadersPercent / 100);
         const amtPerPoint = availableAmount / leadersPoints;
         resolve(Math.round(amtPerPoint *l1));
