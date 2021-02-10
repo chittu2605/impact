@@ -120,7 +120,7 @@ export const AdminDashboard = () => {
           <StatisticCard
             value={totalMoney}
             cardColor="blue"
-            title="Total Money"
+            title="Total BV Till Date"
             icon={<ShoppingCartOutlinedIcon />}
           />
         </Grid>

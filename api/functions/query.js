@@ -372,7 +372,7 @@ const INSERT_CYCLE_DATE = (
   , ${coSponsorRoyality}, ${blueCardLimit}, ${yellowCardLimit}, ${greenCardLimit}, ${blueCardPercent})`;
 
 const INSERT_CYCLE_ROWS = () => `INSERT INTO impact_prod.tbl_cycle_report
-(adp_id, zone_value, bv, co_sponsor_royality, champion_earnings, oneplus_earnings, leaders_earnings, cycle_id, no_co_sponsored)
+(adp_id, zone_value, bv, pbv, co_sponsor_royality, champion_earnings, oneplus_earnings, leaders_earnings, cycle_id, no_co_sponsored)
 VALUES ?`;
 
 const EXPIRE_CARDS = (cycleId) =>

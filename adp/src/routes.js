@@ -32,7 +32,7 @@ var dashRoutes = [
   {
     path: "/add-adp",
     name: "Add ADP",
-    icon: "location_map-big",
+    icon: "users_single-02",
     component: AddADP,
     layout: "/adp",
   },

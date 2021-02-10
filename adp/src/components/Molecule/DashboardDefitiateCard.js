@@ -34,7 +34,7 @@ class DashboardDefitiateCard extends React.Component {
     noCoSponsored: 0,
   };
 
-  componentDidMount = () => {
+  componentDidMount = () => { 
     this.getPbvDetails();
     this.getGbvDetails();
     this.getBvDetails();

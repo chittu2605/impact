@@ -29,14 +29,11 @@ const getAdpZone = (adpId) => {
       getPlanZone().then(async (allZone) => {
         let i=0;
         for(let elm of allZone){
-          if (bvData.bvTillDate == 0 && elm.min_value == 1) {
-            resolve(elm);
-            break;
-          } else if (
+         if (
             bvData.bvTillDate >= elm.min_value &&
             (bvData.bvTillDate <= elm.max_value || elm.max_value == 0)
           ) {
-            if (elm.min_value === 1) {
+            if (elm.min_value === 0) {
               try {
                 const isSprintQualified = await getSprintQualified(adpId);
                 if (isSprintQualified == 1) {
@@ -67,8 +64,7 @@ const getDeficitZone = (adpId) => {
             bvData.bvTillDate <= elm.max_value
           ) {
             let adder =1
-            if(elm.min_value===1){
-        
+            if(elm.min_value===0){
               const sprintQualified = await getSprintQualified(adpId)
               if(sprintQualified == 1){
                 ++adder;
@@ -77,8 +73,10 @@ const getDeficitZone = (adpId) => {
               const deficitZone = allZone[i + adder].name;
               const deficitValue = allZone[i + adder].min_value - bvData.bvTillDate;
               resolve({ deficitZone, deficitValue })
+              break;
           } else if (bvData.bvTillDate >= elm.min_value && elm.max_value == 0) {
             resolve({ deficitZone: false });
+            break;
           }
           i++;
         }
