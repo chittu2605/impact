@@ -4,11 +4,8 @@ const MONTHLY_TURNOVER = () => `SELECT sum(after_discount * qty) AS mtv FROM tbl
 WHERE 
 order_date > 
 IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
-const TOTAL_MONEY = () => `SELECT IFNULL(sum(bv * qty),0) AS tm FROM tbl_order`;
-const MONTHLY_MONEY = () => `SELECT IFNULL(sum(bv * qty),0) AS mm FROM tbl_order
-WHERE 
-order_date > 
-IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
+const TOTAL_MONEY = () => `SELECT IFNULL(sum(pbv),0) AS tm FROM tbl_pbv`;
+const MONTHLY_MONEY = () => `SELECT IFNULL(sum(current_month_pbv),0) AS mm FROM tbl_pbv`;
 const TOTAL_ADP = () => `SELECT count(adp_id) AS ta FROM tbl_adp`;
 const NEW_ADP = () => `SELECT count(adp_id) AS na FROM tbl_adp
 WHERE 
