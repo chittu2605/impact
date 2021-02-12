@@ -68,7 +68,7 @@ export const ChampionClubPopup = ({ open, onClose, rows }) => {
               {tableRows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
-                  const metSecondCondition = row.new_co_sponsored > 4 && row.current_month_gbv >= 8000
+                  const metSecondCondition = row.new_co_sponsored > 4 && row.current_month_gbv >= 12000
                   return (
                     <TableRow key={row.adp_id}>
                       <TableCell component="th" scope="row">

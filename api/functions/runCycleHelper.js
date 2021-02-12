@@ -75,7 +75,7 @@ const getChampionEarnings = (
           ? championData.current_month_pbv
           : 0;
       adpPoints +=
-        championData.current_month_gbv >= 8000 &&
+        championData.current_month_gbv >= 12000 &&
         championData.new_co_sponsored > 4
           ? championData.current_month_gbv
           : 0;

@@ -42,13 +42,13 @@ class Dashboard extends React.Component {
       <>
         <PanelHeader
           size="lg"
-          content={
+           content={
             <Line
               data={dashboardPanelChart.data}
               options={dashboardPanelChart.options}
             />
           }
-        />
+        /> 
         <div className="content">
           <Row>
             <Col xs={12} md={6}>
