@@ -14,6 +14,8 @@ class DashboardSummaryCard extends React.Component {
     zone: "",
     bv: 0,
     bvTillDate: 0,
+    walletBalance: 0,
+    smartMartBalance: 0,
   };
 
   componentDidMount = () => {
@@ -23,6 +25,8 @@ class DashboardSummaryCard extends React.Component {
     this.fetchRetailProfit();
     this.fetchZone();
     this.getBvDetails();
+    this.getWalletBalance();
+    this.getSmartMartBalance();
   }
 
   getPbvDetails = () => {
@@ -35,6 +39,27 @@ class DashboardSummaryCard extends React.Component {
       }
     })
   }
+
+  getWalletBalance = () => {
+    getWalletBalance().then((response) => {
+      if (response && response.data && response.data.balance) {
+      this.setState({
+        walletBalance: response.data.balance,
+      });
+    }
+    } )
+  }
+
+  getSmartMartBalance = () => {
+    getSmartMartBalance().then((response) => {
+      if (response && response.data && response.data.balance) {
+        this.setState({
+          smartMartBalance: response.data.balance,
+        });
+      }
+    })
+}
+
 
   getGbvDetails = () => {
     getGbv().then((response) => {
@@ -89,7 +114,7 @@ class DashboardSummaryCard extends React.Component {
   }
 
   render() {
-    let { pbv, totalPbv, gbv, totalGbv, coSponsorIncome, total_retail_profit, zone, bv, bvTillDate } = this.state;
+    let { pbv, totalPbv, gbv, totalGbv, coSponsorIncome, total_retail_profit, zone, bv, bvTillDate, walletBalance, smartMartBalance} = this.state;
     return (
       <Card className="">
         <CardHeader>
@@ -106,9 +131,8 @@ class DashboardSummaryCard extends React.Component {
             <p>TOTAL BV TILL DATE : {bvTillDate}</p>
             <p>YOUR CURRENT ZONE : {zone}</p>
             <p>PERSONAL NEW JOINING TILL DATE : own</p>
-            
-
-
+            <p><b>WALLET BALANCE : {walletBalance} RS </b></p>
+            <p><b>SMART MART BALANCE : {smartMartBalance} RS </b></p>
           </div>
         </CardBody>
         <CardFooter>
@@ -146,4 +170,12 @@ function getZone () {
 
 function getBv () {
   return apiHandler.get("/bv")
+}
+
+function getWalletBalance () {
+  return apiHandler.get("/wallet-balance");
+}
+
+function getSmartMartBalance() {
+  return apiHandler.get(`/smart-mart-balance`);
 }

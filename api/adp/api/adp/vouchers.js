@@ -13,9 +13,7 @@ module.exports = (app) => {
             voucherCode: voucher.voucher_code,
             voucherType: voucher.voucher,
             amount: voucher.amount,
-            expiryDate: `${expDate.getFullYear()}-${
-              expDate.getMonth() + 1
-            }-${expDate.getDate()}`,
+            expiryDate: `${expDate.getDate().toString().padStart(2,0)}-${( expDate.getMonth() + 1).toString().padStart(2,0)}-${expDate.getFullYear()}`
           });
         });
         res.json(returnValue);

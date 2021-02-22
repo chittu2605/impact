@@ -53,7 +53,7 @@ const ADPStatement = () => {
         setAdpStatementColor("green");
       }
       setAdpCommision(
-        (res.data.adpDetails.bv * res.data.adpDetails.zone_value) / 100
+        (res.data.adpDetails.pbv * res.data.adpDetails.zone_value) / 100
       );
     } catch (error) {
       console.log(error);
@@ -165,7 +165,7 @@ const ADPStatement = () => {
                             </td>
                             <td>
                               <span style={{ color: adpStatementColor }}>
-                                {statementData.adpDetails.bv}
+                                {statementData.adpDetails.pbv}
                               </span>
                             </td>
                             <td>
@@ -175,7 +175,7 @@ const ADPStatement = () => {
                             </td>
                             <td>
                               <span style={{ color: adpStatementColor }}>
-                                {Math.round(adpCommision)}
+                                {Math.round(adpCommision)+" RS"}
                               </span>
                             </td>
                           </tr>
@@ -195,7 +195,7 @@ const ADPStatement = () => {
                                 <td>{child.zone_value}%</td>
                                 <td>{child.bv}</td>
                                 <td>{difference}%</td>
-                                <td>{Math.round(commision)}</td>
+                                <td>{Math.round(commision)+" RS"}</td>
                               </tr>
                             );
                           })}
@@ -205,7 +205,7 @@ const ADPStatement = () => {
                             <td></td>
                             <th>{childBVTotal}</th>
                             <td></td>
-                            <th>{Math.round(adpCommision + comissionTotal)}</th>
+                            <th>{Math.round(adpCommision + comissionTotal)+" RS"}</th>
                           </tr>
                         </tbody>
                       </table>

@@ -147,7 +147,7 @@ class Header extends React.Component {
           </div>
           <ADPDetails />
           <div>
-            <WalletNavItem walletBalance={this.props.walletBalance} />
+             <WalletNavItem walletBalance={this.props.walletBalance} /> 
             <SmartMartNavItem />
           </div>
           <NavbarToggler onClick={this.toggle}>

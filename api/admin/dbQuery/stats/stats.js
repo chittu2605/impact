@@ -4,11 +4,8 @@ const MONTHLY_TURNOVER = () => `SELECT sum(after_discount * qty) AS mtv FROM tbl
 WHERE 
 order_date > 
 IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
-const TOTAL_MONEY = () => `SELECT IFNULL(sum(bv * qty),0) AS tm FROM tbl_order`;
-const MONTHLY_MONEY = () => `SELECT IFNULL(sum(bv * qty),0) AS mm FROM tbl_order
-WHERE 
-order_date > 
-IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
+const TOTAL_MONEY = () => `SELECT IFNULL(sum(pbv),0) AS tm FROM tbl_pbv`;
+const MONTHLY_MONEY = () => `SELECT IFNULL(sum(current_month_pbv),0) AS mm FROM tbl_pbv`;
 const TOTAL_ADP = () => `SELECT count(adp_id) AS ta FROM tbl_adp`;
 const NEW_ADP = () => `SELECT count(adp_id) AS na FROM tbl_adp
 WHERE 
@@ -38,7 +35,7 @@ IFNULL(g.current_month_gbv,0) AS current_month_gbv, (SELECT count(ta.adp_id) FRO
 WHERE ta.co_sponsor_id = tp.adp_id AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate
 ORDER BY id DESC LIMIT 1),0)) AS new_co_sponsored, (SELECT count(ta.adp_id) FROM tbl_adp ta
 WHERE ta.co_sponsor_id = tp.adp_id) AS no_of_frontlines FROM tbl_pbv tp JOIN gbv AS g ON tp.adp_id = g.sponsor_id)
-SELECT SUM((CASE WHEN current_month_pbv >=5000 THEN current_month_pbv ELSE 0 END) + (CASE WHEN current_month_gbv >= 8000
+SELECT SUM((CASE WHEN current_month_pbv >=5000 THEN current_month_pbv ELSE 0 END) + (CASE WHEN current_month_gbv >= 12000
 AND new_co_sponsored > 4 THEN current_month_gbv ELSE 0 END)) AS total_points
 FROM champion_details WHERE gbv>20000 AND no_of_frontlines>1`;
 const GET_CHAMPION_PERCENT = () =>
@@ -91,7 +88,7 @@ line1 AS (
 SELECT tp.sponsor_id AS adp_id, min(tp.adp_id) AS line1_adp, max_line1.bv AS line1_bv FROM tbl_pbv tp
 JOIN bv b USING (adp_id)
 JOIN (SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) GROUP BY sponsor_id
-HAVING bv > 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
+HAVING bv >= 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
 line2 AS (SELECT tp.sponsor_id AS adp_id, l1.line1_adp, l1.line1_bv, min(tp.adp_id) AS line2_adp, max_line2.bv AS line2_bv 
 FROM tbl_pbv tp JOIN bv b USING (adp_id) JOIN line1 l1 ON tp.sponsor_id = l1.adp_id
 JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) 
@@ -103,7 +100,7 @@ line3 AS (SELECT tp.sponsor_id AS adp_id, l2.line1_adp, l2.line1_bv,l2.line2_adp
 FROM tbl_pbv tp JOIN bv b USING (adp_id) JOIN line2 l2 ON tp.sponsor_id = l2.adp_id
 JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) 
 JOIN line2 l2 ON tp.sponsor_id = l2.adp_id WHERE tp.adp_id != l2.line1_adp
-AND tp.adp_id != l2.line2_adp AND b.bv >= (l2.line1_bv * 40/100))max_line3 ON tp.sponsor_id = max_line3.sponsor_id 
+AND tp.adp_id != l2.line2_adp AND b.bv >= (l2.line1_bv * 40/100) GROUP BY tp.sponsor_id)max_line3 ON tp.sponsor_id = max_line3.sponsor_id 
 AND max_line3.bv = b.bv GROUP BY tp.sponsor_id)
 SELECT l.adp_id, g.gbv, ta.firstname, ta.lastname, l.line1_adp, l.line1_bv, l.line2_adp, l.line2_bv, l.line3_adp,
 l.line3_bv FROM line3 l JOIN tbl_adp ta USING (adp_id) JOIN gbv g ON g.sponsor_id = l.adp_id`;
@@ -120,7 +117,7 @@ line1 AS (
 SELECT tp.sponsor_id AS adp_id, min(tp.adp_id) AS line1_adp, max_line1.bv AS line1_bv FROM tbl_pbv tp
 JOIN bv b USING (adp_id)
 JOIN (SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) GROUP BY sponsor_id
-HAVING bv > 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
+HAVING bv >= 40000) AS max_line1 ON tp.sponsor_id = max_line1.sponsor_id AND max_line1.bv = b.bv GROUP BY tp.sponsor_id),
 line2 AS (SELECT tp.sponsor_id AS adp_id, l1.line1_adp, l1.line1_bv, min(tp.adp_id) AS line2_adp, max_line2.bv AS line2_bv 
 FROM tbl_pbv tp JOIN bv b USING (adp_id) JOIN line1 l1 ON tp.sponsor_id = l1.adp_id
 JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) 
@@ -132,7 +129,7 @@ line3 AS (SELECT tp.sponsor_id AS adp_id, l2.line1_adp, l2.line1_bv,l2.line2_adp
 FROM tbl_pbv tp JOIN bv b USING (adp_id) JOIN line2 l2 ON tp.sponsor_id = l2.adp_id
 JOIN(SELECT tp.sponsor_id,  max(b.bv) AS bv FROM tbl_pbv tp JOIN bv b USING (adp_id) 
 JOIN line2 l2 ON tp.sponsor_id = l2.adp_id WHERE tp.adp_id != l2.line1_adp
-AND tp.adp_id != l2.line2_adp AND b.bv >= (l2.line1_bv * 40/100))max_line3 ON tp.sponsor_id = max_line3.sponsor_id 
+AND tp.adp_id != l2.line2_adp AND b.bv >= (l2.line1_bv * 40/100) GROUP BY tp.sponsor_id)max_line3 ON tp.sponsor_id = max_line3.sponsor_id 
 AND max_line3.bv = b.bv GROUP BY tp.sponsor_id)
 select IFNULL(SUM(line1_BV),0) AS total_points from line3`;
 

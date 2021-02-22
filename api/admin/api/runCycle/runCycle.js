@@ -34,11 +34,11 @@ const {
   getLeadersFundPercent,
 } = require("../stats/stats");
 const { getAdpZone } = require("../../../functions/zone");
-const { getAdpBv, getAdpGbv } = require("../../../functions/getPbv");
+const { getAdpPbv, getAdpBv } = require("../../../functions/getPbv");
 const updateCycleData = async () => {
   const monthMoney = await getMonthlyMoney();
   const championPoints = await getChampionPoints();
-  const chapionPercent = await getChampionFundPercent();
+  const championPercent = await getChampionFundPercent();
   const onePlusPercent = await getOnePlusFundPercent();
   const onePlusCardsTotal = await getTotalOnePlusCards();
   const leadersPoints = await getLeadersPoints();
@@ -50,15 +50,16 @@ const updateCycleData = async () => {
     adpList.map(async (adp, index) => {
       const adpZone = await getAdpZone(adp);
       const zoneValue = adpZone.value;
+      const pbv = await getAdpPbv(adp);
       const bv = await getAdpBv(adp);
-      const gbv = await getAdpGbv(adp);
+      const currMonthPbv = (pbv && pbv.length> 0) ? pbv[0].current_month_pbv : 0; 
       const coSponsoredNo = await getCoSponsoredNo(adp);
       const coSponsorRoyality = await getCoSponsorRoyality(adp);
       const championEarnings = await getChampionEarnings(
         monthMoney,
         adp,
         championPoints,
-        chapionPercent
+        championPercent
       );
       const onePlusEarnings =
         coSponsoredNo > 2
@@ -79,6 +80,7 @@ const updateCycleData = async () => {
         adp,
         zoneValue,
         bv.bv,
+        currMonthPbv,
         coSponsorRoyality,
         championEarnings,
         onePlusEarnings,
@@ -110,7 +112,11 @@ const getPrevRunCycleDate = () => {
 const createVouchers = (eligibleSprinterIDs, voucherType) => {
   eligibleSprinterIDs.forEach(async (adpId) => {
     const coupon = await generateVoucher();
-    connection.query(ADD_VOUCHER(adpId, coupon, voucherType, null));
+    connection.query(ADD_VOUCHER(adpId, coupon, voucherType, null), (error, results, fields) => {
+      if(error){
+      console.log(error);
+      }
+    });
   });
 };
 

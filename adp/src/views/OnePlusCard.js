@@ -84,7 +84,7 @@ const OnePlusCard = () => {
                             ? card.valid_till + " Cycles"
                             : "NA"}
                         </td>
-                        <td>{card.expiry_cycle && noCosponsor< 3 ?  <span style={{ color: 'red' }}>INACTIVE</span>: "ACTIVE"}</td>
+                        <td>{!card.expiry_cycle && noCosponsor< 3 ?  <span style={{ color: 'red' }}>INACTIVE</span>: "ACTIVE"}</td>
                         <td>
                           <Button onClick={() => openDetails(card)}>
                             Details
