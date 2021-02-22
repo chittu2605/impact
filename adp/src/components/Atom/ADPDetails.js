@@ -17,6 +17,7 @@ const ADPDetails = () => {
     icon: {
       fontSize: "1.5rem",
       verticalAlign: "middle",
+      marginLeft:"15px"
     },
   };
   const ADPIdWrapper = styled("div")(style.idWrapper);
@@ -27,14 +28,12 @@ const ADPDetails = () => {
   const { adpId, name } = useSelector((state) => state.updateLoginStatus);
   return (
     <div>
-      <ADPIdWrapper>
+      <>
         <ADPDetailsIcon className="now-ui-icons  users_circle-08" />
         <ADPDetailsLabel>ADP ID: {adpId}</ADPDetailsLabel>
-      </ADPIdWrapper>
-      <ADPNameWrapper>
         <ADPDetailsIcon className="now-ui-icons emoticons_satisfied" />
         <ADPDetailsLabel>ADP Name: {name}</ADPDetailsLabel>
-      </ADPNameWrapper>
+      </>
     </div>
   );
 };

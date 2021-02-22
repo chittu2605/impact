@@ -16,6 +16,7 @@ class DashboardSummaryCard extends React.Component {
     bvTillDate: 0,
     walletBalance: 0,
     smartMartBalance: 0,
+    noCoSponsored:0,
   };
 
   componentDidMount = () => {
@@ -27,6 +28,7 @@ class DashboardSummaryCard extends React.Component {
     this.getBvDetails();
     this.getWalletBalance();
     this.getSmartMartBalance();
+    this.getNoCoSponsered();
   }
 
   getPbvDetails = () => {
@@ -72,6 +74,16 @@ class DashboardSummaryCard extends React.Component {
     })
   }
 
+  getNoCoSponsered = () => {
+    getNoCoSponsered().then((response) => {
+      if (response && response.data && response.data.noCoSponsored) {
+        this.setState({
+          noCoSponsored: response.data.noCoSponsored,
+        });
+      }
+    });
+  };
+
   fetchCoSponsorIncome = () => {
     getCoSponsorIncome().then((response) => {
       if (response && response.data ) {
@@ -114,12 +126,12 @@ class DashboardSummaryCard extends React.Component {
   }
 
   render() {
-    let { pbv, totalPbv, gbv, totalGbv, coSponsorIncome, total_retail_profit, zone, bv, bvTillDate, walletBalance, smartMartBalance} = this.state;
+    let { pbv, totalPbv, gbv, totalGbv, coSponsorIncome, total_retail_profit, zone, bv, bvTillDate, walletBalance, smartMartBalance, noCoSponsored} = this.state;
     return (
       <Card className="">
-        <CardHeader>
-          <h5 className="card-category"></h5>
-          <CardTitle tag="h4">Summary</CardTitle>
+        <CardHeader  style={{backgroundColor:"red"}}>
+          <h5 className="card-category" style={{color:"white"}} ></h5>
+          <CardTitle tag="h4" style={{color:"white"}}>Summary</CardTitle>
         </CardHeader>
         <CardBody>
           <div className="">
@@ -130,7 +142,7 @@ class DashboardSummaryCard extends React.Component {
             <p>CURRENT MONTH BV : {bv}</p>
             <p>TOTAL BV TILL DATE : {bvTillDate}</p>
             <p>YOUR CURRENT ZONE : {zone}</p>
-            <p>PERSONAL NEW JOINING TILL DATE : own</p>
+            <p>PERSONAL NEW JOINING TILL DATE : {noCoSponsored}</p>
             <p><b>WALLET BALANCE : {walletBalance} RS </b></p>
             <p><b>SMART MART BALANCE : {smartMartBalance} RS </b></p>
           </div>
@@ -178,4 +190,8 @@ function getWalletBalance () {
 
 function getSmartMartBalance() {
   return apiHandler.get(`/smart-mart-balance`);
+}
+
+function getNoCoSponsered() {
+  return apiHandler.get("/no-co-sponsored");
 }

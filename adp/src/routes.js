@@ -91,7 +91,7 @@ var dashRoutes = [
   {
     path: "/change-password",
     name: "Change Password",
-    icon: "business_money-coins",
+    icon: "ui-1_lock-circle-open",
     component: ChangePassword,
     layout: "/adp",
   },

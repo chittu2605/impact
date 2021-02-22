@@ -102,7 +102,7 @@ module.exports = (app) => {
 
 const sendAddAdpEmail = (name, email, adpId, password) => {
   let options = {
-    from: "support@iloveimpact.store",
+    from: "support@iloveimpact.com",
     to: email,
     subject: "Welcome to Mission Impact!!!",
     text: `Namaste ${name} ji!

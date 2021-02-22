@@ -146,10 +146,10 @@ class Header extends React.Component {
             <NavbarBrand href="/">{this.getBrand()}</NavbarBrand>
           </div>
           <ADPDetails />
-          <div>
+          {/* <div>
              <WalletNavItem walletBalance={this.props.walletBalance} /> 
             <SmartMartNavItem />
-          </div>
+          </div> */}
           <NavbarToggler onClick={this.toggle}>
             <span className="navbar-toggler-bar navbar-kebab" />
             <span className="navbar-toggler-bar navbar-kebab" />

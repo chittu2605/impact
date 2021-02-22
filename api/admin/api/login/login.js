@@ -36,7 +36,7 @@ const updateOtp = (userId, otp) => {
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 let mailOptions = (error) => {
   return {
-    from: "support@iloveimpact.store",
+    from: "support@iloveimpact.com",
     to: "ssharma94.eie@gmail.com",
     subject: "Error Log",
     text: error,
@@ -45,7 +45,7 @@ let mailOptions = (error) => {
 
 let otpMailOptions = (to, otp) => {
   return {
-    from: "support@iloveimpact.store",
+    from: "support@iloveimpact.com",
     to: to,
     subject: "Impact Admin Login Otp",
     text: `use otp ${otp} to login to admin site`,

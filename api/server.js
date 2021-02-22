@@ -160,7 +160,7 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 
 let mailOptions = (error) => {
   return {
-    from: "support@iloveimpact.store",
+    from: "support@iloveimpact.com",
     to: "ssharma94.eie@gmail.com",
     subject: "Error Log",
     text: error,

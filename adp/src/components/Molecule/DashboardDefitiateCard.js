@@ -298,9 +298,9 @@ class DashboardDefitiateCard extends React.Component {
     }
     return (
       <Card className="">
-        <CardHeader>
-          <h5 className="card-category"></h5>
-          <CardTitle tag="h4">Team Summary</CardTitle>
+      <CardHeader  style={{backgroundColor:"red"}}>
+          <h5 className="card-category" style={{color:"white"}} ></h5>
+          <CardTitle tag="h4" style={{color:"white"}}>Team Summary</CardTitle>
         </CardHeader>
         <CardBody>
           <div className="">
