@@ -24,13 +24,19 @@ import { apiHandler } from "config/apiConfig";
 import SmartMartNavItem from "components/Atom/SmartMartNavItem";
 import ADPDetails from "components/Atom/ADPDetails";
 
+import { childLoginAction } from "../../redux/actions/login";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 class Header extends React.Component {
   state = {
     isOpen: false,
     dropdownOpen: false,
     color: "transparent",
+    anchorEl: null,
   };
   sidebarToggle = React.createRef();
+  searchRef = React.createRef();
   toggle = () => {
     if (this.state.isOpen) {
       this.setState({
@@ -91,6 +97,7 @@ class Header extends React.Component {
       });
     }
   };
+
   componentDidMount() {
     window.addEventListener("resize", this.updateColor.bind(this));
   }
@@ -105,6 +112,7 @@ class Header extends React.Component {
     }
   }
   render() {
+    const { anchorEl } = this.state;
     return (
       // add or remove classes depending if we are on full-screen-maps page or not
       <Navbar
@@ -155,12 +163,47 @@ class Header extends React.Component {
           >
             <form>
               <InputGroup className="no-border">
-                <Input placeholder="Search..." />
+                <Input
+                  onBlur={(e) => {
+                    e.preventDefault();
+                    const enteredId = e.target.value;
+                    if (enteredId != "") {
+                      const childLoginBody = {
+                        params: {
+                          childId: enteredId,
+                        },
+                      };
+                      this.props.childLoginAction(childLoginBody, (res) => {
+                        if (res.status == 200) {
+                          if (
+                            this.props.location.pathname === "/adp/dashboard"
+                          ) {
+                            this.props.history.push("/temp");
+                            this.props.history.goBack();
+                          }
+                          this.props.history.push("/adp/dashboard");
+                        }
+                      });
+                    }
+                  }}
+                  placeholder="Search..."
+                  onChange={this.handleSarch}
+                />
                 <InputGroupAddon addonType="append">
                   <InputGroupText>
                     <i className="now-ui-icons ui-1_zoom-bold" />
                   </InputGroupText>
                 </InputGroupAddon>
+                {/* <div
+                  style={{
+                    position: "absolute",
+                    top: "35px",
+                    right: "0",
+                    width: "210px",
+                    height: "100px",
+                    backgroundColor: "white",
+                  }}
+                /> */}
               </InputGroup>
             </form>
             <Nav navbar>
@@ -178,7 +221,7 @@ class Header extends React.Component {
                 toggle={(e) => this.dropdownToggle(e)}
               >
                 <DropdownToggle caret nav>
-                  <i className="now-ui-icons location_world" />
+                  <i className="now-ui-icons media-1_button-power" />
                   <p>
                     <span className="d-lg-none d-md-block">Actions</span>
                   </p>
@@ -214,7 +257,15 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    childLoginAction: bindActionCreators(childLoginAction, dispatch),
+  };
+};
+
+const connector = connect(null, mapDispatchToProps);
+
+export default connector(Header);
 
 function logoutApi(body) {
   return apiHandler.post(`/logout`, body).catch((err) => {

@@ -3,6 +3,8 @@ import {
   UPDATE_LOGIN_FAILED,
   UPDATE_LOGIN_SUCCESS,
   UPDATE_LOGOUT_SUCCESS,
+  UPDATE_CHILD_LOGIN_SUCCESS,
+  UPDATE_CHILD_LOGOUT_SUCCESS,
 } from "../constants/login";
 import { apiHandler } from "config/apiConfig";
 
@@ -32,14 +34,45 @@ export const updateLogoutSuccess = (data) => {
   };
 };
 
+export const updateChildLogin = (data) => {
+  return {
+    type: UPDATE_CHILD_LOGIN_SUCCESS,
+    payload: data,
+  };
+};
+
+export const updateChildLogout = () => {
+  return {
+    type: UPDATE_CHILD_LOGOUT_SUCCESS,
+  };
+};
+
 export const loginAction = (body, cb) => {
   return (dispatch) => {
     dispatch(updateLoginInitiate());
     return loginApi(body)
       .then((response) => {
         if (response) {
-          dispatch(updateLoginSuccess(response));
+          dispatch(updateLoginSuccess(response.data));
           cb();
+        } else {
+          dispatch(updateLoginFailed());
+        }
+      })
+      .catch((error) => {
+        dispatch(updateLoginFailed());
+      });
+  };
+};
+
+export const childLoginAction = (body, cb) => {
+  return (dispatch) => {
+    dispatch(updateLoginInitiate());
+    return childLoginApi(body)
+      .then((response) => {
+        if (response) {
+          dispatch(updateChildLogin(response.data));
+          cb(response);
         } else {
           dispatch(updateLoginFailed());
         }
@@ -61,6 +94,16 @@ export const logoutAction = (body) => {
   };
 };
 
+export const childLogoutAction = () => {
+  return (dispatch) => {
+    return childLogout()
+      .then((response) => {
+        dispatch(updateChildLogout());
+      })
+      .catch((error) => {});
+  };
+};
+
 function loginApi(body) {
   return apiHandler.post(`/login`, body).catch((err) => {
     console.log(err);
@@ -69,6 +112,18 @@ function loginApi(body) {
 
 function logoutApi(body) {
   return apiHandler.post(`/logout`, body).catch((err) => {
+    console.log(err);
+  });
+}
+
+function childLoginApi(body) {
+  return apiHandler.get(`/child-login`, body).catch((err) => {
+    console.log(err);
+  });
+}
+
+function childLogout() {
+  return apiHandler.get(`/child-logout`).catch((err) => {
     console.log(err);
   });
 }

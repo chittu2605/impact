@@ -1,15 +1,16 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env_test') });
-console.log(process.env.EMAIL)
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../.env_test") });
+console.log(process.env.EMAIL);
 const nodemailer = require("nodemailer");
-const { send } = require('process');
+const { send } = require("process");
 
 let transporter = nodemailer.createTransport({
-  host: "mail.iloveimpact.store",
-  port: 465,
+  // host: "mail.iloveimpact.store",
+  // port: 465,
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL, 
-    pass: process.env.PASSWORD, 
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
   },
 });
 
@@ -19,7 +20,6 @@ let transporter = nodemailer.createTransport({
 //   subject: "testing",
 //   text: "It works",
 // }
-
 
 // transporter.sendMail(mailOptions, (err, data) => {
 //   if (err) {
@@ -32,11 +32,11 @@ let transporter = nodemailer.createTransport({
 const sendMail = (options) => {
   transporter.sendMail(options, (err, data) => {
     if (err) {
-      console.log("error Occured", err)
+      console.log("error Occured", err);
     } else {
-      console.log("Email Sent")
+      console.log("Email Sent");
     }
-  })
-}
+  });
+};
 
 module.exports.sendMail = sendMail;

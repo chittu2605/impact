@@ -1,4 +1,5 @@
 const { ADD_ADP_LINE, ADD_ADP_LINE_2 } = require("../../dbQuery/adp/adpQuery");
+const { generateAdpId } = require("../../../functions/generateAdp");
 
 module.exports = (app) => {
   const ADD_ADP = require("../../dbQuery/adp/adpQuery").ADD_ADP;
@@ -7,7 +8,9 @@ module.exports = (app) => {
   const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
   app.post("/add-adp", urlencodedParser, async (req, res) => {
+    const adpId = await generateAdpId();
     const adp = req.body.data;
+    adp.adpId = adpId;
     connection.query(ADD_ADP(adp), async (error, results, fields) => {
       console.log(error);
       if (error) return res.sendStatus("401");

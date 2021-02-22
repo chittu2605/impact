@@ -1,7 +1,9 @@
-
 import React from "react";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
+import { childLogoutAction } from "../redux/actions/login";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // reactstrap components
 import {
@@ -37,6 +39,15 @@ import DashboardSummaryCard from "components/Molecule/DashboardSummaryCard";
 import DashboardDefitiateCard from "components/Molecule/DashboardDefitiateCard";
 
 class Dashboard extends React.Component {
+  state = { adpId: "" };
+  componentDidMount() {
+    this.setState({ adpId: this.props.adpId });
+  }
+  componentWillUnmount() {
+    if (this.state.adpId != this.props.adpId) {
+      this.props.childLogoutAction();
+    }
+  }
   render() {
     return (
       <>
@@ -334,4 +345,18 @@ class Dashboard extends React.Component {
   }
 }
 
-export default Dashboard;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    childLogoutAction: bindActionCreators(childLogoutAction, dispatch),
+  };
+};
+
+const mapStateToProps = (state) => {
+  return {
+    adpId: state.updateLoginStatus.adpId,
+  };
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+export default connector(Dashboard);

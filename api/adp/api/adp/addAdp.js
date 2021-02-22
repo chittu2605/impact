@@ -3,6 +3,10 @@ const {
   ADD_ADP_LINE_2,
 } = require("../../../admin/dbQuery/adp/adpQuery");
 const { passwordEncrypt } = require("../../../utils/passwordEncrypt");
+const { generateAdpId } = require("../../../functions/generateAdp");
+const { sendMail } = require("../../../utils/emailer");
+
+const connection = require("../../../dbConnect");
 
 module.exports = (app) => {
   const ADD_ADP = require("../../adpQuery/adp/adp").ADD_ADP;
@@ -17,6 +21,8 @@ module.exports = (app) => {
 
   app.post("/adp/add-adp", urlencodedParser, async (req, res) => {
     const adpData = req.body.adpData;
+    const adpId = await generateAdpId();
+    adpData.adpId = adpId;
     const products = req.body.products;
     const userAdpId = req.user.adp_id;
     const totalAmount = req.body.totalAmount;
@@ -28,7 +34,7 @@ module.exports = (app) => {
       async (error, results, fields) => {
         if (error) return res.sendStatus("401");
         // if (results.length === 0) return res.sendStatus("404");
-        let adp_id = results.insertId;
+        let adp_id = adpData.adpId;
         let sponsorId = adpData.sponsor_id;
         let name = `${adpData.firstname} ${adpData.lastname}`;
         connection.query(
@@ -56,23 +62,29 @@ module.exports = (app) => {
                 if (error) return res.sendStatus("401");
                 if (results.length === 0) return res.sendStatus("404");
                 let balance = await debitWallet(userAdpId, totalAmount);
-                let msg = `Namaste ${adpData.firstname} ji!
+                sendAddAdpEmail(
+                  adpData.firstname,
+                  adpData.email,
+                  adp_id,
+                  password
+                );
+                // let msg = `Namaste ${adpData.firstname} ji!
 
-                Welcome to Mission Impact!
-                
-                To view your account you can login from the following link,
-                
-                www.iloveimpact.com/impact
-                
-                Please login with following credentials.
-                
-                ID - ${adp_id}
-                Password - ${password}
-                
-                Wish you success!
-                
-                IMPACT TEAM`;
-                sendSmsByAdpId(adp_id, msg);
+                // Welcome to Mission Impact!
+
+                // To view your account you can login from the following link,
+
+                // www.iloveimpact.com/impact
+
+                // Please login with following credentials.
+
+                // ID - ${adp_id}
+                // Password - ${password}
+
+                // Wish you success!
+
+                // IMPACT TEAM`;
+                // sendSmsByAdpId(adp_id, msg);
                 if (i === products.length - 1) {
                   updatePvb(pvbdata);
                   return res.json({
@@ -86,4 +98,38 @@ module.exports = (app) => {
       }
     );
   });
+};
+
+const sendAddAdpEmail = (name, email, adpId, password) => {
+  let options = {
+    from: "support@iloveimpact.store",
+    to: email,
+    subject: "Welcome to Mission Impact!!!",
+    text: `Namaste ${name} ji!
+
+      We take this opportunity to welcome you in IMPACT ADP family!
+      
+      Please login to your ID from the following link, 
+      
+      www.iloveimpact.com/impact
+      
+      using these credentials,
+      
+      ID -  ${adpId}
+      Password -  ${password}
+      
+      Have you browsed our Hindi website yet! Check link below,
+      
+       www.iloveimpact.com/hindi
+      
+      
+      Take help from your upline leaders and us, whenever you need.
+      
+      Inside yourself have faith that you have the inner strength, necessary ingredients, the qualities and the power to succeed as an IMPACT ADP. It’s not about money alone, it’s about bringing out the best in YOU and YOUR TEAM.
+      
+      Wish you Success at IMPACT!!!
+      
+      IMPACT TEAM`,
+  };
+  sendMail(options);
 };

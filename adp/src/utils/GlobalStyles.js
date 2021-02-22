@@ -3,7 +3,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     padding: 0;
     margin: 0;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Lato', 'Montserrat', sans-serif;
     text-transform: uppercase;
   }
 
@@ -65,6 +65,6 @@ input[type=number] {
   height: 31px;
   border: 0px solid;
 }
-`
+`;
 
 export default GlobalStyle;

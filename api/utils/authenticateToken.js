@@ -14,6 +14,7 @@ const authenticateToken = (req, res, next) => {
         userType: userCookie.user_type,
         authenticated: true,
         name: userCookie.name,
+        parent_id: userCookie.parent_id,
       };
       if (user.adp_id !== "admin" && adminOnlyApi.includes(req.path)) {
         return res.sendStatus(403);

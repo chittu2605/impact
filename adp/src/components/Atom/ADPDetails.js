@@ -28,11 +28,11 @@ const ADPDetails = () => {
   return (
     <div>
       <ADPIdWrapper>
-        <ADPDetailsIcon className="now-ui-icons business_money-coins" />
+        <ADPDetailsIcon className="now-ui-icons  users_circle-08" />
         <ADPDetailsLabel>ADP ID: {adpId}</ADPDetailsLabel>
       </ADPIdWrapper>
       <ADPNameWrapper>
-        <ADPDetailsIcon className="now-ui-icons business_money-coins" />
+        <ADPDetailsIcon className="now-ui-icons emoticons_satisfied" />
         <ADPDetailsLabel>ADP Name: {name}</ADPDetailsLabel>
       </ADPNameWrapper>
     </div>

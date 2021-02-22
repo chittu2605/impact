@@ -33,7 +33,7 @@ class SmartMartNavItem extends React.Component {
     let { balance, status } = this.props;
     return (
       <SmartMartWrapper>
-        <SmartMartIcon className="now-ui-icons business_money-coins" />
+        <SmartMartIcon className="now-ui-icons shopping_basket" />
         <SmartMartLabel>Smart Mart Balance: {balance}</SmartMartLabel>
       </SmartMartWrapper>
     );

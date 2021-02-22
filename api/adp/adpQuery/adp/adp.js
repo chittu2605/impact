@@ -18,6 +18,7 @@ const ADD_ADP = (data, password) => {
   return `
   INSERT INTO tbl_adp
 (
+adp_id,
 city,
 sponsor_id,
 sponsor_name,
@@ -57,6 +58,7 @@ new_joining,
 flag)
 VALUES
   (
+  "${data.adpId}" , 
   "" ,
   "${data.sponsor_id}" ,
   "${data.sponsor_name}" ,

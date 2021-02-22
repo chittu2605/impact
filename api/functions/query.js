@@ -394,6 +394,11 @@ const GET_LEADERS_DATA_FOR_ADP = (adpId) =>
   LEFT JOIN gbv g ON tp.adp_id = g.sponsor_id WHERE tp.sponsor_id != '')
 SELECT adp_id, bv FROM bv WHERE sponsor_id = ${adpId} ORDER BY bv DESC LIMIT 3`;
 
+const IS_ADP_EXISTS = (adpId) => `SELECT EXISTS(
+  SELECT adp_id FROM tbl_adp 
+  WHERE adp_id = '${adpId}') 
+  AS isExists`;
+
 module.exports.GET_PBV_BY_ADP_ID = GET_PBV_BY_ADP_ID;
 module.exports.GET_ALL_CHILD = GET_ALL_CHILD;
 module.exports.INSERT_CO_SPONSOR_ROYALTY = INSERT_CO_SPONSOR_ROYALTY;
@@ -429,3 +434,4 @@ module.exports.INSERT_CYCLE_DATE = INSERT_CYCLE_DATE;
 module.exports.EXPIRE_CARDS = EXPIRE_CARDS;
 module.exports.GET_COSPONSORED_NO = GET_COSPONSORED_NO;
 module.exports.GET_LEADERS_DATA_FOR_ADP = GET_LEADERS_DATA_FOR_ADP;
+module.exports.IS_ADP_EXISTS = IS_ADP_EXISTS;

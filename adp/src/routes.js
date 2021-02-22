@@ -14,11 +14,13 @@ import FamilyTree from "views/FamilyTree";
 import Voucher from "views/Voucher";
 import OnePlusCard from "views/OnePlusCard";
 import ADPStatement from "views/ADPStatement";
+import ChangePassword from "views/ChangePassword";
+
 var dashRoutes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    icon: "design_app",
+    icon: "business_bulb-63",
     component: Dashboard,
     layout: "/adp",
   },
@@ -39,28 +41,28 @@ var dashRoutes = [
   {
     path: "/wallet-statement",
     name: "Wallet Statement",
-    icon: "business_money-coins",
+    icon: "shopping_credit-card",
     component: WalletStatement,
     layout: "/adp",
   },
   {
     path: "/smart-mart-statement",
     name: "Smart Mart Statement",
-    icon: "business_money-coins",
+    icon: "shopping_cart-simple",
     component: SmartMartBalanceStatement,
     layout: "/adp",
   },
   {
     path: "/adp-statement",
     name: "ADP Statement",
-    icon: "business_money-coins",
+    icon: "education_paper",
     component: ADPStatement,
     layout: "/adp",
   },
   {
     path: "/re-purchase",
     name: "Re Purchase",
-    icon: "business_money-coins",
+    icon: "shopping_bag-16",
     component: RePurchase,
     layout: "/adp",
   },
@@ -68,7 +70,7 @@ var dashRoutes = [
   {
     path: "/family-tree",
     name: "Tree View",
-    icon: "business_money-coins",
+    icon: "design_vector",
     component: FamilyTree,
     layout: "/adp",
   },
@@ -82,8 +84,15 @@ var dashRoutes = [
   {
     path: "/card",
     name: "Card",
-    icon: "business_money-coins",
+    icon: "files_single-copy-04",
     component: OnePlusCard,
+    layout: "/adp",
+  },
+  {
+    path: "/change-password",
+    name: "Change Password",
+    icon: "business_money-coins",
+    component: ChangePassword,
     layout: "/adp",
   },
   // {

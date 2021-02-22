@@ -39,7 +39,7 @@ function Router(props) {
       <Route path="/generate-statement" component={GenerateStatement} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/run-cycle" component={RunCycle} />
-      <Redirect exact from="/" to="/login" />
+      <Redirect exact from="/lg" to="/login" />
 
       {/* {window.API_URL === "https://impact-node-app.herokuapp.com/admin" && <Redirect exact from="/" to="/login" /> } */}
     </BrowserRouter>

@@ -24,7 +24,7 @@ class WalletNavItem extends React.Component {
     let { walletBalance } = this.props;
     return (
       <WalletWrapper>
-        <WalletIcon className="now-ui-icons business_money-coins" />
+        <WalletIcon className="now-ui-icons business_briefcase-24" />
         <WalletLabel>Wallet Balance: {walletBalance}</WalletLabel>
       </WalletWrapper>
     );
