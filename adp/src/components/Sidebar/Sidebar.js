@@ -1,4 +1,3 @@
-
 /*eslint-disable*/
 import React from "react";
 import { NavLink } from "react-router-dom";
@@ -7,6 +6,9 @@ import { Nav } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "impact1.png";
+
+import { useSelector } from "react-redux";
+import { connect } from "react-redux";
 
 var ps;
 
@@ -36,45 +38,50 @@ class Sidebar extends React.Component {
     return (
       <div className="sidebar" data-color={this.props.backgroundColor}>
         <div className="logo">
-          <a
-            href="#"
-            className="simple-text logo-mini"
-            target="_blank"
-          >
+          <a href="#" className="simple-text logo-mini" target="_blank">
             <div className="logo-img">
               <img src={logo} alt="react-logo" />
             </div>
           </a>
-      
         </div>
         <div className="sidebar-wrapper" ref="sidebar">
-          <Nav>
-            {this.props.routes.map((prop, key) => {
-              if (prop.redirect) return null;
-              return (
-                <li
-                  className={
-                    this.activeRoute(prop.layout + prop.path) +
-                    (prop.pro ? " active active-pro" : "")
-                  }
-                  key={key}
-                >
-                  <NavLink
-                    to={prop.layout + prop.path}
-                    className="nav-link"
-                    activeClassName="active"
+          {this.props.parentId === "" && (
+            <Nav>
+              {this.props.routes.map((prop, key) => {
+                if (prop.redirect) return null;
+                return (
+                  <li
+                    className={
+                      this.activeRoute(prop.layout + prop.path) +
+                      (prop.pro ? " active active-pro" : "")
+                    }
+                    key={key}
                   >
-                    <i className={"now-ui-icons " + prop.icon} />
-                    <p>{prop.name}</p>
-                  </NavLink>
-                </li>
-              );
-            })}
-          </Nav>
+                    <NavLink
+                      to={prop.layout + prop.path}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      <i className={"now-ui-icons " + prop.icon} />
+                      <p>{prop.name}</p>
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </Nav>
+          )}
         </div>
       </div>
     );
   }
 }
 
-export default Sidebar;
+const mapStateToProps = (state) => {
+  return {
+    parentId: state.updateLoginStatus.parentId,
+  };
+};
+
+const connector = connect(mapStateToProps);
+
+export default connector(Sidebar);

@@ -70,30 +70,29 @@ class Login extends React.Component {
 
   handlerLogin = (body) => {
     this.props.loginAction(body, this.navigateToDashboard).then((response) => {
-      if (this.props.status === "success") this.props.history.push("/adp")
-      else alert("Please check username and password.")
-    })
+      if (this.props.status !== "success")
+        alert("Please check username and password.");
+    });
   };
 
   navigateToDashboard = () => {
-    this.props.history.push("/adp/dashboard")
-  }
+    this.props.history.push("/adp");
+  };
 
   componentDidMount = () => {
     if (!this.props.authenticated) {
       validateToken().then((response) => {
         if (response.data.status === "success") {
-          this.props.updateLoginSuccess(response.data)
-          this.props.history.push("/adp/dashboard")
+          this.props.updateLoginSuccess(response.data);
+          this.props.history.push("/adp");
         } else {
           this.setState({
             validating: false,
-          })
+          });
         }
-      })
+      });
     }
-    
-  }
+  };
 
   render() {
     let { showForgotForm, sentOtp } = this.state;
@@ -160,7 +159,8 @@ class LoginForm extends React.Component {
           password: "",
         }}
         validationSchema={Yup.object().shape({
-          adpId: Yup.number().typeError('Username must be a number')
+          adpId: Yup.number()
+            .typeError("Username must be a number")
             .positive("please enter a valid adp ID")
             .required("Required"),
 
@@ -168,7 +168,7 @@ class LoginForm extends React.Component {
         })}
         onSubmit={async (values) => {
           await new Promise((resolve) => setTimeout(resolve, 500));
-          handlerLogin(values)
+          handlerLogin(values);
         }}
       >
         {({
@@ -189,8 +189,8 @@ class LoginForm extends React.Component {
               data-validate="Type user name"
             >
               {errors.adpId && touched.adpId && (
-                            <div className="input-feedback">{errors.adpId}</div>
-                        )}
+                <div className="input-feedback">{errors.adpId}</div>
+              )}
               <Input
                 label="Adp ID"
                 id="adpId"
@@ -205,7 +205,7 @@ class LoginForm extends React.Component {
                 }
                 showLabel={false}
               />
-              
+
               <span className="focus-input100"></span>
             </div>
             <div
@@ -482,7 +482,6 @@ const generateNewPassword = (props) => {
   );
 };
 
-
-function validateToken () {
-  return apiHandler.post("/validateToken")
+function validateToken() {
+  return apiHandler.post("/validateToken");
 }

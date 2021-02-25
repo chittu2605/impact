@@ -8,13 +8,17 @@ const authenticateToken = (req, res, next) => {
     // console.log(token)
     if (token == null) return res.sendStatus(401);
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userCookie) => {
-      if (err) return res.sendStatus(403);
+      if (err) {
+        console.log(err);
+        return res.sendStatus(403);
+      }
       const user = {
         adp_id: userCookie.adp_id,
         userType: userCookie.user_type,
         authenticated: true,
         name: userCookie.name,
         parent_id: userCookie.parent_id,
+        parent_name: userCookie.parent_name,
       };
       if (user.adp_id !== "admin" && adminOnlyApi.includes(req.path)) {
         return res.sendStatus(403);

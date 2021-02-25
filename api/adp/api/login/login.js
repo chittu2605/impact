@@ -66,7 +66,7 @@ module.exports = (app) => {
             authenticated: result,
             userType: results[0].user_type,
             name: `${results[0].firstname} ${results[0].lastname}`,
-            adpId: results[0].adp_id,
+            adp_id: results[0].adp_id,
           });
         }
       );
@@ -83,22 +83,27 @@ module.exports = (app) => {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userCookie) => {
         if (err) {
           res.sendStatus(401);
+        } else {
+          const childId = childDetails.adp_id;
+          const childName = `${childDetails.firstname} ${childDetails.lastname}`;
+          const user = {
+            adp_id: childId,
+            userType: userCookie.user_type,
+            authenticated: true,
+            name: childName,
+            parent_id: adpId,
+            parent_name: userCookie.name,
+          };
+          const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: process.env.TOKEN_EXPIRE_TIME,
+          });
+          res.clearCookie("jwt");
+          res.cookie("jwt", accessToken);
+          res.json({
+            childId,
+            childName,
+          });
         }
-        const user = {
-          adp_id: childId,
-          userType: userCookie.user_type,
-          authenticated: true,
-          name: userCookie.name,
-          parent_id: adpId,
-        };
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-          expiresIn: process.env.TOKEN_EXPIRE_TIME,
-        });
-        res.cookie("jwt", accessToken);
-        res.json({
-          childId: childDetails.adp_id,
-          childName: `${childDetails.firstname} ${childDetails.lastname}`,
-        });
       });
     } else {
       res.sendStatus(401);
@@ -112,16 +117,19 @@ module.exports = (app) => {
       if (err) {
         res.sendStatus(401);
       }
-      const user = {
-        adp_id: userCookie.parent_id,
-        userType: userCookie.user_type,
-        authenticated: true,
-        name: userCookie.name,
-      };
-      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: process.env.TOKEN_EXPIRE_TIME,
-      });
-      res.cookie("jwt", accessToken);
+      if (userCookie.parent_id) {
+        const user = {
+          adp_id: userCookie.parent_id,
+          userType: userCookie.user_type,
+          authenticated: true,
+          name: userCookie.parent_name,
+        };
+        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+          expiresIn: process.env.TOKEN_EXPIRE_TIME,
+        });
+        res.clearCookie("jwt");
+        res.cookie("jwt", accessToken);
+      }
       res.sendStatus(205);
     });
   });
@@ -135,9 +143,11 @@ module.exports = (app) => {
       if (decoded) {
         return res.json({
           status: "success",
-          adpId: decoded.adp_id,
+          adp_id: decoded.adp_id,
           authenticated: true,
           name: decoded.name,
+          parent_id: decoded.parent_id,
+          parent_name: decoded.parent_name,
         });
       } else {
         res.sendStatus("401");

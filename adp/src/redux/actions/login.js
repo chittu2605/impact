@@ -94,13 +94,17 @@ export const logoutAction = (body) => {
   };
 };
 
-export const childLogoutAction = () => {
-  return (dispatch) => {
-    return childLogout()
-      .then((response) => {
+export const childLogoutAction = (cb) => {
+  return async (dispatch) => {
+    try {
+      const res = await childLogout();
+      if (res.status === 205) {
         dispatch(updateChildLogout());
-      })
-      .catch((error) => {});
+        cb();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 };
 
@@ -123,7 +127,5 @@ function childLoginApi(body) {
 }
 
 function childLogout() {
-  return apiHandler.get(`/child-logout`).catch((err) => {
-    console.log(err);
-  });
+  return apiHandler.get(`/child-logout`);
 }

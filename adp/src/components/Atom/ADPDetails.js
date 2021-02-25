@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
 
-const ADPDetails = () => {
+const ADPDetails = ({ adpId, name }) => {
   const style = {
     idWrapper: {
       display: "block",
@@ -17,15 +16,13 @@ const ADPDetails = () => {
     icon: {
       fontSize: "1.5rem",
       verticalAlign: "middle",
-      marginLeft:"15px"
+      marginLeft: "15px",
     },
   };
   const ADPIdWrapper = styled("div")(style.idWrapper);
   const ADPNameWrapper = styled("div")(style.nameWrapper);
   const ADPDetailsLabel = styled("span")(style.label);
   const ADPDetailsIcon = styled("i")(style.icon);
-
-  const { adpId, name } = useSelector((state) => state.updateLoginStatus);
   return (
     <div>
       <>

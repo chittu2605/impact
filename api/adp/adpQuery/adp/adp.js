@@ -185,7 +185,7 @@ const GET_VOUCHERS_BY_ADP_ID = (adpID) =>
   `SELECT * FROM tbl_voucher tv WHERE adp_id = ${adpID}`;
 
 const GET_NO_FRONT_LINES = (adpID) =>
-  `SELECT count(tp.adp_id) AS frontLines FROM tbl_pbv tp WHERE tp.sponsor_id = ${adpID}`;
+  `SELECT count(tp.adp_id) AS frontLines FROM tbl_adp tp WHERE tp.sponsor_id = ${adpID}`;
 
 const GET_PERSONAL_NEW_JOININGS = (
   adpId
@@ -214,6 +214,14 @@ SELECT count(adp_id) AS team_size FROM link WHERE sponsor_id = ${adpId}`;
 const GET_NO_CO_SPONSORED = (adpId) =>
   `SELECT count(adp_id) AS no_co_sponsored FROM tbl_adp WHERE co_sponsor_id = ${adpId}`;
 
+const SEARCH_ADP = (adpId, term, field) => `WITH RECURSIVE link
+AS (
+	SELECT adp_id, firstname, lastname, sponsor_id FROM tbl_adp 
+	UNION ALL 
+	SELECT ta.adp_id, ta.firstname, ta.lastname, l.sponsor_id FROM tbl_adp ta JOIN link l ON ta.sponsor_id = l.adp_id
+)
+SELECT adp_id, firstname, lastname FROM link WHERE sponsor_id = ${adpId} AND ${field} LIKE '${term}%'`;
+
 module.exports.SELECT_ADP_BY_ADP_ID = SELECT_ADP_BY_ADP_ID;
 module.exports.SELECT_ADP_NAME_BY_ADP_ID = SELECT_ADP_NAME_BY_ADP_ID;
 module.exports.ADD_ADP = ADD_ADP;
@@ -234,3 +242,4 @@ module.exports.GET_PERSONAL_NEW_JOININGS = GET_PERSONAL_NEW_JOININGS;
 module.exports.GET_TOTAL_NEW_JOININGS = GET_TOTAL_NEW_JOININGS;
 module.exports.GET_TEAM_SIZE = GET_TEAM_SIZE;
 module.exports.GET_NO_CO_SPONSORED = GET_NO_CO_SPONSORED;
+module.exports.SEARCH_ADP = SEARCH_ADP;

@@ -24,19 +24,24 @@ import { apiHandler } from "config/apiConfig";
 import SmartMartNavItem from "components/Atom/SmartMartNavItem";
 import ADPDetails from "components/Atom/ADPDetails";
 
-import { childLoginAction } from "../../redux/actions/login";
+import { childLoginAction, childLogoutAction } from "../../redux/actions/login";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { SearchResultsComponent } from "components/Atom/SearchResultsComponent";
+import { Button } from "reactstrap";
 
 class Header extends React.Component {
   state = {
     isOpen: false,
     dropdownOpen: false,
     color: "transparent",
-    anchorEl: null,
+    searchValue: "",
+    searchResults: [],
+    showSearchResults: false,
   };
   sidebarToggle = React.createRef();
   searchRef = React.createRef();
+
   toggle = () => {
     if (this.state.isOpen) {
       this.setState({
@@ -98,6 +103,44 @@ class Header extends React.Component {
     }
   };
 
+  handleSarch = (e) => {
+    const inputValue = e.target.value;
+    this.setState({ searchValue: inputValue });
+    if (inputValue.length > 2) {
+      searchAdp(inputValue).then(({ data }) => {
+        if (data.length > 0) {
+          this.setState({ showSearchResults: true, searchResults: data });
+        } else {
+          this.resetSearch();
+        }
+      });
+    } else {
+      this.setState({ showSearchResults: false });
+    }
+  };
+
+  resetSearch = () => {
+    this.setState({ showSearchResults: false, searchValue: "" });
+  };
+
+  changeSession = (childId) => {
+    const childLoginBody = {
+      params: {
+        childId,
+      },
+    };
+    this.props.childLoginAction(childLoginBody, (res) => {
+      if (res.status == 200) {
+        this.props.history.push("/adp");
+        this.resetSearch();
+      }
+    });
+  };
+
+  logOutChild = () => {
+    this.props.childLogoutAction(() => this.props.history.push("/adp"));
+  };
+
   componentDidMount() {
     window.addEventListener("resize", this.updateColor.bind(this));
   }
@@ -112,7 +155,7 @@ class Header extends React.Component {
     }
   }
   render() {
-    const { anchorEl } = this.state;
+    const { showSearchResults, searchResults, searchValue } = this.state;
     return (
       // add or remove classes depending if we are on full-screen-maps page or not
       <Navbar
@@ -145,7 +188,7 @@ class Header extends React.Component {
             </div>
             <NavbarBrand href="/">{this.getBrand()}</NavbarBrand>
           </div>
-          <ADPDetails />
+          <ADPDetails adpId={this.props.adpId} name={this.props.name} />
           {/* <div>
              <WalletNavItem walletBalance={this.props.walletBalance} /> 
             <SmartMartNavItem />
@@ -161,51 +204,30 @@ class Header extends React.Component {
             navbar
             className="justify-content-end"
           >
-            <form>
-              <InputGroup className="no-border">
-                <Input
-                  onBlur={(e) => {
-                    e.preventDefault();
-                    const enteredId = e.target.value;
-                    if (enteredId != "") {
-                      const childLoginBody = {
-                        params: {
-                          childId: enteredId,
-                        },
-                      };
-                      this.props.childLoginAction(childLoginBody, (res) => {
-                        if (res.status == 200) {
-                          if (
-                            this.props.location.pathname === "/adp/dashboard"
-                          ) {
-                            this.props.history.push("/temp");
-                            this.props.history.goBack();
-                          }
-                          this.props.history.push("/adp/dashboard");
-                        }
-                      });
-                    }
-                  }}
-                  placeholder="Search..."
-                  onChange={this.handleSarch}
-                />
-                <InputGroupAddon addonType="append">
-                  <InputGroupText>
-                    <i className="now-ui-icons ui-1_zoom-bold" />
-                  </InputGroupText>
-                </InputGroupAddon>
-                {/* <div
-                  style={{
-                    position: "absolute",
-                    top: "35px",
-                    right: "0",
-                    width: "210px",
-                    height: "100px",
-                    backgroundColor: "white",
-                  }}
-                /> */}
-              </InputGroup>
-            </form>
+            {this.props.parentId === "" ? (
+              <form>
+                <InputGroup className="no-border">
+                  <Input
+                    placeholder="Search..."
+                    value={searchValue}
+                    onChange={this.handleSarch}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>
+                      <i className="now-ui-icons ui-1_zoom-bold" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  {showSearchResults && (
+                    <SearchResultsComponent
+                      data={searchResults}
+                      onSelect={this.changeSession}
+                    />
+                  )}
+                </InputGroup>
+              </form>
+            ) : (
+              <Button onClick={this.logOutChild}>Exit Child</Button>
+            )}
             <Nav navbar>
               <NavItem>
                 <Link to="#pablo" className="nav-link">
@@ -257,15 +279,30 @@ class Header extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
   return {
-    childLoginAction: bindActionCreators(childLoginAction, dispatch),
+    adpId: state.updateLoginStatus.adpId,
+    name: state.updateLoginStatus.name,
+    parentId: state.updateLoginStatus.parentId,
   };
 };
 
-const connector = connect(null, mapDispatchToProps);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    childLoginAction: bindActionCreators(childLoginAction, dispatch),
+    childLogoutAction: bindActionCreators(childLogoutAction, dispatch),
+  };
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 export default connector(Header);
+
+function searchAdp(searchTerm) {
+  return apiHandler.get(`/search-adp/${searchTerm}`).catch((err) => {
+    console.log(err);
+  });
+}
 
 function logoutApi(body) {
   return apiHandler.post(`/logout`, body).catch((err) => {

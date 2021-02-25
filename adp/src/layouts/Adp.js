@@ -15,9 +15,7 @@ import routes from "routes.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import GlobalStyle from "utils/GlobalStyles";
-import { apiHandler } from "config/apiConfig";
 
 var ps;
 
@@ -25,18 +23,22 @@ class Dashboard extends React.Component {
   state = {
     backgroundColor: "red",
     walletBalance: 0,
-    currUrl: "",
   };
   mainPanel = React.createRef();
+
+  updateChildSession() {
+    if (this.props.childSessionActive) {
+      //this.props.updateChildSessionActiveAction(false);
+    } else {
+    }
+  }
+
   componentDidMount() {
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.mainPanel.current);
       document.body.classList.toggle("perfect-scrollbar-on");
     }
-    if (this.state.currUrl !== window.location.href) {
-      this.setState({ currUrl: window.location.href });
-      this.getWalletBalance();
-    }
+    //this.updateChildSession();
   }
   componentWillUnmount() {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -50,21 +52,11 @@ class Dashboard extends React.Component {
       document.scrollingElement.scrollTop = 0;
       this.mainPanel.current.scrollTop = 0;
     }
-    if (this.state.currUrl !== window.location.href) {
-      this.setState({ currUrl: window.location.href });
-      this.getWalletBalance();
-    }
   }
   handleColorClick = (color) => {
     this.setState({ backgroundColor: color });
   };
 
-  getWalletBalance = async () => {
-    const response = await apiHandler.get("/wallet-balance");
-    this.setState({
-      walletBalance: response.data.balance,
-    });
-  };
   render() {
     return (
       <div className="wrapper">
@@ -107,13 +99,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    // updateAdpData: bindActionCreators(updateAdpData, dispatch),
-    // fetchWalletAction: bindActionCreators(fetchWalletAction, dispatch),
-  };
-};
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(mapStateToProps);
 
 export default connector(Dashboard);

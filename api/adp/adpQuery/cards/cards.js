@@ -14,7 +14,7 @@ const CREATE_CARD = (
   qty,
   multipleOf,
   vaidity
-) => `INSERT INTO impact_prod.tbl_card
+) => `INSERT INTO tbl_card
 (adp_id, card_type, qty, multiple_of, valid_cycles)
 VALUES(${adp_id}, '${type}', ${qty}, ${multipleOf}, ${vaidity})`;
 

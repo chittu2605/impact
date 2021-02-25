@@ -6,6 +6,7 @@ const {
   GET_TOTAL_NEW_JOININGS,
   GET_TEAM_SIZE,
   GET_NO_CO_SPONSORED,
+  SEARCH_ADP,
 } = require("../../adpQuery/adp/adp");
 const { getSprinterData } = require("../../../functions/sprinter");
 const { getLeadersDataForAdp } = require("../../../functions/runCycleHelper");
@@ -13,6 +14,18 @@ const {
   getCardsOverflow,
   getTotalCardsOfADPForMonth,
 } = require("../cardUtils");
+const connection = require("../../../dbConnect");
+
+const searchAdp = (adpId, term, field) =>
+  new Promise((resolve, reject) =>
+    connection.query(SEARCH_ADP(adpId, term, field), (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    })
+  );
 
 module.exports = (app) => {
   // const SELECT_ADP_BY_ADP_ID = require("../../dbQuery/adp/adpQuery").SELECT_ADP_BY_ADP_ID;
@@ -190,5 +203,21 @@ module.exports = (app) => {
     const adpId = req.user.adp_id;
     const topFrontlines = await getLeadersDataForAdp(adpId);
     res.json(topFrontlines);
+  });
+
+  app.get("/adp/search-adp/:term", async (req, res) => {
+    const adpId = req.user.adp_id;
+    const term = req.params.term;
+    let adpDetails;
+    if (isNaN(term)) {
+      adpDetails = await searchAdp(adpId, term, "firstname");
+    } else {
+      adpDetails = await searchAdp(adpId, term, "adp_id");
+    }
+    if (!adpDetails) {
+      res.sendStatus(404);
+    } else {
+      res.json(adpDetails);
+    }
   });
 };

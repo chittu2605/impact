@@ -79,6 +79,7 @@ module.exports = (app) => {
               process.env.ACCESS_TOKEN_SECRET,
               { expiresIn: process.env.TOKEN_EXPIRE_TIME }
             );
+            res.cookie("jwt", accessToken);
             res.sendStatus(200);
           }
         );
@@ -91,7 +92,7 @@ module.exports = (app) => {
     const otp = req.body.otp;
     if (token == null) res.sendStatus(401);
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userCookie) => {
-      const adminId = userCookie.adp_id;
+      const adminId = userCookie.userForOtp;
       connection.query(
         SELECT_USER_BY_USERNAME(adminId),
         async (error, results, fields) => {

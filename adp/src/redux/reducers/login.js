@@ -24,13 +24,15 @@ export const updateLoginStatus = (state = initialUserData, action = {}) => {
         status: "waiting",
       });
     case UPDATE_LOGIN_SUCCESS:
-      console.log(action.payload);
       return Object.assign({}, state, {
         status: "success",
         authenticated: action.payload.authenticated,
-        adpId: action.payload.adpId,
+        adpId: action.payload.adp_id,
         name: action.payload.name,
-        // accessToken: action.payload.accessToken,
+        parentId: action.payload.parent_id ? action.payload.parent_id : "",
+        parentName: action.payload.parent_name
+          ? action.payload.parent_name
+          : "",
       });
     case UPDATE_LOGIN_FAILED:
       return Object.assign({}, state, {
