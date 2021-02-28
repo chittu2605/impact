@@ -59,7 +59,7 @@ const getChampionEarnings = (
   monthMoney,
   adpId,
   championPoints,
-  chapionPercent
+  championPercent
 ) =>
   new Promise(async (resolve, reject) => {
     const championData = await getChampionDataForAdp(adpId);
@@ -68,7 +68,7 @@ const getChampionEarnings = (
       championData.gbv >= 20000 &&
       championData.no_of_frontlines > 2
     ) {
-      const availableAmount = monthMoney * (chapionPercent / 100);
+      const availableAmount = monthMoney * (championPercent / 100);
       const amtPerPoint =
         championPoints == 0 ? 0 : availableAmount / championPoints;
       let adpPoints =

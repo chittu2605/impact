@@ -72,11 +72,11 @@ module.exports = (app) => {
                       console.log(error);
                       console.log(CREATE_ORDER(adp_id, element));
                       if (error) return res.sendStatus("401");
-                      if (results.length === 0) return res.sendStatus("404");
-                      let balance = await debitWallet(userAdpId, totalAmount);
+                      if (results.length === 0) return res.sendStatus("404")
                       // let msg = `Congratulations!! You have successfully joined Mission IMPACT. Your ADP ID is ${adp_id}.`
                       // sendSmsByAdpId(adp_id, msg)
                       if (i === products.length - 1) {
+                        let balance = await debitWallet(userAdpId, totalAmount);
                         connection.query(
                           GET_ADP_SPONSOR_COSPONSOR_BY_ADP_ID(adp_id),
                           async (error, coSponsor, fields) => {

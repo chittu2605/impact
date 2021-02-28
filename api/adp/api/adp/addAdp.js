@@ -61,7 +61,6 @@ module.exports = (app) => {
                 console.log(CREATE_ORDER(adp_id, element));
                 if (error) return res.sendStatus("401");
                 if (results.length === 0) return res.sendStatus("404");
-                let balance = await debitWallet(userAdpId, totalAmount);
                 sendAddAdpEmail(
                   adpData.firstname,
                   adpData.email,
@@ -86,6 +85,7 @@ module.exports = (app) => {
                 // IMPACT TEAM`;
                 // sendSmsByAdpId(adp_id, msg);
                 if (i === products.length - 1) {
+                  let balance = await debitWallet(userAdpId, totalAmount);
                   updatePvb(pvbdata);
                   return res.json({
                     status: "success",

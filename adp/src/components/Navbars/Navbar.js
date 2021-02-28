@@ -226,7 +226,7 @@ class Header extends React.Component {
                 </InputGroup>
               </form>
             ) : (
-              <Button onClick={this.logOutChild}>Exit Child</Button>
+              <Button color="danger" onClick={this.logOutChild}>EXIT CHILD</Button>
             )}
             <Nav navbar>
               <NavItem>

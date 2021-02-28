@@ -58,13 +58,13 @@ class FamilyTree extends React.Component {
           let obj = {};
           obj.name = `${user.firstname} ${user.lastname}`;
           if (
-            this.state.sprintersUnder.includes(user.adp_id.toString()) ||
-            this.state.sprinterFrontLines.includes(user.adp_id.toString())
+            (this.state.sprintersUnder && this.state.sprintersUnder.includes(user.adp_id.toString())) ||
+           (this.state.sprinterFrontLines && this.state.sprinterFrontLines.includes(user.adp_id.toString()))
           ) {
             obj.name += " (SPRINTER LEG)";
           } else if (
-            this.state.sprintsUnder.includes(user.adp_id.toString()) ||
-            this.state.sprintsFrontLines.includes(user.adp_id.toString())
+            (this.state.sprintsUnder && this.state.sprintsUnder.includes(user.adp_id.toString())) ||
+            (this.state.sprintsFrontLines && this.state.sprintsFrontLines.includes(user.adp_id.toString()))
           ) {
             obj.name += " (SPRINT LEG)";
           }

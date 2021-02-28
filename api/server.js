@@ -35,7 +35,7 @@ app.use(
       if (whitelist.indexOf(origin) === -1) {
         var msg =
           "The CORS policy for this site does not " +
-          "allow access from the specified Origin.";
+          "allow access from the specified Origin." + origin;
         return callback(new Error(msg), false);
       }
       return callback(null, true);
@@ -61,8 +61,10 @@ var whitelist = [
   "http://localhost:3001",
   "http://localhost:3002",
   "http://localhost:4000/",
+  "http://localhost:4000",
   "http://localhost:3500",
   "https://iloveimpact.store",
+  "https://experience.iloveimpact.com",
   "https://impact-adp.web.app",
 ];
 var corsOptions = {
