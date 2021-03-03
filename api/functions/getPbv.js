@@ -1,5 +1,5 @@
 const connection = require("../dbConnect");
-const { GET_PBV_BY_ADP_ID, GET_ADP_GBV } = require("./query");
+const { GET_PBV_BY_ADP_ID, GET_ADP_GBV, IS_CHILD } = require("./query");
 
 const getAdpPbv = (adpId) => {
   return new Promise(async (resolve, reject) => {
@@ -11,6 +11,20 @@ const getAdpPbv = (adpId) => {
     );
   });
 };
+
+const checkIfChild = (childId, adpId) =>
+  new Promise((resolve, reject) =>
+    connection.query(IS_CHILD(childId, adpId), (error, results, fields) => {
+      if (error) {
+        console.log(error);
+        resolve(false);
+      } else if (results.length == 0) {
+        resolve(false);
+      } else {
+        resolve(results[0].isChild);
+      }
+    })
+  );
 
 // connection.query(GET_ADP_GBV(adpId), async (error, results, fields) => {
 //   if (results && results.length === 0)
@@ -90,6 +104,25 @@ module.exports = (app) => {
         });
       });
     } catch (error) {
+      res.sendStatus(400);
+    }
+  });
+
+  app.get("/adp/adp-bv/:childId", urlencodedParser, async (req, res) => {
+    try {
+      const adpId = req.user.adp_id;
+      const childId = req.params.childId;
+      if (!adpId == childId && !(await checkIfChild(childId, adpId))) {
+        res.sendStatus(404);
+      } else {
+        getAdpBv(childId).then((result) => {
+          res.json({
+            ...result,
+          });
+        });
+      }
+    } catch (error) {
+      console.log(error);
       res.sendStatus(400);
     }
   });

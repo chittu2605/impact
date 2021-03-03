@@ -22,6 +22,9 @@ const styles = {
       background: "black !important",
     },
   },
+  selectedHeader: {
+    paddingLeft: "15px",
+  },
 };
 
 const Wrapper = styled("div")(styles.wrapper);
@@ -34,38 +37,58 @@ class SelectAdpRepurchase extends React.Component {
   //   alert(value);
   // };
 
-  handleChange = (selectedOption) => {
-    console.log(`Option selected:`, selectedOption);
-  };
-
-  loadOptions = (inputValue, callback) => {
+  loadMobileOptions = (inputValue, callback) => {
     if (inputValue.length > 3 && inputValue.length < 11) {
       getAdpByPhone(inputValue).then(({ data }) => {
-        if (data.result && data.result.length > 0) {
-          let adpOption = [];
-          data.result.forEach((element) => {
-            let obj = {
-              value: element.adp_id,
-              label: `${element.adp_id} - ${element.firstname} ${element.lastname}`,
-              name: `${element.firstname} ${element.lastname}`,
-              sponsorId: element.sponsor_id,
-              sponsorName: element.sponsor_name,
-              mobile: element.mobile,
-              pan: element.pan,
-            };
-            adpOption.push(obj);
-          });
-          this.setState(
-            {
-              adpOption,
-            },
-            () => {
-              callback(this.state.adpOption);
-            }
-          );
+        if (data && data.length > 0) {
+          this.prepareOptions(data, callback);
         }
       });
     }
+  };
+
+  loadIdOptions = (inputValue, callback) => {
+    if (inputValue.length > 2) {
+      getAdpById(inputValue).then(({ data }) => {
+        if (data && data.length > 0) {
+          this.prepareOptions(data, callback);
+        }
+      });
+    }
+  };
+
+  loadNameOptions = (inputValue, callback) => {
+    if (inputValue.length > 2) {
+      getAdpByName(inputValue).then(({ data }) => {
+        if (data && data.length > 0) {
+          this.prepareOptions(data, callback);
+        }
+      });
+    }
+  };
+
+  prepareOptions = (result, callback) => {
+    let adpOption = [];
+    result.forEach((element) => {
+      let obj = {
+        value: element.adp_id,
+        label: `${element.adp_id} - ${element.firstname} ${element.lastname}`,
+        name: `${element.firstname} ${element.lastname}`,
+        sponsorId: element.sponsor_id,
+        sponsorName: element.sponsor_name,
+        mobile: element.mobile,
+        pan: element.pan,
+      };
+      adpOption.push(obj);
+    });
+    this.setState(
+      {
+        adpOption,
+      },
+      () => {
+        callback(this.state.adpOption);
+      }
+    );
   };
 
   componentDidMount = () => {
@@ -95,93 +118,102 @@ class SelectAdpRepurchase extends React.Component {
   };
 
   render() {
-    let { adpOption } = this.state;
     let { adpName, adpId, sponsorId, sponsorName, mobile, pan } = this.props;
     return (
-      <Wrapper className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-lg-4">
-        <div className="col">
-          <AsyncSelectInput
-            label="Phone Number"
-            isClearable
-            // onInputChange={this.handleInputChange}
-            isSearchable
-            onChange={this.handleChangeSelect}
-            loadOptions={this.loadOptions}
-            showLabel
-            placeholder="Search"
-          />
+      <>
+        <div style={styles.selectedHeader}>
+          SELECTED ADP : {`${adpId} - ${adpName}`}
         </div>
-        <div className="col">
-          <TextInput
-            label="ADP ID"
-            type="text"
-            value={adpId}
-            // onChange={handleChange}
-            // onBlur={handleBlur}
-            disabled
-            showLabel
-          />
-        </div>
-        <div className="col">
-          <TextInput
-            label="ADP Name"
-            type="text"
-            value={adpName}
-            // onChange={handleChange}
-            // onBlur={handleBlur}
-            disabled
-            showLabel
-          />
-        </div>
+        <Wrapper className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-lg-4">
+          <div className="col">
+            <AsyncSelectInput
+              label="Phone Number"
+              isClearable
+              value={null}
+              // onInputChange={this.handleInputChange}
+              isSearchable
+              onChange={this.handleChangeSelect}
+              loadOptions={this.loadMobileOptions}
+              showLabel
+              placeholder="Search"
+            />
+          </div>
+          <div className="col">
+            <AsyncSelectInput
+              label="ADP ID"
+              isClearable
+              value={null}
+              // onInputChange={this.handleInputChange}
+              isSearchable
+              onChange={this.handleChangeSelect}
+              loadOptions={this.loadIdOptions}
+              showLabel
+              placeholder="Search"
+            />
+          </div>
+          <div className="col">
+            <AsyncSelectInput
+              label="ADP Name"
+              isClearable
+              value={null}
+              // onInputChange={this.handleInputChange}
+              isSearchable
+              onChange={this.handleChangeSelect}
+              loadOptions={this.loadNameOptions}
+              showLabel
+              placeholder="Search"
+            />
+          </div>
 
-        <div className="col">
-          <TextInput
-            label="Sponsor ID"
-            type="text"
-            value={sponsorId}
-            // onChange={handleChange}
-            // onBlur={handleBlur}
-            disabled
-            showLabel
-          />
-        </div>
+          <div className="col">
+            <TextInput
+              label="Sponsor ID"
+              type="text"
+              value={sponsorId}
+              // onChange={handleChange}
+              // onBlur={handleBlur}
+              disabled
+              showLabel
+            />
+          </div>
 
-        <div className="col">
-          <TextInput
-            label="Sponsor Name"
-            type="text"
-            value={sponsorName}
-            // onChange={handleChange}
-            // onBlur={handleBlur}
-            disabled
-            showLabel
-          />
-        </div>
+          <div className="col">
+            <TextInput
+              label="Sponsor Name"
+              type="text"
+              value={sponsorName}
+              // onChange={handleChange}
+              // onBlur={handleBlur}
+              disabled
+              showLabel
+            />
+          </div>
 
-        <div className="col">
-          <TextInput
-            label="Mobile"
-            type="text"
-            value={mobile}
-            // onChange={handleChange}
-            // onBlur={handleBlur}
-            disabled
-            showLabel
-          />
-        </div>
+          <div className="col">
+            <TextInput
+              label="Mobile"
+              type="text"
+              value={mobile}
+              // onChange={handleChange}
+              // onBlur={handleBlur}
+              disabled
+              showLabel
+            />
+          </div>
 
-        <div className="col">
-          <TextInput
-            label="PAN"
-            type="text"
-            value={pan}
-            // onChange={handleChange}
-            // onBlur={handleBlur}
-            disabled
-            showLabel
-          />
-        </div>
-      </Wrapper>
+          <div className="col">
+            <TextInput
+              label="PAN"
+              type="text"
+              value={pan}
+              // onChange={handleChange}
+              // onBlur={handleBlur}
+              disabled
+              showLabel
+            />
+          </div>
+        </Wrapper>
+      </>
     );
   }
 }
@@ -213,9 +245,13 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 export default connector(SelectAdpRepurchase);
 
 function getAdpByPhone(phoneNumber) {
-  return axios.get(`/adp/get-adp-by-phone`, {
-    params: {
-      phone: phoneNumber,
-    },
-  });
+  return axios.get(`/adp/search-adp/${phoneNumber}?type=mobile`);
+}
+
+function getAdpById(id) {
+  return axios.get(`/adp/search-adp/${id}?type=adp_id`);
+}
+
+function getAdpByName(name) {
+  return axios.get(`/adp/search-adp/${name}?type=firstname`);
 }

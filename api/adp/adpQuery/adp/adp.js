@@ -216,11 +216,11 @@ const GET_NO_CO_SPONSORED = (adpId) =>
 
 const SEARCH_ADP = (adpId, term, field) => `WITH RECURSIVE link
 AS (
-	SELECT adp_id, firstname, lastname, sponsor_id FROM tbl_adp 
+	SELECT adp_id, firstname, lastname, sponsor_id, mobile, pan FROM tbl_adp 
 	UNION ALL 
-	SELECT ta.adp_id, ta.firstname, ta.lastname, l.sponsor_id FROM tbl_adp ta JOIN link l ON ta.sponsor_id = l.adp_id
+	SELECT ta.adp_id, ta.firstname, ta.lastname, l.sponsor_id, ta.mobile, ta.pan FROM tbl_adp ta JOIN link l ON ta.sponsor_id = l.adp_id
 )
-SELECT adp_id, firstname, lastname FROM link WHERE sponsor_id = ${adpId} AND ${field} LIKE '${term}%'`;
+SELECT adp_id, firstname, lastname, sponsor_id, mobile, pan FROM link WHERE sponsor_id = ${adpId} AND ${field} LIKE '${term}%'`;
 
 module.exports.SELECT_ADP_BY_ADP_ID = SELECT_ADP_BY_ADP_ID;
 module.exports.SELECT_ADP_NAME_BY_ADP_ID = SELECT_ADP_NAME_BY_ADP_ID;

@@ -90,7 +90,7 @@ class BuyProducts extends React.Component {
       });
     });
 
-    getPreviousBv().then((response) => {
+    getPreviousBv(this.props.adpId).then((response) => {
       if (response && response.data) {
         this.setState({
           previousBv: response.data.bvTillDate,
@@ -107,6 +107,18 @@ class BuyProducts extends React.Component {
     });
 
     this.getProductTypeApi();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.adpId !== prevProps.adpId) {
+      getPreviousBv(this.props.adpId).then((response) => {
+        if (response && response.data) {
+          this.setState({
+            previousBv: response.data.bvTillDate,
+          });
+        }
+      });
+    }
   }
 
   subCategoryApiCall = (categoryId) => {
@@ -387,7 +399,7 @@ class BuyProducts extends React.Component {
       balance: response.data.balance,
     });
   };
-  
+
   render() {
     const {
       categoryOptions,
@@ -417,6 +429,7 @@ class BuyProducts extends React.Component {
     );
     return (
       <Wrapper>
+        <div style={{ display: "none" }}>adpId</div>
         <h6>Your Cart</h6>
         <Cart
           cartItem={cart}
@@ -569,8 +582,8 @@ function getBvWeightage() {
   return apiHandler.get("/bv-weightage");
 }
 
-function getPreviousBv() {
-  return apiHandler.get("/bv");
+function getPreviousBv(adpId) {
+  return apiHandler.get(`adp-bv/${adpId}`);
 }
 
 function getTotalBv(products) {

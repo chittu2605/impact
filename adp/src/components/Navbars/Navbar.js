@@ -107,7 +107,8 @@ class Header extends React.Component {
     const inputValue = e.target.value;
     this.setState({ searchValue: inputValue });
     if (inputValue.length > 2) {
-      searchAdp(inputValue).then(({ data }) => {
+      const type = isNaN(inputValue) ? "firstname" : "adp_id";
+      searchAdp(inputValue, type).then(({ data }) => {
         if (data.length > 0) {
           this.setState({ showSearchResults: true, searchResults: data });
         } else {
@@ -226,7 +227,9 @@ class Header extends React.Component {
                 </InputGroup>
               </form>
             ) : (
-              <Button color="danger" onClick={this.logOutChild}>EXIT CHILD</Button>
+              <Button color="danger" onClick={this.logOutChild}>
+                EXIT CHILD
+              </Button>
             )}
             <Nav navbar>
               <NavItem>
@@ -298,10 +301,12 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 export default connector(Header);
 
-function searchAdp(searchTerm) {
-  return apiHandler.get(`/search-adp/${searchTerm}`).catch((err) => {
-    console.log(err);
-  });
+function searchAdp(searchTerm, type) {
+  return apiHandler
+    .get(`/search-adp/${searchTerm}?type=${type}`)
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 function logoutApi(body) {

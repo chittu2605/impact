@@ -318,7 +318,6 @@ const GET_CHAMPION_DATA_FOR_ADP = (adpId) => `WITH RECURSIVE link AS(
   SELECT tp.adp_id, tp.sponsor_id, tp.pbv, tp.current_month_pbv 
   FROM 
     tbl_pbv tp 
-    JOIN tbl_adp ta ON tp.adp_id = ta.adp_id 
   UNION ALL 
   SELECT t.adp_id, l.sponsor_id, t.pbv, t.current_month_pbv 
   FROM 
@@ -399,6 +398,12 @@ const IS_ADP_EXISTS = (adpId) => `SELECT EXISTS(
   WHERE adp_id = '${adpId}') 
   AS isExists`;
 
+const IS_CHILD = (childId, adpId) => `WITH RECURSIVE link AS (
+	SELECT adp_id, sponsor_id FROM tbl_adp
+	UNION ALL
+	SELECT ta.adp_id, l.sponsor_id FROM tbl_adp ta JOIN link l ON ta.sponsor_id = l.adp_id
+)
+SELECT EXISTS (SELECT adp_id FROM link WHERE adp_id = ${childId} AND sponsor_id = ${sposnorId}) AS isChild`;
 module.exports.GET_PBV_BY_ADP_ID = GET_PBV_BY_ADP_ID;
 module.exports.GET_ALL_CHILD = GET_ALL_CHILD;
 module.exports.INSERT_CO_SPONSOR_ROYALTY = INSERT_CO_SPONSOR_ROYALTY;
@@ -435,3 +440,4 @@ module.exports.EXPIRE_CARDS = EXPIRE_CARDS;
 module.exports.GET_COSPONSORED_NO = GET_COSPONSORED_NO;
 module.exports.GET_LEADERS_DATA_FOR_ADP = GET_LEADERS_DATA_FOR_ADP;
 module.exports.IS_ADP_EXISTS = IS_ADP_EXISTS;
+module.exports.IS_CHILD = IS_CHILD;

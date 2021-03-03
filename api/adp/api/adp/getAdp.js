@@ -81,23 +81,6 @@ module.exports = (app) => {
     );
   });
 
-  app.get("/adp/get-adp-by-phone", urlencodedParser, async (req, res) => {
-    console.log(req.query);
-    const phone = req.query.phone;
-    connection.query(
-      GET_ADP_BY_PHONE(phone),
-      async (error, results, fields) => {
-        console.log(error);
-        if (error) return res.sendStatus("401");
-        // if (results.length === 0) return res.sendStatus("404");
-
-        return res.json({
-          result: results,
-        });
-      }
-    );
-  });
-
   app.get("/adp/check-line_adp", urlencodedParser, async (req, res) => {
     const sponsorId = req.user.adp_id;
     const adp_id = req.query.adp_id;
@@ -208,12 +191,8 @@ module.exports = (app) => {
   app.get("/adp/search-adp/:term", async (req, res) => {
     const adpId = req.user.adp_id;
     const term = req.params.term;
-    let adpDetails;
-    if (isNaN(term)) {
-      adpDetails = await searchAdp(adpId, term, "firstname");
-    } else {
-      adpDetails = await searchAdp(adpId, term, "adp_id");
-    }
+    const type = req.query.type ? req.query.type : "firstname";
+    const adpDetails = await searchAdp(adpId, term, type);
     if (!adpDetails) {
       res.sendStatus(404);
     } else {

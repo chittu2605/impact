@@ -46,6 +46,40 @@ const genderOption = [
     label: "Others",
   },
 ];
+
+const accountTypeOption = [
+  {
+    value: "Savings",
+    label: "Savings",
+  },
+  {
+    value: "Current",
+    label: "Current",
+  },
+];
+
+const relationOption = [
+  {
+    value: "Spouse",
+    label: "Spouse",
+  },
+  {
+    value: "Father",
+    label: "Father",
+  },
+  {
+    value: "Mother",
+    label: "Mother",
+  },
+  {
+    value: "Brother",
+    label: "Brother",
+  },
+  {
+    value: "Sister",
+    label: "Sister",
+  },
+];
 class AddAdpForm extends React.Component {
   state = {};
 
@@ -102,7 +136,7 @@ class AddAdpForm extends React.Component {
                 "Must be exactly 10 digits",
                 (val) => val && val.toString().length === 10
               ),
-            email: Yup.string().email("Invalid email address"),
+            email: Yup.string().required().email("Invalid email address"),
             dob: Yup.date().nullable(),
           })}
           onSubmit={(values, { setSubmitting }) => {
@@ -123,6 +157,7 @@ class AddAdpForm extends React.Component {
             handleChange,
             getFieldProps,
             setFieldValue,
+            setFieldTouched,
             handleBlur,
             handleSubmit,
             isSubmitting,
@@ -142,7 +177,7 @@ class AddAdpForm extends React.Component {
                       getAdpName(e.target.value)
                         .catch((err) => {
                           if (err.response.status === 404) {
-                            alert("Please check Sponsor ID");
+                            // alert("Please check Sponsor ID");
                             setFieldValue("sponsor_id", "");
                           }
                         })
@@ -197,7 +232,7 @@ class AddAdpForm extends React.Component {
                       getAdpName(e.target.value)
                         .catch((err) => {
                           if (err.response.status === 404) {
-                            alert("Please check Co Sponsor ID");
+                            // alert("Please check Co Sponsor ID");
                             setFieldValue("co_sponsor_id", "");
                           }
                         })
@@ -325,24 +360,14 @@ class AddAdpForm extends React.Component {
 
                 <div class="col">
                   <SelectInput
+                    onChange={({ value }) => {
+                      setFieldValue("gender", value);
+                    }}
                     label="Gender"
                     id="gender"
-                    value={values.gender}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    {...getFieldProps("gender")}
-                    className={
-                      errors.gender && touched.gender
-                        ? "text-input error"
-                        : "text-input"
-                    }
                     options={genderOption}
                     showLabel
                   />
-
-                  {/* {errors.gender && touched.gender && (
-                            <div className="input-feedback">{errors.gender}</div>
-                        )} */}
                 </div>
 
                 <div class="col">
@@ -427,23 +452,14 @@ class AddAdpForm extends React.Component {
 
                 <div class="col">
                   <SelectInput
+                    onChange={({ value }) => {
+                      setFieldValue("nominee_gender", value);
+                    }}
                     label="Nominee Gender"
                     id="nominee_gender"
-                    value={values.nominee_gender}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    {...getFieldProps("nominee_gender")}
-                    className={
-                      errors.nominee_gender && touched.nominee_gender
-                        ? "text-input error"
-                        : "text-input"
-                    }
                     options={genderOption}
                     showLabel
                   />
-                  {/* {errors.nominee_gender && touched.nominee_gender && (
-                            <div className="input-feedback">{errors.nominee_gender}</div>
-                        )} */}
                 </div>
 
                 <div class="col">
@@ -482,29 +498,18 @@ class AddAdpForm extends React.Component {
                     }
                     showLabel
                   />
-                  {/* {errors.nominee_dob && touched.nominee_dob && (
-                            <div className="input-feedback">{errors.nominee_dob}</div>
-                        )} */}
                 </div>
 
                 <div class="col">
-                  <TextInput
+                  <SelectInput
+                    onChange={({ value }) => {
+                      setFieldValue("relation", value);
+                    }}
                     label="Nominee Relation"
                     id="relation"
-                    type="text"
-                    value={values.relation}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={
-                      errors.relation && touched.relation
-                        ? "text-input error"
-                        : "text-input"
-                    }
+                    options={relationOption}
                     showLabel
                   />
-                  {/* {errors.relation && touched.relation && (
-                            <div className="input-feedback">{errors.relation}</div>
-                        )} */}
                 </div>
 
                 <div class="col">
@@ -731,22 +736,31 @@ class AddAdpForm extends React.Component {
 
                 <div class="col">
                   <TextInput
-                    label="Account Number"
-                    id="account_no"
+                    label="IFSC"
+                    id="ifs_code"
                     type="text"
-                    value={values.account_no}
+                    value={values.ifs_code}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    // onBlur={handleBlur}
                     className={
-                      errors.account_no && touched.account_no
+                      errors.ifs_code && touched.ifs_code
                         ? "text-input error"
                         : "text-input"
                     }
                     showLabel
+                    onBlur={(e) => {
+                      // handleBlur(e); this.blurHandle(e);
+                      let ifscCode = e.target.value;
+                      ifsc.validate(ifscCode)
+                        ? fetchIfscDetails(ifscCode).then((response) => {
+                            let branch = `${response.BANKCODE} - ${response.BRANCH}`;
+
+                            setFieldValue("bank_name", response.BANK);
+                            setFieldValue("branch", branch);
+                          })
+                        : setFieldValue("ifs_code", "");
+                    }}
                   />
-                  {/* {errors.account_no && touched.account_no && (
-                            <div className="input-feedback">{errors.account_no}</div>
-                        )} */}
                 </div>
 
                 <div class="col">
@@ -772,54 +786,31 @@ class AddAdpForm extends React.Component {
 
                 <div class="col">
                   <TextInput
-                    label="IFSC"
-                    id="ifs_code"
+                    label="Account Number"
+                    id="account_no"
                     type="text"
-                    value={values.ifs_code}
-                    onChange={handleChange}
-                    // onBlur={handleBlur}
-                    className={
-                      errors.ifs_code && touched.ifs_code
-                        ? "text-input error"
-                        : "text-input"
-                    }
-                    showLabel
-                    onBlur={(e) => {
-                      // handleBlur(e); this.blurHandle(e);
-                      let ifscCode = e.target.value;
-                      ifsc.validate(ifscCode)
-                        ? fetchIfscDetails(ifscCode).then((response) => {
-                            let branch = `${response.BANKCODE} - ${response.BRANCH}`;
-
-                            setFieldValue("bank_name", response.BANK);
-                            setFieldValue("branch", branch);
-                          })
-                        : alert("Please Check IFSC");
-                    }}
-                  />
-                  {/* {errors.ifs_code && touched.ifs_code && (
-                            <div className="input-feedback">{errors.ifs_code}</div>
-                        )} */}
-                </div>
-
-                <div class="col">
-                  <TextInput
-                    label="Account Type"
-                    id="account_type"
-                    type="text"
-                    value={values.account_type}
+                    value={values.account_no}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className={
-                      errors.account_type && touched.account_type
+                      errors.account_no && touched.account_no
                         ? "text-input error"
                         : "text-input"
                     }
                     showLabel
                   />
-                  {/* {errors.account_type && touched.account_type && (
-                            <div className="input-feedback">{errors.account_type}</div>
-                        )} */}
+                </div>
+
+                <div class="col">
+                  <SelectInput
+                    onChange={({ value }) => {
+                      setFieldValue("account_type", value);
+                    }}
+                    label="Account Type"
+                    id="account_type"
+                    options={accountTypeOption}
+                    showLabel
+                  />
                 </div>
               </div>
 
