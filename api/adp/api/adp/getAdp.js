@@ -6,6 +6,7 @@ const {
   GET_TOTAL_NEW_JOININGS,
   GET_TEAM_SIZE,
   GET_NO_CO_SPONSORED,
+  GET_NEW_CO_SPONSORED,
   SEARCH_ADP,
 } = require("../../adpQuery/adp/adp");
 const { getSprinterData } = require("../../../functions/sprinter");
@@ -159,6 +160,15 @@ module.exports = (app) => {
         }
       }
     );
+  });
+
+  app.get("/adp/new-co-sponsored", async (req, res) => {
+    const adpId = req.user.adp_id;
+    connection.query(GET_NEW_CO_SPONSORED(adpId), (error, results, fields) => {
+      if (!error && results.length) {
+        res.json({ newCosponsored: results[0].new_co_sponsored });
+      }
+    });
   });
 
   app.get("/adp/team-size", async (req, res) => {

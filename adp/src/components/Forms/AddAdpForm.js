@@ -58,6 +58,48 @@ const accountTypeOption = [
   },
 ];
 
+const idProofOption = [
+  {
+    value: "Aadhar card",
+    label: "Aadhar card",
+  },
+  {
+    value: "Pan card",
+    label: "Pan card",
+  },
+  {
+    value: "Voter card",
+    label: "Voter card",
+  },
+  {
+    value: "Driving license",
+    label: "Driving license",
+  },
+  {
+    value: "Passport",
+    label: "Passport",
+  },
+];
+
+const addressProofOption = [
+  {
+    value: "Aadhar card",
+    label: "Aadhar card",
+  },
+  {
+    value: "Voter card",
+    label: "Voter card",
+  },
+  {
+    value: "Driving license",
+    label: "Driving license",
+  },
+  {
+    value: "Passport",
+    label: "Passport",
+  },
+];
+
 const relationOption = [
   {
     value: "Spouse",
@@ -674,43 +716,27 @@ class AddAdpForm extends React.Component {
                 </div>
 
                 <div class="col">
-                  <TextInput
+                  <SelectInput
+                    onChange={({ value }) => {
+                      setFieldValue("id_proof", value);
+                    }}
                     label="ID Proof"
                     id="id_proof"
-                    type="text"
-                    value={values.id_proof}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={
-                      errors.id_proof && touched.id_proof
-                        ? "text-input error"
-                        : "text-input"
-                    }
+                    options={idProofOption}
                     showLabel
                   />
-                  {/* {errors.id_proof && touched.id_proof && (
-                            <div className="input-feedback">{errors.id_proof}</div>
-                        )} */}
                 </div>
 
                 <div class="col">
-                  <TextInput
+                  <SelectInput
+                    onChange={({ value }) => {
+                      setFieldValue("proof_address", value);
+                    }}
                     label="Proof Address"
                     id="proof_address"
-                    type="text"
-                    value={values.proof_address}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={
-                      errors.proof_address && touched.proof_address
-                        ? "text-input error"
-                        : "text-input"
-                    }
+                    options={addressProofOption}
                     showLabel
                   />
-                  {/* {errors.proof_address && touched.proof_address && (
-                            <div className="input-feedback">{errors.proof_address}</div>
-                        )} */}
                 </div>
 
                 <div class="col">

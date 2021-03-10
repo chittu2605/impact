@@ -214,6 +214,11 @@ SELECT count(adp_id) AS team_size FROM link WHERE sponsor_id = ${adpId}`;
 const GET_NO_CO_SPONSORED = (adpId) =>
   `SELECT count(adp_id) AS no_co_sponsored FROM tbl_adp WHERE co_sponsor_id = ${adpId}`;
 
+const GET_NEW_CO_SPONSORED = (
+  adpId
+) => `SELECT count(adp_id) AS new_co_sponsored FROM tbl_adp WHERE co_sponsor_id = ${adpId} AND date_created > 
+IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
+
 const SEARCH_ADP = (adpId, term, field) => `WITH RECURSIVE link
 AS (
 	SELECT adp_id, firstname, lastname, sponsor_id, mobile, pan FROM tbl_adp 
@@ -242,4 +247,5 @@ module.exports.GET_PERSONAL_NEW_JOININGS = GET_PERSONAL_NEW_JOININGS;
 module.exports.GET_TOTAL_NEW_JOININGS = GET_TOTAL_NEW_JOININGS;
 module.exports.GET_TEAM_SIZE = GET_TEAM_SIZE;
 module.exports.GET_NO_CO_SPONSORED = GET_NO_CO_SPONSORED;
+module.exports.GET_NEW_CO_SPONSORED = GET_NEW_CO_SPONSORED;
 module.exports.SEARCH_ADP = SEARCH_ADP;

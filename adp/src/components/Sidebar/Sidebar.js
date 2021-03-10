@@ -45,18 +45,18 @@ class Sidebar extends React.Component {
           </a>
         </div>
         <div className="sidebar-wrapper" ref="sidebar">
-          {this.props.parentId === "" && (
-            <Nav>
-              {this.props.routes.map((prop, key) => {
-                if (prop.redirect) return null;
-                return (
-                  <li
-                    className={
-                      this.activeRoute(prop.layout + prop.path) +
-                      (prop.pro ? " active active-pro" : "")
-                    }
-                    key={key}
-                  >
+          <Nav>
+            {this.props.routes.map((prop, key) => {
+              if (prop.redirect) return null;
+              return (
+                <li
+                  className={
+                    this.activeRoute(prop.layout + prop.path) +
+                    (prop.pro ? " active active-pro" : "")
+                  }
+                  key={key}
+                >
+                  {(this.props.parentId === "" || prop.displayInChildMode) && (
                     <NavLink
                       to={prop.layout + prop.path}
                       className="nav-link"
@@ -65,11 +65,11 @@ class Sidebar extends React.Component {
                       <i className={"now-ui-icons " + prop.icon} />
                       <p>{prop.name}</p>
                     </NavLink>
-                  </li>
-                );
-              })}
-            </Nav>
-          )}
+                  )}
+                </li>
+              );
+            })}
+          </Nav>
         </div>
       </div>
     );

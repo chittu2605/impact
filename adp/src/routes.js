@@ -23,6 +23,7 @@ var dashRoutes = [
     icon: "business_bulb-63",
     component: Dashboard,
     layout: "/adp",
+    displayInChildMode: true,
   },
   // {
   //   path: "/icons",
@@ -73,6 +74,7 @@ var dashRoutes = [
     icon: "design_vector",
     component: FamilyTree,
     layout: "/adp",
+    displayInChildMode: true,
   },
   {
     path: "/voucher",

@@ -32,9 +32,10 @@ class DashboardDefitiateCard extends React.Component {
     leadersLine3BV: 0,
     leaderBV3Color: "red",
     noCoSponsored: 0,
+    newCoSponsored: 0,
   };
 
-  componentDidMount = () => { 
+  componentDidMount = () => {
     this.getPbvDetails();
     this.getGbvDetails();
     this.getBvDetails();
@@ -49,6 +50,7 @@ class DashboardDefitiateCard extends React.Component {
     this.getTeamNewJoining();
     this.getTotalTeamSize();
     this.getNoCoSponsered();
+    this.getNewCoSponsered();
   };
 
   getPbvDetails = () => {
@@ -123,6 +125,16 @@ class DashboardDefitiateCard extends React.Component {
       if (response && response.data && response.data.noCoSponsored) {
         this.setState({
           noCoSponsored: response.data.noCoSponsored,
+        });
+      }
+    });
+  };
+
+  getNewCoSponsered = () => {
+    getNewCoSponsered().then((response) => {
+      if (response && response.data && response.data.newCosponsored) {
+        this.setState({
+          newCoSponsored: response.data.newCosponsored,
         });
       }
     });
@@ -206,25 +218,43 @@ class DashboardDefitiateCard extends React.Component {
   fetchTop3frontlines = () => {
     getTop3frontlines().then((response) => {
       if (response && response.data) {
-        const line1Amt = response.data[0] ? response.data[0].bv : 0;
-        const line2Amt = response.data[1] ? response.data[1].bv : 0;
-        const line3Amt = response.data[2] ? response.data[2].bv : 0;
+        let line1Amt = response.data[0] ? response.data[0].bv : 0;
+        let line2Amt = response.data[1] ? response.data[1].bv : 0;
+        let line3Amt = response.data[2] ? response.data[2].bv : 0;
         let line1Color = "red";
+        let line2Color = "red";
+        let line3Color = "red";
+        let line1Postfix = "BV Required";
+        let line2Postfix = "BV Required";
+        let line3Postfix = "BV Required";
         let line2BaseValue = 28000;
         let line3BaseValue = 16000;
         if (line1Amt >= 40000) {
           line1Color = "green";
+          line1Postfix = "Qualified";
           line2BaseValue = (70 * line1Amt) / 100;
           line3BaseValue = (40 * line1Amt) / 100;
+        } else {
+          line1Amt = 40000 - line1Amt;
         }
-        const line2Color = line2Amt < line2BaseValue ? "red" : "green";
-        const line3Color = line3Amt < line3BaseValue ? "red" : "green";
+        if (line2Amt >= line2BaseValue) {
+          line2Color = "green";
+          line2Postfix = "Qualified";
+        } else {
+          line2Amt = line2BaseValue - line2Amt;
+        }
+        if (line3Amt >= line3BaseValue) {
+          line3Color = "green";
+          line3Postfix = "Qualified";
+        } else {
+          line3Amt = line3BaseValue - line3Amt;
+        }
         this.setState({
-          leadersLine1BV: line1Amt,
+          leadersLine1BV: line1Amt + " " + line1Postfix,
           leaderBV1Color: line1Color,
-          leadersLine2BV: line2Amt,
+          leadersLine2BV: line2Amt + " " + line2Postfix,
           leaderBV2Color: line2Color,
-          leadersLine3BV: line3Amt,
+          leadersLine3BV: line3Amt + " " + line3Postfix,
           leaderBV3Color: line3Color,
         });
       }
@@ -280,6 +310,7 @@ class DashboardDefitiateCard extends React.Component {
       teamNewJoin,
       teamSize,
       noCoSponsored,
+      newCoSponsored,
     } = this.state;
     let championDifference =
       totalGbv < 20000 ? 20000 - totalGbv + " GBV" : 5000 - pbv + " PBV";
@@ -296,11 +327,32 @@ class DashboardDefitiateCard extends React.Component {
         championDifference = 2 - frontLines + " frontline";
       }
     }
+    let championCoSponsorColor = "green";
+    let championCoSponsorDeficit = "Qualified";
+    if (gbv < 12000) {
+      championCoSponsorColor = "red";
+      if (gbv < 12000) {
+        championCoSponsorDeficit = 12000 - gbv + " GBV required";
+      }
+    }
+    if (newCoSponsored < 5) {
+      if (gbv < 12000) {
+        championCoSponsorDeficit +=
+          " and " + (5 - newCoSponsored) + " Cosponsor(s) required";
+      } else {
+        championCoSponsorColor = "red";
+        championCoSponsorDeficit =
+          5 - newCoSponsored + " Cosponsor(s) required";
+      }
+    }
+
     return (
       <Card className="">
-      <CardHeader  style={{backgroundColor:"red"}}>
-          <h5 className="card-category" style={{color:"white"}} ></h5>
-          <CardTitle tag="h4" style={{color:"white"}}>Team Summary</CardTitle>
+        <CardHeader style={{ backgroundColor: "red" }}>
+          <h5 className="card-category" style={{ color: "white" }}></h5>
+          <CardTitle tag="h4" style={{ color: "white" }}>
+            Team Summary
+          </CardTitle>
         </CardHeader>
         <CardBody>
           <div className="">
@@ -341,6 +393,12 @@ class DashboardDefitiateCard extends React.Component {
               </span>
             </p>
             <p>
+              CHAMPIONS CLUB CO-SPONSOR DEFICIT :{" "}
+              <span style={{ color: championCoSponsorColor }}>
+                {" " + championCoSponsorDeficit}
+              </span>
+            </p>
+            <p>
               DEFICIT FOR BLUE CARD : {11000 - cardOverflow} BV{" "}
               {noCoSponsored < 3 ? (
                 <span style={{ color: "red" }}>
@@ -353,17 +411,9 @@ class DashboardDefitiateCard extends React.Component {
             <p>TOTAL 1+1 CARD THIS MONTH : {totalOnePlusCards}</p>
             <p>
               LEADER'S CLUB :{" "}
-              <span style={{ color: leaderBV1Color }}>
-                {leadersLine1BV + " BV"}
-              </span>{" "}
-              |{" "}
-              <span style={{ color: leaderBV2Color }}>
-                {leadersLine2BV + " BV"}
-              </span>{" "}
-              |{" "}
-              <span style={{ color: leaderBV3Color }}>
-                {leadersLine3BV + " BV"}
-              </span>
+              <span style={{ color: leaderBV1Color }}>{leadersLine1BV}</span> |{" "}
+              <span style={{ color: leaderBV2Color }}>{leadersLine2BV}</span> |{" "}
+              <span style={{ color: leaderBV3Color }}>{leadersLine3BV}</span>
             </p>
             <p>MEB DEFICIT : </p>
             <p>INCOME FROM PULL : </p>
@@ -406,6 +456,9 @@ function getNoFrontLines() {
 }
 function getNoCoSponsered() {
   return apiHandler.get("/no-co-sponsored");
+}
+function getNewCoSponsered() {
+  return apiHandler.get("/new-co-sponsored");
 }
 
 function getPersonalNewJoining() {
