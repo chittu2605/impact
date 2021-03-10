@@ -5,9 +5,8 @@ const nodemailer = require("nodemailer");
 const { send } = require("process");
 
 let transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com",
-  port: 587,
-  secure: false, 
+  host: "iloveimpact.com",
+  port: 465, 
   auth: {
     user: process.env.EMAIL,
     pass: process.env.PASSWORD,

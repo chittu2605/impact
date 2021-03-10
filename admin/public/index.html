@@ -51,17 +51,8 @@
     -->
 
     <script type="application/javascript">
-       if (window.location.origin === "http://43.231.127.39:4000") {
-        window.API_URL = "http://43.231.127.39:4000/";
-      } 
-     else if (window.location.origin === "http://iloveimpact.store:4000" ) {
-          window.API_URL = "http://iloveimpact.store:4000/";
-      } else if (window.location.origin === "http://iloveimpact.store") {
-        window.API_URL = "http://iloveimpact.store/";
-      } else if (window.location.origin === "https://iloveimpact.store:4000" ) {
-          window.API_URL = "https://iloveimpact.store:4000/";
-      } else if (window.location.origin === "https://iloveimpact.store") {
-        window.API_URL = "https://iloveimpact.store/";
+      if (window.location.origin === "https://experience.iloveimpact.com") {
+        window.API_URL = "https://experience.iloveimpact.com/";
       }else{
         window.API_URL = "http://localhost:4000/";
       }
