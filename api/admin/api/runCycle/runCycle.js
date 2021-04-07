@@ -1,5 +1,5 @@
 const {
-  GET_PREV_CYCLE_DATE,
+  GET_PREV_CYCLE,
   UPDATE_CURRENT_PBV,
   UPDATE_SPRINT_QUALIFIED,
   ADD_VOUCHER,
@@ -12,16 +12,13 @@ const {
   getADPMissingSPrint,
 } = require("../../../functions/sprinter");
 const {
-  getAllADP,
-  getCoSponsorRoyality,
-  getChampionEarnings,
   generateVoucher,
-  getOnePlusEarnings,
   updateCycleHistory,
-  insertCycleRows,
   expireCards,
-  getCoSponsoredNo,
-  getLeadersEarnings,
+  getAdpCount,
+  getTotalOverflowRecords,
+  getOnePlusAdpCount,
+  adjustPull,
 } = require("../../../functions/runCycleHelper");
 
 const {
@@ -35,71 +32,21 @@ const {
 } = require("../stats/stats");
 const { getAdpZone } = require("../../../functions/zone");
 const { getAdpPbv, getAdpBv } = require("../../../functions/getPbv");
-const updateCycleData = async () => {
-  const monthMoney = await getMonthlyMoney();
-  const championPoints = await getChampionPoints();
-  const championPercent = await getChampionFundPercent();
-  const onePlusPercent = await getOnePlusFundPercent();
-  const onePlusCardsTotal = await getTotalOnePlusCards();
-  const leadersPoints = await getLeadersPoints();
-  const leadersPercent = await getLeadersFundPercent();
-  const adpList = await getAllADP();
-  const cycleId = await updateCycleHistory(8, 11000, 11000, 25000, 60);
-  const dbRows = [];
-  await Promise.all(
-    adpList.map(async (adp, index) => {
-      const adpZone = await getAdpZone(adp);
-      const zoneValue = adpZone.value;
-      const pbv = await getAdpPbv(adp);
-      const bv = await getAdpBv(adp);
-      const currMonthPbv = (pbv && pbv.length> 0) ? pbv[0].current_month_pbv : 0; 
-      const coSponsoredNo = await getCoSponsoredNo(adp);
-      const coSponsorRoyality = await getCoSponsorRoyality(adp);
-      const championEarnings = await getChampionEarnings(
-        monthMoney,
-        adp,
-        championPoints,
-        championPercent
-      );
-      const onePlusEarnings =
-        coSponsoredNo > 2
-          ? await getOnePlusEarnings(
-              monthMoney,
-              adp,
-              onePlusPercent,
-              onePlusCardsTotal
-            )
-          : 0;
-      const leadersEarnings = await getLeadersEarnings(
-        monthMoney,
-        adp,
-        leadersPoints,
-        leadersPercent
-      );
-      dbRows.push([
-        adp,
-        zoneValue,
-        bv.bv,
-        currMonthPbv,
-        coSponsorRoyality,
-        championEarnings,
-        onePlusEarnings,
-        leadersEarnings,
-        cycleId,
-        coSponsoredNo,
-      ]);
-    })
-  );
-  insertCycleRows(dbRows);
-  await expireCards(cycleId);
-  await updateCurrentPbv();
-};
-const getPrevRunCycleDate = () => {
+const {
+  copyAdpToHistory,
+  adjustOverflow,
+  adjustLeadersClub,
+  adjustChampionsClub,
+  createOnePlusEarnings,
+  adjustOnePlusEarnings,
+} = require("./threadManager");
+
+const getPrevRunCycle = () => {
   return new Promise((resolve, reject) => {
-    connection.query(GET_PREV_CYCLE_DATE(), (error, result, fields) => {
+    connection.query(GET_PREV_CYCLE(), (error, result, fields) => {
       if (!error) {
         if (result[0]) {
-          resolve(result[0].todate);
+          resolve(result[0]);
         }
         resolve("");
       } else {
@@ -112,11 +59,14 @@ const getPrevRunCycleDate = () => {
 const createVouchers = (eligibleSprinterIDs, voucherType) => {
   eligibleSprinterIDs.forEach(async (adpId) => {
     const coupon = await generateVoucher();
-    connection.query(ADD_VOUCHER(adpId, coupon, voucherType, null), (error, results, fields) => {
-      if(error){
-      console.log(error);
+    connection.query(
+      ADD_VOUCHER(adpId, coupon, voucherType, null),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+        }
       }
-    });
+    );
   });
 };
 
@@ -145,31 +95,72 @@ const updateCurrentPbv = () => {
 
 module.exports = (app) => {
   app.post("/admin/run-cycle", async (req, res) => {
-    const eligibleSprintIDs = await getEligibleSprintIDs();
-    const eligibleSprinters = await getEligibleSprinters(eligibleSprintIDs);
-    const adpMissingSprint = await getADPMissingSPrint();
-    if (eligibleSprintIDs) {
-      createVouchers(eligibleSprintIDs, "SPRINT");
+    try {
+      const prevCycleId = (await getPrevRunCycle()).id;
+      const cycleId = await updateCycleHistory();
+      const totalRecords = await getAdpCount();
+      console.log("start at", new Date());
+      await copyAdpToHistory(cycleId, totalRecords);
+      const totalOverFlowRecords = await getTotalOverflowRecords(prevCycleId);
+      await adjustOverflow(prevCycleId, cycleId, totalOverFlowRecords);
+      const monthMoney = await getMonthlyMoney();
+      const leaderPoints = await getLeadersPoints();
+      const leadersPercent = await getLeadersFundPercent();
+      await adjustLeadersClub(
+        cycleId,
+        monthMoney,
+        leaderPoints,
+        leadersPercent
+      );
+      const championPoints = await getChampionPoints(1);
+      const championPercent = await getChampionFundPercent();
+      await adjustChampionsClub(
+        cycleId,
+        monthMoney,
+        championPoints,
+        championPercent
+      );
+      const onePlusPercent = await getOnePlusFundPercent();
+      const onePlusCardsTotal = await getTotalOnePlusCards();
+      await createOnePlusEarnings(
+        cycleId,
+        monthMoney,
+        onePlusCardsTotal,
+        onePlusPercent
+      );
+      const totalOnePlusAdp = await getOnePlusAdpCount(cycleId);
+      await adjustOnePlusEarnings(cycleId, totalOnePlusAdp);
+      await expireCards(cycleId);
+      await adjustPull(cycleId);
+      const eligibleSprintIDs = await getEligibleSprintIDs();
+      const eligibleSprinters = await getEligibleSprinters(eligibleSprintIDs);
+      const adpMissingSprint = await getADPMissingSPrint();
+      if (eligibleSprintIDs) {
+        createVouchers(eligibleSprintIDs, "SPRINT");
+      }
+      if (eligibleSprinters) {
+        generateSprinterVouchers(eligibleSprinters);
+      }
+      if (eligibleSprintIDs || adpMissingSprint) {
+        updateSprintQualifiedFlag([...eligibleSprintIDs, ...adpMissingSprint]);
+      }
+      await updateCurrentPbv();
+      console.log("end at", new Date());
+      res.sendStatus(200);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
     }
-    if (eligibleSprinters) {
-      generateSprinterVouchers(eligibleSprinters);
-    }
-    if (eligibleSprintIDs || adpMissingSprint) {
-      updateSprintQualifiedFlag([...eligibleSprintIDs, ...adpMissingSprint]);
-    }
-    await updateCycleData();
-    res.status(200);
-    res.send("success");
   });
 
   app.get("/admin/prev-cycle-end-date", async (req, res) => {
-    const endDate = await getPrevRunCycleDate();
+    const prevCycle = await getPrevRunCycle();
     res.status(200);
-    if (endDate) {
+    if (prevCycle.todate) {
       res.send(
-        `${endDate.getFullYear()}-${
-          endDate.getMonth() + 1
-        }-${endDate.getDate()}`
+        `${prevCycle.todate.getFullYear()}-${
+          prevCycle.todate.getMonth() + 1
+        }-${prevCycle.todate.getDate()}`
       );
     } else {
       res.send("Not Available");

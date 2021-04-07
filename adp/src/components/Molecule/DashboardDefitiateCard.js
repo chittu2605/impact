@@ -7,7 +7,7 @@ class DashboardDefitiateCard extends React.Component {
   state = {
     pbv: "",
     totalPbv: "",
-    gbv: "",
+    newGbv: "",
     totalGbv: "",
     coSponsorIncome: 0,
     total_retail_profit: 0,
@@ -73,7 +73,7 @@ class DashboardDefitiateCard extends React.Component {
     getGbv().then((response) => {
       if (response && response.data) {
         this.setState({
-          gbv: response.data.gbv,
+          newGbv: response.data.newGbv,
           totalGbv: response.data.totalGbv,
         });
       }
@@ -286,7 +286,7 @@ class DashboardDefitiateCard extends React.Component {
       pbv,
       bv,
       totalPbv,
-      gbv,
+      newGbv,
       totalGbv,
       coSponsorIncome,
       total_retail_profit,
@@ -329,14 +329,14 @@ class DashboardDefitiateCard extends React.Component {
     }
     let championCoSponsorColor = "green";
     let championCoSponsorDeficit = "Qualified";
-    if (gbv < 12000) {
+    if (newGbv < 12000) {
       championCoSponsorColor = "red";
-      if (gbv < 12000) {
-        championCoSponsorDeficit = 12000 - gbv + " GBV required";
+      if (newGbv < 12000) {
+        championCoSponsorDeficit = 12000 - newGbv + " GBV required";
       }
     }
     if (newCoSponsored < 5) {
-      if (gbv < 12000) {
+      if (newGbv < 12000) {
         championCoSponsorDeficit +=
           " and " + (5 - newCoSponsored) + " Cosponsor(s) required";
       } else {

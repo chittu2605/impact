@@ -177,7 +177,7 @@ const GET_ADP_BY_CO_SPONSOR = (co_sponsor_id) => {
   WHERE co_sponsor_id = "${co_sponsor_id}";`;
 };
 
-const GET_PREV_CYCLE_DATE = () => `SELECT todate
+const GET_PREV_CYCLE = () => `SELECT *
 FROM      tbl_cycledate
 ORDER BY  id DESC
 LIMIT     1`;
@@ -211,7 +211,7 @@ module.exports.ADD_ADP_LINE = ADD_ADP_LINE;
 module.exports.GET_ADP_BY_CO_SPONSOR = GET_ADP_BY_CO_SPONSOR;
 module.exports.INSERT_ADP_UP_LINE = INSERT_ADP_UP_LINE;
 module.exports.ADD_ADP_LINE_2 = ADD_ADP_LINE_2;
-module.exports.GET_PREV_CYCLE_DATE = GET_PREV_CYCLE_DATE;
+module.exports.GET_PREV_CYCLE = GET_PREV_CYCLE;
 module.exports.UPDATE_CURRENT_PBV = UPDATE_CURRENT_PBV;
 module.exports.UPDATE_SPRINT_QUALIFIED = UPDATE_SPRINT_QUALIFIED;
 module.exports.ADD_VOUCHER = ADD_VOUCHER;

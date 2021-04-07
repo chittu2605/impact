@@ -123,18 +123,21 @@ const getNewJoiningBV = () => {
   });
 };
 
-const getChampionPoints = () => {
+const getChampionPoints = (prevCycleLimit) => {
   return new Promise((resolve, reject) => {
-    connection.query(GET_CHAMPION_POINTS(), (error, result, fields) => {
-      if (!error) {
-        if (result[0]) {
-          resolve(result[0].total_points);
+    connection.query(
+      GET_CHAMPION_POINTS(prevCycleLimit),
+      (error, result, fields) => {
+        if (!error) {
+          if (result[0]) {
+            resolve(result[0]);
+          }
+          resolve("");
+        } else {
+          reject(error);
         }
-        resolve("");
-      } else {
-        reject(error);
       }
-    });
+    );
   });
 };
 
@@ -153,15 +156,18 @@ const getChampionFundPercent = () => {
   });
 };
 
-const getChampionQualifiers = () => {
+const getChampionQualifiers = (offset, rowCount, prevCycleLimit) => {
   return new Promise((resolve, reject) => {
-    connection.query(GET_CHAMPION_QUALIFIERS(), (error, results, fields) => {
-      if (!error && results.length > 0) {
-        resolve(results);
-      } else {
-        resolve([]);
+    connection.query(
+      GET_CHAMPION_QUALIFIERS(offset, rowCount, prevCycleLimit),
+      (error, results, fields) => {
+        if (!error && results.length > 0) {
+          resolve(results);
+        } else {
+          resolve([]);
+        }
       }
-    });
+    );
   });
 };
 
@@ -185,7 +191,7 @@ const getTotalOnePlusCards = () => {
     connection.query(GET_TOTAL_ONE_PLUS_CARDS(), (error, result, fields) => {
       if (!error) {
         if (result[0]) {
-          resolve(result[0].no_cards);
+          resolve(result[0]);
         }
         resolve("");
       } else {
@@ -212,7 +218,7 @@ const getLeadersPoints = () => {
     connection.query(GET_LEADERS_CLUB_POINTS(), (error, result, fields) => {
       if (!error) {
         if (result[0]) {
-          resolve(result[0].total_points);
+          resolve(result[0]);
         }
         resolve("");
       } else {
@@ -237,10 +243,10 @@ const getLeadersFundPercent = () => {
   });
 };
 
-const getLeadersQualifiers = () => {
+const getLeadersQualifiers = (offset, rowCount) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      GET_LEADERS_CLUB_QUALIFIERS(),
+      GET_LEADERS_CLUB_QUALIFIERS(offset, rowCount),
       (error, results, fields) => {
         if (!error && results.length > 0) {
           resolve(results);
@@ -321,7 +327,7 @@ module.exports.app = (app) => {
 
   app.get("/admin/get-champion-data", async (req, res) => {
     try {
-      const totalPoints = await getChampionPoints();
+      const totalPoints = (await getChampionPoints(0)).total_points;
       const percent = await getChampionFundPercent();
       res.status(200);
       res.send({
@@ -336,7 +342,7 @@ module.exports.app = (app) => {
 
   app.get("/admin/get-one-plus-one-data", async (req, res) => {
     try {
-      const totalPoints = await getTotalOnePlusCards();
+      const totalPoints = (await getTotalOnePlusCards()).no_cards;
       const percent = await getOnePlusFundPercent();
       res.status(200);
       res.send({
@@ -371,12 +377,12 @@ module.exports.app = (app) => {
 
   app.get("/admin/get-leaders-data", async (req, res) => {
     try {
-      const totalPoints = await getLeadersPoints();
+      const leadersPoints = await getLeadersPoints();
       const percent = await getLeadersFundPercent();
       res.status(200);
       res.send({
         percent,
-        totalPoints,
+        totalPoints: leadersPoints.total_points,
       });
     } catch (error) {
       console.log(error);
@@ -402,3 +408,5 @@ module.exports.getOnePlusFundPercent = getOnePlusFundPercent;
 module.exports.getTotalOnePlusCards = getTotalOnePlusCards;
 module.exports.getLeadersFundPercent = getLeadersFundPercent;
 module.exports.getLeadersPoints = getLeadersPoints;
+module.exports.getLeadersQualifiers = getLeadersQualifiers;
+module.exports.getChampionQualifiers = getChampionQualifiers;

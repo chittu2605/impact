@@ -3,31 +3,21 @@ const GET_PBV_BY_ADP_ID = (adp_id) => {
   WHERE adp_id = "${adp_id}";`;
 };
 
-// const GET_ALL_CHILD = (adp_id) => {
-//   return `with recursive cte (adp_id, firstname, lastname, sponsor_id) as (
-//     select     adp_id,
-//                firstname,
-//                lastname,
-//                sponsor_id
-//     from       tbl_adp
-//     where      adp_id = "${adp_id}"
-//     union all
-//     select     p.adp_id,
-//                p.firstname,
-//                p.lastname,
-//                p.sponsor_id
-//     from       tbl_adp p
-//     inner join cte
-//             on p.sponsor_id = cte.adp_id
-//   )
-//   select * from cte;`
-// }
-
 const GET_ALL_CHILD = (adp_id) => {
   return `  Select Distinct adp_id, firstname, lastname, sponsor_id from tbl_adp
   where adp_id IN (
   SELECT adp_id FROM tbl_adp_line
   WHERE main_adp = "${adp_id}");`;
+};
+
+const GET_PULL_DATA = (adpId) => {
+  return `WITH RECURSIVE link AS
+  (SELECT ta.adp_id, ta.sponsor_id, tp.current_month_pbv, ta.date_created FROM tbl_adp ta JOIN tbl_pbv tp 
+  USING (adp_id) WHERE ta.sponsor_id  = 15144115
+  UNION ALL
+  SELECT t.adp_id,t.sponsor_id,tp.current_month_pbv, t.date_created FROM tbl_adp t JOIN tbl_pbv tp
+  ON t.adp_id = tp.adp_id  JOIN link l ON t.sponsor_id = l.adp_id)
+  SELECT * FROM link ORDER BY current_month_pbv DESC, date_created`;
 };
 
 const INSERT_CO_SPONSOR_ROYALTY = (
@@ -211,10 +201,17 @@ const GET_PLAN_TDS = () => {
 
 const GET_ADP_GBV = (adp_id) => `
 WITH RECURSIVE link AS(
-  SELECT tp.adp_id, tp.pbv, tp.current_month_pbv FROM tbl_pbv tp WHERE tp.sponsor_id = ${adp_id}
+  SELECT tp.adp_id, tp.pbv, tp.current_month_pbv, ta.date_created FROM tbl_pbv tp
+  JOIN tbl_adp ta USING (adp_id) WHERE tp.sponsor_id = ${adp_id}
   UNION ALL 
-  SELECT tp2.adp_id, tp2.pbv, tp2.current_month_pbv FROM tbl_pbv tp2 JOIN link l ON tp2.sponsor_id = l.adp_id)
-  SELECT IFNULL(SUM(pbv),0) AS totalGbv, IFNULL(SUM(current_month_pbv),0) AS gbv FROM link
+  SELECT tp2.adp_id, tp2.pbv, tp2.current_month_pbv, ta.date_created FROM tbl_pbv tp2 
+  JOIN link l ON tp2.sponsor_id = l.adp_id JOIN tbl_adp ta ON tp2.adp_id = ta.adp_id)
+  SELECT IFNULL(SUM(pbv),0) AS totalGbv, IFNULL(SUM(current_month_pbv),0) AS gbv, 
+  SUM(CASE
+    WHEN date_created > (IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0))
+    THEN current_month_pbv
+    ELSE 0
+  END) AS newGbv FROM link
 `;
 
 const GET_ELIGIBLE_SPRINTS = () => `WITH RECURSIVE link
@@ -308,7 +305,20 @@ const GET_FRONTLINE_CHILDREN = (adpId) =>
 const IS_SPRINT_QUALIFIED = (adpId) =>
   `SELECT ta.sprint_qualified FROM tbl_adp ta WHERE ta.adp_id=${adpId}`;
 
-const GET_ALL_ADP = () => `SELECT adp_id from tbl_adp`;
+const GET_ADP_COUNT = () => `SELECT COUNT(adp_id) AS count FROM tbl_adp`;
+
+const GET_ALL_ADP = (offset, rowCount) =>
+  `SELECT adp_id from tbl_adp LIMIT ${offset}, ${rowCount}`;
+
+const GET_CYCLE_ITEM = (cycleId, adpId) =>
+  `SELECT * from tbl_cycle_report where adp_id = ${adpId} AND cycle_id = ${cycleId}`;
+
+const GET_TOTAL_OVERFLOW_RECORDS = (prevCycleId) => `
+  SELECT COUNT(*) as count FROM tbl_cycle_report where cycle_id = ${prevCycleId} AND overflow > 0
+`;
+const GET_PBV_OVERFLOW_ITEMS = (prevCycleId, offset, rowCount) => `
+  SELECT * FROM tbl_cycle_report where cycle_id = ${prevCycleId} AND overflow > 0 LIMIT ${offset}, ${rowCount}
+`;
 
 const GET_CO_SPONSOR_ROYALITY = (adpId) =>
   `SELECT IFNULL(SUM(tp.current_month_pbv),0) AS co_sponsor_royality FROM tbl_pbv tp JOIN tbl_adp ta USING (adp_id)
@@ -356,28 +366,86 @@ const GET_TOTAL_CARDS_FOR_ADP = (adpId) =>
 const GET_BLUE_CARDS_FOR_ADP = (adpId) =>
   `SELECT IFNULL(sum(qty),0) as no_cards FROM tbl_card WHERE expiry_cycle IS NULL and adp_id = ${adpId} and card_type='blue'`;
 
-const INSERT_CYCLE_DATE = (
-  coSponsorRoyality,
-  blueCardLimit,
-  yellowCardLimit,
-  greenCardLimit,
-  blueCardPercent
-) => `INSERT INTO tbl_cycledate
-  (fromdate, co_sponsor_royality, blue_card_limit, yellow_card_limit, green_card_limit, blue_card_percent)
-  VALUES(
-  (SELECT todate FROM 
-  (SELECT todate  FROM tbl_cycledate cd
-  ORDER BY id DESC LIMIT 1) AS fd)
-  , ${coSponsorRoyality}, ${blueCardLimit}, ${yellowCardLimit}, ${greenCardLimit}, ${blueCardPercent})`;
+const GET_ONE_PLUS_ADP_COUNT = (cycleId) =>
+  `SELECT COUNT(DISTINCT(adp_id)) AS count FROM tbl_card_earnings WHERE cyle_id = ${cycleId}`;
+
+const GET_CARD_EARNINGS = (
+  cycleId,
+  limit,
+  rowCount
+) => `SELECT adp_id, SUM(amount) AS earnings FROM tbl_card_earnings WHERE cyle_id = ${cycleId} 
+GROUP BY adp_id LIMIT ${limit},${rowCount}`;
+
+const GET_CYCLE_DATE_RECORD = (cycleId) =>
+  `SELECT * FROM tbl_cycledate WHERE id = ${cycleId}`;
+
+const GET_MAX_PULL_ADP_EARNING = () =>
+  `SELECT max_value FROM tbl_planmanagement WHERE plan_name = "Pull"`;
+
+const GET_ADP_WITH_PULL = (
+  cycleId
+) => `SELECT adp_id FROM tbl_cycle_report WHERE cycle_id = ${cycleId} 
+AND total_income > (SELECT max_value FROM tbl_planmanagement WHERE plan_name = "Pull")`;
+
+const GET_ADP_CHILD_FOR_PULL = (adpId) => `WITH RECURSIVE link AS(
+	SELECT ta.adp_id, ta.sponsor_id, tp.current_month_pbv, ta.date_created 
+	FROM tbl_adp ta JOIN tbl_pbv tp USING (adp_id)
+	UNION ALL
+	SELECT ta.adp_id, l.sponsor_id, tp.current_month_pbv, ta.date_created 
+	FROM tbl_adp ta JOIN tbl_pbv tp USING (adp_id) 
+	JOIN link l ON ta.sponsor_id = l.adp_id
+),
+current_gbv AS (SELECT sponsor_id AS adp_id , sum(current_month_pbv) AS curr_gbv
+	FROM link WHERE date_created > (SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1,1) 
+	GROUP BY sponsor_id),
+pull_data AS (SELECT l.adp_id, l.sponsor_id, 
+((l.current_month_pbv/1000)*(SELECT value FROM tbl_planmanagement WHERE plan_name = "Pull")) AS purchase_points, 
+((IFNULL(cg.curr_gbv,0)/1000)*(SELECT value2 FROM tbl_planmanagement WHERE plan_name = "Pull")) AS join_points,
+((SELECT purchase_points) + (SELECT join_points)) AS total_points, l.date_created
+FROM link l
+LEFT JOIN current_gbv cg ON l.adp_id = cg.adp_id )
+SELECT * FROM pull_data WHERE sponsor_id = ${adpId} ORDER BY total_points DESC, date_created LIMIT 0,10`;
+
+const UPDATE_CYCLE_PULL_OVERFLOW = (amount, cycleId) =>
+  `UPDATE tbl_cycledate SET pull_overflow = ${amount} WHERE id = ${cycleId}`;
+
+const INSERT_CYCLE_DATE = () => `INSERT INTO tbl_cycledate
+(fromdate)
+VALUES(
+(SELECT todate  FROM tbl_cycledate cd
+ORDER BY id DESC LIMIT 1))`;
 
 const INSERT_CYCLE_ROWS = () => `INSERT INTO tbl_cycle_report
-(adp_id, zone_value, bv, pbv, co_sponsor_royality, champion_earnings, oneplus_earnings, leaders_earnings, cycle_id, no_co_sponsored)
+(adp_id,cycle_id,
+  zone_value,
+  pbv,
+  bv,
+  overflow,
+  no_co_sponsored,
+  co_sponsor_royality,
+  income_from_child,
+  total_income)
 VALUES ?`;
+
+const UPDATE_CYCLE_RECORD = (id, fields, values) =>
+  `UPDATE tbl_cycle_report SET` +
+  fields.map((field, index) => ` ${field}=${values[index]}`).join(",") +
+  ` where id = ${id}`;
+
+const INSERT_CARD_EARNINGS = (
+  cardId,
+  adpId,
+  cycleId,
+  amount,
+  voucherId
+) => `INSERT INTO impact_prod.tbl_card_earnings
+(card_id, adp_id, cyle_id, amount, voucher_id)
+VALUES(${cardId}, ${adpId}, ${cycleId}, ${amount}, ${voucherId})`;
 
 const EXPIRE_CARDS = (cycleId) =>
   `UPDATE tbl_card tc SET tc.expiry_cycle=${cycleId} WHERE 
-  tc.expiry_cycle IS NULL AND valid_cycles <= 
-  (SELECT count(id) FROM tbl_cycledate WHERE todate >= tc.created_on)`;
+  tc.expiry_cycle IS NULL AND tc.valid_cycles <= 
+  (SELECT count(id) FROM tbl_card_earnings tce WHERE  tce.card_id = tc.id)`;
 
 const GET_COSPONSORED_NO = (adpId) =>
   `SELECT count(adp_id) as co_sponsored_no FROM tbl_adp WHERE co_sponsor_id= ${adpId}`;
@@ -441,3 +509,17 @@ module.exports.GET_COSPONSORED_NO = GET_COSPONSORED_NO;
 module.exports.GET_LEADERS_DATA_FOR_ADP = GET_LEADERS_DATA_FOR_ADP;
 module.exports.IS_ADP_EXISTS = IS_ADP_EXISTS;
 module.exports.IS_CHILD = IS_CHILD;
+module.exports.GET_ADP_COUNT = GET_ADP_COUNT;
+module.exports.GET_CYCLE_ITEM = GET_CYCLE_ITEM;
+module.exports.GET_TOTAL_OVERFLOW_RECORDS = GET_TOTAL_OVERFLOW_RECORDS;
+module.exports.GET_PBV_OVERFLOW_ITEMS = GET_PBV_OVERFLOW_ITEMS;
+module.exports.UPDATE_CYCLE_RECORD = UPDATE_CYCLE_RECORD;
+module.exports.INSERT_CARD_EARNINGS = INSERT_CARD_EARNINGS;
+module.exports.GET_ONE_PLUS_ADP_COUNT = GET_ONE_PLUS_ADP_COUNT;
+module.exports.GET_CARD_EARNINGS = GET_CARD_EARNINGS;
+module.exports.GET_CYCLE_DATE_RECORD = GET_CYCLE_DATE_RECORD;
+module.exports.GET_PULL_DATA = GET_PULL_DATA;
+module.exports.GET_MAX_PULL_ADP_EARNING = GET_MAX_PULL_ADP_EARNING;
+module.exports.GET_ADP_WITH_PULL = GET_ADP_WITH_PULL;
+module.exports.GET_ADP_CHILD_FOR_PULL = GET_ADP_CHILD_FOR_PULL;
+module.exports.UPDATE_CYCLE_PULL_OVERFLOW = UPDATE_CYCLE_PULL_OVERFLOW;

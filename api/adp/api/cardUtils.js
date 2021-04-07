@@ -1,3 +1,6 @@
+const {
+  GET_ELIGIBLE_ONE_PLUS_CARDS,
+} = require("../../admin/dbQuery/stats/stats");
 const connection = require("../../dbConnect");
 const { GET_PVB } = require("../adpQuery/bv/bv");
 const {
@@ -109,8 +112,24 @@ const getCycleDetailsForCard = (cardId) =>
       }
     );
   });
+
+const getEligibleOnePlusCards = (offset, rowCount) =>
+  new Promise(async (resolve, reject) => {
+    connection.query(
+      GET_ELIGIBLE_ONE_PLUS_CARDS(offset, rowCount),
+      (error, results, fields) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      }
+    );
+  });
+
 module.exports.createCards = createCards;
 module.exports.getCardsOverflow = getCardsOverflow;
 module.exports.getCardsOfADP = getCardsOfADP;
 module.exports.getCycleDetailsForCard = getCycleDetailsForCard;
 module.exports.getTotalCardsOfADPForMonth = getTotalCardsOfADPForMonth;
+module.exports.getEligibleOnePlusCards = getEligibleOnePlusCards;

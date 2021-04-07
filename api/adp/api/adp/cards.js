@@ -29,26 +29,10 @@ module.exports = (app) => {
       const cycleDetails = await getCycleDetailsForCard(cardId);
       const resArr = [];
       for (cycle of cycleDetails) {
-        let cardIncome = 0;
-        if (cycle.no_co_sponsored > 2) {
-          const totalCardIncome = cycle.oneplus_earnings;
-          const tatalCards = cycle.total_cards;
-          const totalBlueCards = cycle.total_blue_cards;
-          const blueCardPercent = cycle.blue_card_percent;
-          const relTotalCards =
-            tatalCards -
-            totalBlueCards +
-            (totalBlueCards * blueCardPercent) / 100;
-          const pointValue = totalCardIncome / relTotalCards;
-          cardIncome =
-            cycle.card_type === "blue"
-              ? (pointValue * cycle.card_qty * blueCardPercent) / 100
-              : pointValue * cycle.card_qty;
-        }
         resArr.push({
-          cycleId: cycle.id,
-          cardIncome: cardIncome,
-          date: cycle.todate.getTime(),
+          cycleId: cycle.card_id,
+          cardIncome: cycle.amount,
+          date: cycle.toDate.getTime(),
         });
       }
       res.json(resArr);

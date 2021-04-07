@@ -69,7 +69,6 @@ const ADPStatement = () => {
   let childBVTotal = 0;
   let comissionTotal = 0;
 
-  const adjustCalculations = () => {};
   return (
     <>
       <PanelHeader size="sm" />
@@ -175,7 +174,7 @@ const ADPStatement = () => {
                             </td>
                             <td>
                               <span style={{ color: adpStatementColor }}>
-                                {Math.round(adpCommision)+" RS"}
+                                {Math.round(adpCommision) + " RS"}
                               </span>
                             </td>
                           </tr>
@@ -195,7 +194,7 @@ const ADPStatement = () => {
                                 <td>{child.zone_value}%</td>
                                 <td>{child.bv}</td>
                                 <td>{difference}%</td>
-                                <td>{Math.round(commision)+" RS"}</td>
+                                <td>{Math.round(commision) + " RS"}</td>
                               </tr>
                             );
                           })}
@@ -203,9 +202,14 @@ const ADPStatement = () => {
                             <th>Total</th>
                             <td></td>
                             <td></td>
-                            <th>{childBVTotal}</th>
+                            <th>
+                              {statementData.adpDetails.pbv + childBVTotal}
+                            </th>
                             <td></td>
-                            <th>{Math.round(adpCommision + comissionTotal)+" RS"}</th>
+                            <th>
+                              {Math.round(adpCommision + comissionTotal) +
+                                " RS"}
+                            </th>
                           </tr>
                         </tbody>
                       </table>
@@ -218,9 +222,7 @@ const ADPStatement = () => {
                         <div className="col container">
                           <div className="row mb-1">
                             <div className="col">Retail Profit</div>
-                            <div className="col">
-                              : {0} Rs
-                            </div>
+                            <div className="col">: {0} Rs</div>
                           </div>
                         </div>
                         <div className="col container">
@@ -271,12 +273,14 @@ const ADPStatement = () => {
                       <div className="row mb-3">
                         <div className="col font-weight-bold">
                           Total:{" "}
-                          {Math.round(statementData.adpDetails.co_sponsor_royality +
-                            statementData.adpDetails.champion_earnings +
-                            statementData.adpDetails.oneplus_earnings +
-                            statementData.adpDetails.leaders_earnings +
-                            adpCommision +
-                            comissionTotal)}{" "}
+                          {Math.round(
+                            statementData.adpDetails.co_sponsor_royality +
+                              statementData.adpDetails.champion_earnings +
+                              statementData.adpDetails.oneplus_earnings +
+                              statementData.adpDetails.leaders_earnings +
+                              adpCommision +
+                              comissionTotal
+                          )}{" "}
                           Rs
                         </div>
                       </div>

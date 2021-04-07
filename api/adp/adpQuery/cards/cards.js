@@ -18,34 +18,16 @@ const CREATE_CARD = (
 (adp_id, card_type, qty, multiple_of, valid_cycles)
 VALUES(${adp_id}, '${type}', ${qty}, ${multipleOf}, ${vaidity})`;
 
-const GET_CYCLE_DETAILS_FOR_CARD = (
-  cardId
-) => `SELECT cd.*,tcr.no_co_sponsored,tcr.oneplus_earnings,
-(SELECT qty FROM tbl_card WHERE id = ${cardId}) AS card_qty,
-(SELECT card_type FROM tbl_card WHERE id = ${cardId}) AS card_type,
-(SELECT IFNULL(sum(tc.qty),0) FROM tbl_card tc 
-WHERE tc.adp_id = tcr.adp_id AND tc.created_on < cd.todate 
-AND (SELECT count(id) FROM tbl_cycledate cd2
-WHERE cd2.todate BETWEEN tc.created_on AND cd.todate 
-) <= tc.valid_cycles 
-) AS total_cards,
-(SELECT IFNULL(sum(tc.qty),0) FROM tbl_card tc 
-WHERE tc.adp_id = tcr.adp_id AND tc.card_type = 'blue'
-AND tc.created_on < cd.todate 
-AND (SELECT count(id) FROM tbl_cycledate cd2
-WHERE cd2.todate BETWEEN tc.created_on AND cd.todate 
-) <= tc.valid_cycles 
-) AS total_blue_cards
-FROM tbl_cycledate cd
-JOIN tbl_cycle_report tcr ON cd.id = tcr.cycle_id 
-AND tcr.adp_id = (SELECT adp_id FROM tbl_card WHERE id = ${cardId})
-WHERE cd.todate > (SELECT created_on FROM tbl_card WHERE id = ${cardId}) AND 
-((SELECT expiry_cycle FROM tbl_card WHERE id = ${cardId}) IS NULL OR
-cd.id <= (SELECT expiry_cycle FROM tbl_card WHERE id = ${cardId}))
-`;
+const GET_CYCLE_DETAILS_FOR_CARD = (cardId) =>
+  `SELECT tce.card_id, tce.amount, tce.cyle_id, tc.todate AS toDate FROM tbl_card_earnings tce 
+  JOIN tbl_cycledate tc ON tc.id = tce.cyle_id 
+  WHERE card_id = ${cardId}`;
 
 const TOTAL_CARDS_FOR_MONTH = (adpId) =>
   `SELECT count(id) AS noCards FROM tbl_card WHERE adp_id = ${adpId} AND expiry_cycle IS NULL`;
+
+const GET_VALID_CARDS = () =>
+  `SELECT * FROM tbl_card WHERE AND expiry_cycle IS NULL`;
 
 module.exports.GET_CARDS = GET_CARDS;
 module.exports.CARD_GENERATION_TIMES = CARD_GENERATION_TIMES;
