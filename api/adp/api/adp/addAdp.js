@@ -116,7 +116,7 @@ const sendAddAdpEmail = (name, email, adpId, password) => {
       
       Please login to your ID from the following link, 
       
-      www.iloveimpact.com/impact
+      https://www.experience.iloveimpact.com
       
       using these credentials,
       
