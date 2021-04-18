@@ -1,3 +1,8 @@
+const {
+  getBvWeightage,
+  getAdpGenratedBv,
+} = require("../../../functions/getPbv");
+
 module.exports = (app) => {
   const ADD_ADP = require("../../adpQuery/adp/adp").ADD_ADP;
   const CREATE_ORDER = require("../../adpQuery/product/buyProduct")
@@ -32,6 +37,12 @@ module.exports = (app) => {
     let totalAmount = req.body.totalAmount;
     const calculatedBv = req.body.calculatedBv;
     const totalSmartMartDiscount = req.body.totalSmartMartDiscount;
+    const prevBv = (await getAdpGenratedBv(adp_id)).generatedBV;
+    const currentBv = products.reduce(
+      (bv, product) => (bv += product.quantityAdded * product.bv),
+      0
+    );
+    const bvWeightage = await getBvWeightage(currentBv + prevBv);
 
     let pvbdata = {
       adp_id: adp_id,
@@ -67,12 +78,11 @@ module.exports = (app) => {
                   }
 
                   connection.query(
-                    CREATE_ORDER(adp_id, element),
+                    CREATE_ORDER(adp_id, element, bvWeightage, "REPURCHASE"),
                     async (error, results, fields) => {
                       console.log(error);
-                      console.log(CREATE_ORDER(adp_id, element));
                       if (error) return res.sendStatus("401");
-                      if (results.length === 0) return res.sendStatus("404")
+                      if (results.length === 0) return res.sendStatus("404");
                       // let msg = `Congratulations!! You have successfully joined Mission IMPACT. Your ADP ID is ${adp_id}.`
                       // sendSmsByAdpId(adp_id, msg)
                       if (i === products.length - 1) {

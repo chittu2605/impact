@@ -154,6 +154,13 @@ select IFNULL(SUM(line1_BV),0) AS total_points, count(*) AS total_count from lin
 const GET_LEADERS_FUND_PERCENT = () =>
   `SELECT value FROM tbl_planmanagement WHERE plan_name = "leaders_club"`;
 
+const GET_TOTAL_ORDERS = () =>
+  `SELECT COUNT(oid) AS total_orders FROM tbl_order`;
+
+const GET_ORDERS_DATA = (limit, count) =>
+  `SELECT tor.oid, tor.adp_id, ta.firstname, ta.lastname, tor.qty, tor.after_discount, tor.bv, tor.bv_weightage, tor.type
+  FROM tbl_order tor JOIN tbl_adp ta ON ta.adp_id = tor.adp_id ORDER BY order_date DESC LIMIT ${limit},${count}`;
+
 module.exports.TOTAL_TURNOVER = TOTAL_TURNOVER;
 module.exports.MONTHLY_TURNOVER = MONTHLY_TURNOVER;
 module.exports.TOTAL_MONEY = TOTAL_MONEY;
@@ -171,3 +178,5 @@ module.exports.GET_LEADERS_CLUB_QUALIFIERS = GET_LEADERS_CLUB_QUALIFIERS;
 module.exports.GET_LEADERS_CLUB_POINTS = GET_LEADERS_CLUB_POINTS;
 module.exports.GET_LEADERS_FUND_PERCENT = GET_LEADERS_FUND_PERCENT;
 module.exports.GET_ELIGIBLE_ONE_PLUS_CARDS = GET_ELIGIBLE_ONE_PLUS_CARDS;
+module.exports.GET_TOTAL_ORDERS = GET_TOTAL_ORDERS;
+module.exports.GET_ORDERS_DATA = GET_ORDERS_DATA;

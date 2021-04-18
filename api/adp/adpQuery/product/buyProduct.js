@@ -1,5 +1,5 @@
-const CREATE_ORDER = (adp_id, data) => {
-    return `INSERT INTO tbl_order (
+const CREATE_ORDER = (adp_id, data, bvWeightage, type) => {
+  return `INSERT INTO tbl_order (
         invoice_no,
         product,
         product_code,
@@ -38,12 +38,11 @@ const CREATE_ORDER = (adp_id, data) => {
         '${data.bv}' ,
         '${data.actual_price}' ,
         '' ,
-        'not done' ,
-        '' ,
+        '${type}' ,
+        ${bvWeightage},
         '' ,
         0 ,
-        0 );`
-}
-
+        0 );`;
+};
 
 module.exports.CREATE_ORDER = CREATE_ORDER;

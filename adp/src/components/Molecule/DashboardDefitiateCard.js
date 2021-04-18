@@ -416,7 +416,6 @@ class DashboardDefitiateCard extends React.Component {
               <span style={{ color: leaderBV3Color }}>{leadersLine3BV}</span>
             </p>
             <p>MEB DEFICIT : </p>
-            <p>INCOME FROM PULL : </p>
           </div>
         </CardBody>
         <CardFooter>

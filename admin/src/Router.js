@@ -18,7 +18,7 @@ import AddProduct from "./components/pages/AddProduct";
 import GenerateStatement from "./components/pages/GenerateStatement";
 import AdminDashboard from "./components/pages/AdminDashboard";
 import RunCycle from "./components/pages/RunCycle";
-
+import OrderList from "./components/pages/OrderList";
 function Router(props) {
   return (
     <BrowserRouter basename="/admin" history={history}>
@@ -33,6 +33,7 @@ function Router(props) {
       <Route path="/add-adp" component={AddAdp} />
       <Route path="/buy-product" component={BuyProduct} />
       <Route path="/view-adp" component={ViewADP} />
+      <Route path="/order-list" component={OrderList} />
       <Route path="/add-product" component={AddProduct} />
       <Route path="/add-wallet" component={AddWallet} />
       <Route path="/plan-management" component={PlanManagement} />

@@ -1,5 +1,13 @@
+const {
+  getBvWeightageList,
+} = require("../adp/api/planMangement/planManagement");
 const connection = require("../dbConnect");
-const { GET_PBV_BY_ADP_ID, GET_ADP_GBV, IS_CHILD } = require("./query");
+const {
+  GET_PBV_BY_ADP_ID,
+  GET_ADP_GBV,
+  IS_CHILD,
+  GET_ADP_GENERATED_BV,
+} = require("./query");
 
 const getAdpPbv = (adpId) => {
   return new Promise(async (resolve, reject) => {
@@ -7,6 +15,17 @@ const getAdpPbv = (adpId) => {
       GET_PBV_BY_ADP_ID(adpId),
       async (error, results, fields) => {
         resolve(results);
+      }
+    );
+  });
+};
+
+const getAdpGenratedBv = (adpId) => {
+  return new Promise(async (resolve, reject) => {
+    connection.query(
+      GET_ADP_GENERATED_BV(adpId),
+      async (error, results, fields) => {
+        resolve(results[0]);
       }
     );
   });
@@ -65,6 +84,21 @@ const getAdpBv = (adpId) => {
   });
 };
 
+const getBvWeightage = async (totalBv) => {
+  let bvWeightage = 0;
+  const weightList = await getBvWeightageList();
+  for (elm of weightList) {
+    if (elm.min_value <= totalBv && elm.max_value >= totalBv) {
+      bvWeightage = elm.value;
+      break;
+    } else if (elm.min_value <= totalBv && elm.max_value == 0) {
+      bvWeightage = elm.value;
+      break;
+    }
+  }
+  return bvWeightage;
+};
+
 module.exports = (app) => {
   const connection = require("../dbConnect");
   const jwt = require("jsonwebtoken");
@@ -80,6 +114,23 @@ module.exports = (app) => {
         results,
       });
     });
+  });
+
+  app.get("/adp/generated-bv/:childId", urlencodedParser, async (req, res) => {
+    try {
+      const adpId = req.user.adp_id;
+      const childId = req.params.childId;
+      if (!adpId == childId && !(await checkIfChild(childId, adpId))) {
+        res.sendStatus(404);
+      } else {
+        getAdpGenratedBv(childId).then((result) => {
+          res.json(result);
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(400);
+    }
   });
 
   app.get("/adp/gbv", urlencodedParser, async (req, res) => {
@@ -131,3 +182,5 @@ module.exports = (app) => {
 module.exports.getAdpPbv = getAdpPbv;
 module.exports.getAdpGbv = getAdpGbv;
 module.exports.getAdpBv = getAdpBv;
+module.exports.getBvWeightage = getBvWeightage;
+module.exports.getAdpGenratedBv = getAdpGenratedBv;

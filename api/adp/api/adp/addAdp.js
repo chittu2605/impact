@@ -7,6 +7,7 @@ const { generateAdpId } = require("../../../functions/generateAdp");
 const { sendMail } = require("../../../utils/emailer");
 
 const connection = require("../../../dbConnect");
+const { getBvWeightage } = require("../../../functions/getPbv");
 
 module.exports = (app) => {
   const ADD_ADP = require("../../adpQuery/adp/adp").ADD_ADP;
@@ -27,6 +28,11 @@ module.exports = (app) => {
     const userAdpId = req.user.adp_id;
     const totalAmount = req.body.totalAmount;
     const calculatedBv = req.body.calculatedBv;
+    const currentBv = products.reduce(
+      (bv, product) => (bv += product.quantityAdded * product.bv),
+      0
+    );
+    const bvWeightage = await getBvWeightage(currentBv);
     let password = Math.random().toString().split(".")[1];
     let hashedPassword = await passwordEncrypt(password);
     connection.query(
@@ -55,10 +61,9 @@ module.exports = (app) => {
         products &&
           products.forEach(async (element, i) => {
             connection.query(
-              CREATE_ORDER(adp_id, element),
+              CREATE_ORDER(adp_id, element, bvWeightage, "NEW"),
               async (error, newFranchise, fields) => {
                 console.log(error);
-                console.log(CREATE_ORDER(adp_id, element));
                 if (error) return res.sendStatus("401");
                 if (results.length === 0) return res.sendStatus("404");
                 sendAddAdpEmail(

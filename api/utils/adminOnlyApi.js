@@ -12,6 +12,8 @@ const adminOnlyApi = [
   "/admin/get-champion-qualifiers",
   "/admin/get-one-plus-one-data",
   "/admin/get-one-plus-cards",
+  "/admin/get-total-orders",
+  "/admin/get-orders-data",
 ];
 
 module.exports.adminOnlyApi = adminOnlyApi;

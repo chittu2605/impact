@@ -49,6 +49,7 @@ class BuyProducts extends React.Component {
     bvWeightageList: [],
     totalSmartMartDiscount: 0,
     previousBv: 0,
+    previousGeneratedBv: 0,
     balance: 0,
     showDiscount: false,
     selectedProductType: [],
@@ -98,6 +99,14 @@ class BuyProducts extends React.Component {
       }
     });
 
+    getPreviousGeneratedBv(this.props.adpId).then((response) => {
+      if (response && response.data) {
+        this.setState({
+          previousGeneratedBv: response.data.generatedBV,
+        });
+      }
+    });
+
     getBvWeightage().then((response) => {
       if (response && response.data) {
         this.setState({
@@ -115,6 +124,14 @@ class BuyProducts extends React.Component {
         if (response && response.data) {
           this.setState({
             previousBv: response.data.bvTillDate,
+          });
+        }
+      });
+
+      getPreviousGeneratedBv(this.props.adpId).then((response) => {
+        if (response && response.data) {
+          this.setState({
+            previousGeneratedBv: response.data.generatedBV,
           });
         }
       });
@@ -338,12 +355,13 @@ class BuyProducts extends React.Component {
       cart,
       bvWeightageList,
       totalSmartMartDiscount,
-      previousBv,
+      previousGeneratedBv,
     } = this.state;
     let { fetchWalletAction, adpId, fetchSmartMartAction } = this.props;
     let totalBv = getTotalBv(cart);
     let calculatedBv =
-      totalBv * (calcBvWeightage(previousBv + totalBv, bvWeightageList) / 100);
+      totalBv *
+      (calcBvWeightage(previousGeneratedBv + totalBv, bvWeightageList) / 100);
 
     let body = {
       products: cart,
@@ -417,14 +435,14 @@ class BuyProducts extends React.Component {
       totalSmartMartDiscount,
       selectedProductType,
       productTypeOptions,
-      previousBv,
+      previousGeneratedBv,
     } = this.state;
 
     let { toggleBuyProducts, rePurchase, addAdp } = this.props;
     let totalBv = getTotalBv(cart);
-    const prevBVToConsider = rePurchase ? previousBv : 0;
+    const prevBVToConsider = rePurchase ? previousGeneratedBv : 0;
     let bvWeightage = calcBvWeightage(
-      prevBVToConsider + totalBv,
+      previousGeneratedBv + totalBv,
       bvWeightageList
     );
     return (
@@ -445,9 +463,7 @@ class BuyProducts extends React.Component {
               ? getTotal(cart) - totalSmartMartDiscount
               : getTotal(cart)}
           </div>
-          <div className="col">
-            Total BV: {prevBVToConsider + totalBv * (bvWeightage / 100)}
-          </div>
+          <div className="col">Total BV: {prevBVToConsider + totalBv}</div>
           <div className="col">
             Purchase BV: {totalBv * (bvWeightage / 100)}
           </div>
@@ -584,6 +600,10 @@ function getBvWeightage() {
 
 function getPreviousBv(adpId) {
   return apiHandler.get(`adp-bv/${adpId}`);
+}
+
+function getPreviousGeneratedBv(adpId) {
+  return apiHandler.get(`generated-bv/${adpId}`);
 }
 
 function getTotalBv(products) {

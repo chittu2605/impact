@@ -5,11 +5,8 @@ const { getAdpBv } = require("./getPbv");
 const {
   GET_ALL_ADP,
   GET_CO_SPONSOR_ROYALITY,
-  GET_CHAMPION_DATA_FOR_ADP,
   IS_COUPON_EXISTS,
   ADD_VOUCHER,
-  GET_TOTAL_CARDS_FOR_ADP,
-  GET_BLUE_CARDS_FOR_ADP,
   INSERT_CYCLE_ROWS,
   INSERT_CYCLE_DATE,
   EXPIRE_CARDS,
@@ -152,54 +149,6 @@ const isCouponExists = (coupon) => {
     });
   });
 };
-
-const getTotalCardsForADP = (adpId) =>
-  new Promise((resolve, reject) =>
-    connection.query(
-      GET_TOTAL_CARDS_FOR_ADP(adpId),
-      (error, results, fields) => {
-        if (!error && results.length > 0) {
-          resolve(results[0].no_cards);
-        } else if (!error) {
-          resolve(0);
-        } else {
-          reject(error);
-        }
-      }
-    )
-  );
-
-const getBlueCardsForADP = (adpId) =>
-  new Promise((resolve, reject) =>
-    connection.query(
-      GET_BLUE_CARDS_FOR_ADP(adpId),
-      (error, results, fields) => {
-        if (!error && results.length > 0) {
-          resolve(results[0].no_cards);
-        } else if (!error) {
-          resolve(0);
-        } else {
-          reject(error);
-        }
-      }
-    )
-  );
-
-const getChampionDataForAdp = (adpId) =>
-  new Promise((resolve, reject) =>
-    connection.query(
-      GET_CHAMPION_DATA_FOR_ADP(adpId),
-      (error, results, fields) => {
-        if (!error && results.length > 0) {
-          resolve(results[0]);
-        } else if (!error) {
-          resolve(null);
-        } else {
-          reject(error);
-        }
-      }
-    )
-  );
 
 const getLeadersDataForAdp = (adpId) =>
   new Promise((resolve, reject) =>
@@ -344,7 +293,7 @@ const adjustPull = (cycleId) =>
         const dbStatements = [];
         for (adp of adpWithPullIncome) {
           const adpRecord = await getCycleItem(cycleId, adp.adp_id);
-          const eligibleChilds = await getPullEligibelChilds(adp.adp_id);
+          const eligibleChilds = await getPullEligibelChilds(adp.adp_id, 1, 10);
           const pullAmt = adpRecord.total_income - maxAdpEarning;
           let remainigAmt = pullAmt;
           for (let [index, child] of eligibleChilds.entries()) {
@@ -419,15 +368,18 @@ const getAdpWithPullIncome = (cycleId) =>
     })
   );
 
-const getPullEligibelChilds = (adpId) =>
+const getPullEligibelChilds = (adpId, cycleOffset, noRecords) =>
   new Promise((resolve, reject) =>
-    connection.query(GET_ADP_CHILD_FOR_PULL(adpId), (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(results);
+    connection.query(
+      GET_ADP_CHILD_FOR_PULL(adpId, cycleOffset, noRecords),
+      (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
       }
-    })
+    )
   );
 
 const updateCyclePullOverflow = (amount, cycleId) =>
@@ -471,3 +423,4 @@ module.exports.getOnePlusAdpCount = getOnePlusAdpCount;
 module.exports.getCardEarnings = getCardEarnings;
 module.exports.getIncomeFromChild = getIncomeFromChild;
 module.exports.adjustPull = adjustPull;
+module.exports.getPullEligibelChilds = getPullEligibelChilds;

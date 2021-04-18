@@ -10,7 +10,10 @@ const {
   SEARCH_ADP,
 } = require("../../adpQuery/adp/adp");
 const { getSprinterData } = require("../../../functions/sprinter");
-const { getLeadersDataForAdp } = require("../../../functions/runCycleHelper");
+const {
+  getLeadersDataForAdp,
+  getPullEligibelChilds,
+} = require("../../../functions/runCycleHelper");
 const {
   getCardsOverflow,
   getTotalCardsOfADPForMonth,
@@ -196,6 +199,12 @@ module.exports = (app) => {
     const adpId = req.user.adp_id;
     const topFrontlines = await getLeadersDataForAdp(adpId);
     res.json(topFrontlines);
+  });
+
+  app.get("/adp/get-pull-qualifiers", async (req, res) => {
+    const adpId = req.user.adp_id;
+    const pullQualifiers = await getPullEligibelChilds(adpId, 0, 20);
+    res.json(pullQualifiers);
   });
 
   app.get("/adp/search-adp/:term", async (req, res) => {

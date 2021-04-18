@@ -16,6 +16,8 @@ const {
   GET_LEADERS_CLUB_POINTS,
   GET_LEADERS_CLUB_QUALIFIERS,
   GET_LEADERS_FUND_PERCENT,
+  GET_TOTAL_ORDERS,
+  GET_ORDERS_DATA,
 } = require("../../dbQuery/stats/stats");
 
 const getTotalTurnover = () => {
@@ -243,6 +245,33 @@ const getLeadersFundPercent = () => {
   });
 };
 
+const getTotalOrders = () => {
+  return new Promise((resolve, reject) => {
+    connection.query(GET_TOTAL_ORDERS(), (error, result, fields) => {
+      if (!error) {
+        if (result[0]) {
+          resolve({ totalOrders: result[0].total_orders });
+        }
+        resolve("");
+      } else {
+        reject(error);
+      }
+    });
+  });
+};
+
+const getOrdersData = (limit, count) => {
+  return new Promise((resolve, reject) => {
+    connection.query(GET_ORDERS_DATA(limit, count), (error, result, fields) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    });
+  });
+};
+
 const getLeadersQualifiers = (offset, rowCount) => {
   return new Promise((resolve, reject) => {
     connection.query(
@@ -392,6 +421,28 @@ module.exports.app = (app) => {
 
   app.get("/admin/get-leaders-qualifiers", async (req, res) => {
     const result = await getLeadersQualifiers();
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(400);
+      res.send("Not Available");
+    }
+  });
+
+  app.get("/admin/get-total-orders", async (req, res) => {
+    const result = await getTotalOrders();
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(400);
+      res.send("Not Available");
+    }
+  });
+
+  app.get("/admin/get-orders-data/:page/:count", async (req, res) => {
+    const page = req.params.page;
+    const count = req.params.count;
+    const result = await getOrdersData(page * count, count);
     if (result) {
       res.json(result);
     } else {

@@ -76,6 +76,13 @@ let sideBarList = [
   },
 
   {
+    label: "Order List",
+    url: "/order-list",
+    icon: <i class="fas fa-user"></i>,
+    subMenu: [],
+  },
+
+  {
     label: "Plan Management",
     url: "/plan-management",
     icon: <i class="fas fa-tasks"></i>,
