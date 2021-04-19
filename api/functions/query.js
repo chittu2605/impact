@@ -371,26 +371,17 @@ const GET_ADP_CHILD_FOR_PULL = (
   adpId,
   cycleOffset,
   noRecords
-) => `WITH RECURSIVE link AS(
-	SELECT ta.adp_id, ta.firstname, ta.lastname, ta.sponsor_id, tp.current_month_pbv, ta.date_created 
-	FROM tbl_adp ta JOIN tbl_pbv tp USING (adp_id)
-	UNION ALL
-	SELECT ta.adp_id, ta.firstname, ta.lastname, l.sponsor_id, tp.current_month_pbv, ta.date_created 
-	FROM tbl_adp ta JOIN tbl_pbv tp USING (adp_id) 
-	JOIN link l ON ta.sponsor_id = l.adp_id
-),
-current_gbv AS (SELECT sponsor_id AS adp_id , sum(current_month_pbv) AS curr_gbv
-	FROM link WHERE date_created > (SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${cycleOffset},1) 
-	GROUP BY sponsor_id),
-pull_data AS (SELECT l.adp_id, l.firstname, l.lastname, l.sponsor_id, 
-((l.current_month_pbv/1000)*(SELECT value FROM tbl_planmanagement WHERE plan_name = "Pull")) AS purchase_points, 
-((IFNULL(cg.curr_gbv,0)/1000)*(SELECT value2 FROM tbl_planmanagement WHERE plan_name = "Pull")) AS join_points,
-((SELECT purchase_points) + (SELECT join_points)) AS total_points, l.date_created
-FROM link l
-LEFT JOIN current_gbv cg ON l.adp_id = cg.adp_id )
-SELECT * FROM pull_data WHERE sponsor_id = ${adpId} AND 
-total_points > (SELECT min_value FROM tbl_planmanagement WHERE plan_name = "Pull")
-ORDER BY total_points DESC, date_created LIMIT 0,${noRecords}`;
+) => `SELECT tp.adp_id, ta.firstname, ta.lastname,
+((tp.current_month_pbv/1000)*(SELECT value FROM tbl_planmanagement WHERE plan_name = "Pull")) AS purchase_points, 
+((IFNULL((SELECT SUM(tp2.current_month_pbv) FROM tbl_pbv tp2 JOIN tbl_adp ta ON ta.adp_id = tp2.adp_id
+       WHERE ta.co_sponsor_id = tp.adp_id
+    AND ta.date_created >  (SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${cycleOffset},1)),0))/1000)*
+    (SELECT value2 FROM tbl_planmanagement WHERE plan_name = "Pull") AS join_points,
+((SELECT purchase_points) + (SELECT join_points)) AS total_points  
+FROM tbl_pbv tp JOIN tbl_adp AS ta USING (adp_id) WHERE ta.co_sponsor_id = ${adpId}
+AND ta.date_created < (SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${cycleOffset},1)
+HAVING total_points > (SELECT min_value FROM tbl_planmanagement WHERE plan_name = "Pull")
+ORDER BY total_points DESC, ta.date_created LIMIT 0,${noRecords}`;
 
 const UPDATE_CYCLE_PULL_OVERFLOW = (amount, cycleId) =>
   `UPDATE tbl_cycledate SET pull_overflow = ${amount} WHERE id = ${cycleId}`;
