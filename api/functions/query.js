@@ -419,7 +419,7 @@ const INSERT_CARD_EARNINGS = (
   cycleId,
   amount,
   voucherId
-) => `INSERT INTO impact_prod.tbl_card_earnings
+) => `INSERT INTO tbl_card_earnings
 (card_id, adp_id, cyle_id, amount, voucher_id)
 VALUES(${cardId}, ${adpId}, ${cycleId}, ${amount}, ${voucherId})`;
 
