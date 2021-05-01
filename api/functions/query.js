@@ -392,11 +392,9 @@ ORDER BY total_points DESC, l.date_created LIMIT 0,${noRecords}`;
 const UPDATE_CYCLE_PULL_OVERFLOW = (amount, cycleId) =>
   `UPDATE tbl_cycledate SET pull_overflow = ${amount} WHERE id = ${cycleId}`;
 
-const INSERT_CYCLE_DATE = () => `INSERT INTO tbl_cycledate
-(fromdate)
-VALUES(
-(SELECT todate  FROM tbl_cycledate cd
-ORDER BY id DESC LIMIT 1))`;
+const INSERT_CYCLE_DATE = () => `INSERT INTO tbl_cycledate (fromdate, pull_threshold)
+VALUES((SELECT todate  FROM tbl_cycledate cd
+ORDER BY id DESC LIMIT 1), (SELECT max_value FROM tbl_planmanagement WHERE plan_name = "PULL"))`;
 
 const INSERT_CYCLE_ROWS = () => `INSERT INTO tbl_cycle_report
 (adp_id,cycle_id,
@@ -429,6 +427,16 @@ const EXPIRE_CARDS = (cycleId) =>
   `UPDATE tbl_card tc SET tc.expiry_cycle=${cycleId} WHERE 
   tc.expiry_cycle IS NULL AND tc.valid_cycles <= 
   (SELECT count(id) FROM tbl_card_earnings tce WHERE  tce.card_id = tc.id)`;
+
+const INSERT_UPDATE_PULL = (
+  cycleId,
+  from,
+  to,
+  amount
+) => `INSERT INTO tbl_cycle_pull_data
+(cycle_id, \`from\`, \`to\`, amount)
+VALUES(${cycleId}, ${from}, ${to}, ${amount})
+ ON DUPLICATE KEY UPDATE amount = amount + ${amount}`;
 
 const GET_COSPONSORED_NO = (adpId) =>
   `SELECT count(adp_id) as co_sponsored_no FROM tbl_adp WHERE co_sponsor_id= ${adpId}`;
@@ -486,6 +494,7 @@ module.exports.ADD_VOUCHER = ADD_VOUCHER;
 module.exports.INSERT_CYCLE_ROWS = INSERT_CYCLE_ROWS;
 module.exports.INSERT_CYCLE_DATE = INSERT_CYCLE_DATE;
 module.exports.EXPIRE_CARDS = EXPIRE_CARDS;
+module.exports.INSERT_UPDATE_PULL = INSERT_UPDATE_PULL;
 module.exports.GET_COSPONSORED_NO = GET_COSPONSORED_NO;
 module.exports.GET_LEADERS_DATA_FOR_ADP = GET_LEADERS_DATA_FOR_ADP;
 module.exports.IS_ADP_EXISTS = IS_ADP_EXISTS;

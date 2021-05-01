@@ -24,6 +24,7 @@ const {
   GET_ADP_CHILD_FOR_PULL,
   GET_CYCLE_DATE_RECORD,
   UPDATE_CYCLE_PULL_OVERFLOW,
+  INSERT_UPDATE_PULL,
 } = require("./query");
 const { getAdpZone } = require("./zone");
 
@@ -308,7 +309,13 @@ const adjustPull = (cycleId) =>
                 cycleRecord.total_income + childPullIncome,
               ]
             );
-            await updateCycleRecords([updateStatement]);
+            const isnertUpdatePull = INSERT_UPDATE_PULL(
+              cycleId,
+              adp.adp_id,
+              child.adp_id,
+              childPullIncome
+            );
+            await updateCycleRecords([updateStatement, isnertUpdatePull]);
             remainigAmt -= childPullIncome;
           }
           if (remainigAmt > 1) {

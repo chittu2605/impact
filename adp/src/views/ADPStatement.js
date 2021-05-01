@@ -10,7 +10,12 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
 } from "reactstrap";
+import PullDisbusrion from "components/Molecule/PullDisbusrion";
+import PullFromDetails from "components/Molecule/PullFromDetails";
 
 const ADPStatement = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -20,6 +25,8 @@ const ADPStatement = () => {
   const [selectedCycle, setSelectedCycle] = useState(null);
   const [adpStatementColor, setAdpStatementColor] = useState("red");
   const [adpCommision, setAdpCommision] = useState(0);
+  const [modelOpen, setModelOpen] = useState(false);
+  const [pullFrommodelOpen, setPullFromModelOpen] = useState(false);
 
   useEffect(() => {
     fetchADPData();
@@ -68,6 +75,14 @@ const ADPStatement = () => {
 
   let childBVTotal = 0;
   let comissionTotal = 0;
+  let totalIncome = statementData
+    ? Math.round(
+        statementData.adpDetails.champion_earnings +
+          statementData.adpDetails.oneplus_earnings +
+          statementData.adpDetails.leaders_earnings +
+          adpCommision
+      )
+    : 0;
 
   return (
     <>
@@ -260,7 +275,19 @@ const ADPStatement = () => {
                         </div>
                         <div className="col container">
                           <div className="row mb-1">
-                            <div className="col">Income From Pull</div>
+                            {statementData.adpDetails.pull_income ? (
+                              <div
+                                className="col"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  setPullFromModelOpen(true);
+                                }}
+                              >
+                                <u>Income From Pull</u>
+                              </div>
+                            ) : (
+                              <div className="col">Income From Pull</div>
+                            )}
                             <div className="col">
                               : {statementData.adpDetails.pull_income} Rs
                             </div>
@@ -273,8 +300,31 @@ const ADPStatement = () => {
                         </div>
                       </div>
                       <div className="row mb-3">
+                        <div className="col">
+                          Total Income: {(totalIncome += comissionTotal)} Rs
+                        </div>
+                      </div>
+                      {totalIncome > selectedCycle.pullThreshold && (
+                        <div className="row mb-3">
+                          <div className="col">
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                setModelOpen(true);
+                              }}
+                            >
+                              <u> Pull Income Disbursed</u>
+                              {": " +
+                                (totalIncome -
+                                  selectedCycle.pullThreshold)}{" "}
+                              Rs
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div className="row mb-3">
                         <div className="col font-weight-bold">
-                          Total:{" "}
+                          Net Commission:{" "}
                           {Math.round(
                             statementData.adpDetails.co_sponsor_royality +
                               statementData.adpDetails.total_income
@@ -292,6 +342,30 @@ const ADPStatement = () => {
           </Col>
         </Row>
       </div>
+      <Modal
+        isOpen={modelOpen}
+        size="lg"
+        toggle={() => {
+          setModelOpen(false);
+        }}
+      >
+        <ModalHeader>PULL DISBURSEMENT</ModalHeader>
+        <ModalBody>
+          <PullDisbusrion cycleId={selectedCycle ? selectedCycle.id : null} />
+        </ModalBody>
+      </Modal>
+      <Modal
+        isOpen={pullFrommodelOpen}
+        size="lg"
+        toggle={() => {
+          setPullFromModelOpen(false);
+        }}
+      >
+        <ModalHeader>PULL INCOME DETAILS</ModalHeader>
+        <ModalBody>
+          <PullFromDetails cycleId={selectedCycle ? selectedCycle.id : null} />
+        </ModalBody>
+      </Modal>
     </>
   );
 };
