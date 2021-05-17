@@ -54,7 +54,6 @@ const ADPStatement = () => {
   const fetchStatementData = async (id) => {
     try {
       const res = await apiHandler.get(`/cycle/${id}`);
-      console.log(res.data);
       setStatementData(res.data);
       if (res.data.adpDetails.bv) {
         setAdpStatementColor("green");

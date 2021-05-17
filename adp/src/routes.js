@@ -1,11 +1,4 @@
 import Dashboard from "views/Dashboard.js";
-import Notifications from "views/Notifications.js";
-import Icons from "views/Icons.js";
-import Typography from "views/Typography.js";
-import TableList from "views/TableList.js";
-import Maps from "views/Maps.js";
-import Upgrade from "views/Upgrade.js";
-import UserPage from "views/UserPage.js";
 import AddADP from "views/AddADP";
 import WalletStatement from "views/WalletStatement";
 import RePurchase from "views/RePurchase";
@@ -15,6 +8,7 @@ import Voucher from "views/Voucher";
 import OnePlusCard from "views/OnePlusCard";
 import ADPStatement from "views/ADPStatement";
 import ChangePassword from "views/ChangePassword";
+import Messages from "views/Messages";
 
 var dashRoutes = [
   {
@@ -25,13 +19,6 @@ var dashRoutes = [
     layout: "/adp",
     displayInChildMode: true,
   },
-  // {
-  //   path: "/icons",
-  //   name: "Icons",
-  //   icon: "design_image",
-  //   component: Icons,
-  //   layout: "/adp",
-  // },
   {
     path: "/add-adp",
     name: "Add ADP",
@@ -97,34 +84,12 @@ var dashRoutes = [
     component: ChangePassword,
     layout: "/adp",
   },
-  // {
-  //   path: "/user-page",
-  //   name: "User Profile",
-  //   icon: "users_single-02",
-  //   component: UserPage,
-  //   layout: "/adp",
-  // },
-  // {
-  //   path: "/extended-tables",
-  //   name: "Table List",
-  //   icon: "files_paper",
-  //   component: TableList,
-  //   layout: "/adp",
-  // },
-  // {
-  //   path: "/typography",
-  //   name: "Typography",
-  //   icon: "design-2_ruler-pencil",
-  //   component: Typography,
-  //   layout: "/adp",
-  // },
-  // {
-  //   pro: true,
-  //   path: "/upgrade",
-  //   name: "Upgrade to PRO",
-  //   icon: "objects_spaceship",
-  //   component: Upgrade,
-  //   layout: "/adp",
-  // },
+  {
+    path: "/messages",
+    name: "MESSAGES",
+    icon: "ui-1_lock-circle-open",
+    component: Messages,
+    layout: "/adp",
+  },
 ];
 export default dashRoutes;

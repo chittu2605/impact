@@ -4,4 +4,5 @@ module.exports = (app) => {
   const vouchers = require("./vouchers")(app);
   const statement = require("./statement")(app);
   const cards = require("./cards")(app);
+  const messages = require("./messages")(app);
 };

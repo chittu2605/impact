@@ -81,6 +81,9 @@ const ADPTable = (props) => {
                   <TableCell align="left" style={{ fontWeight: "900" }}>
                     Password
                   </TableCell>
+                  <TableCell align="left" style={{ fontWeight: "900" }}>
+                    Message Library
+                  </TableCell>
                   <TableCell align="center" style={{ fontWeight: "900" }}>
                     Button
                   </TableCell>
@@ -95,6 +98,7 @@ const ADPTable = (props) => {
                     firstname={row.firstname}
                     mobile={row.mobile}
                     email={row.email}
+                    showMessages={row.show_messages}
                     password={row.password}
                     active={row.success}
                     handleChange={props.handleChange}

@@ -227,6 +227,8 @@ AS (
 )
 SELECT adp_id, firstname, lastname, sponsor_id, mobile, pan FROM link WHERE sponsor_id = ${adpId} AND ${field} LIKE '${term}%'`;
 
+const GET_ADP_BY_ID = (adpId) => `SELECT * FROM tbl_adp WHERE adp_id =${adpId}`;
+
 module.exports.SELECT_ADP_BY_ADP_ID = SELECT_ADP_BY_ADP_ID;
 module.exports.SELECT_ADP_NAME_BY_ADP_ID = SELECT_ADP_NAME_BY_ADP_ID;
 module.exports.ADD_ADP = ADD_ADP;
@@ -249,3 +251,4 @@ module.exports.GET_TEAM_SIZE = GET_TEAM_SIZE;
 module.exports.GET_NO_CO_SPONSORED = GET_NO_CO_SPONSORED;
 module.exports.GET_NEW_CO_SPONSORED = GET_NEW_CO_SPONSORED;
 module.exports.SEARCH_ADP = SEARCH_ADP;
+module.exports.GET_ADP_BY_ID = GET_ADP_BY_ID;

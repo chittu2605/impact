@@ -6,6 +6,7 @@ const db_config = {
   database: process.env.DB_DATABASE,
   connectionLimit: 10,
   multipleStatements: true,
+  charset: "utf8mb4",
 };
 
 var connection;
