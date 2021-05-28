@@ -55,7 +55,7 @@ const ADPStatement = () => {
     try {
       const res = await apiHandler.get(`/cycle/${id}`);
       setStatementData(res.data);
-      if (res.data.adpDetails.bv) {
+      if (res.data.adpDetails.bv >= 500) {
         setAdpStatementColor("green");
       }
       setAdpCommision(
@@ -321,12 +321,23 @@ const ADPStatement = () => {
                           </div>
                         </div>
                       )}
+                      {statementData.adpDetails.prev_cycle_income > 0 ? (
+                        <div className="row mb-3">
+                          <div className="col">
+                            Previous Income:{" "}
+                            {statementData.adpDetails.prev_cycle_income} RS
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                       <div className="row mb-3">
                         <div className="col font-weight-bold">
                           Net Commission:{" "}
                           {Math.round(
                             statementData.adpDetails.co_sponsor_royality +
-                              statementData.adpDetails.total_income
+                              statementData.adpDetails.total_income +
+                              statementData.adpDetails.prev_cycle_income
                           )}{" "}
                           Rs
                         </div>

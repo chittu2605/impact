@@ -87,7 +87,7 @@ var dashRoutes = [
   {
     path: "/messages",
     name: "MESSAGES",
-    icon: "ui-1_lock-circle-open",
+    icon: "ui-1_email-85",
     component: Messages,
     layout: "/adp",
   },

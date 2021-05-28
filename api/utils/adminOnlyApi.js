@@ -14,6 +14,14 @@ const adminOnlyApi = [
   "/admin/get-one-plus-cards",
   "/admin/get-total-orders",
   "/admin/get-orders-data",
+  "/admin/get-message-lib-details",
+  "/admin/update-message-library",
+  "/admin/get-message-lib-defaults",
+  "/admin/get-whatsapp-groups",
+  "/admin/get-all-cylces",
+  "/admin/get-cycle-incomes",
+  "/admin/get-total-incomes",
+  "/admin/adp-statement-details",
 ];
 
 module.exports.adminOnlyApi = adminOnlyApi;

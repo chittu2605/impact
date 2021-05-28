@@ -16,7 +16,9 @@ import {
 
 const Messages = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [groupDropdownOpen, setGroupDropdownOpen] = useState(false);
   const [messages, setMessages] = useState([]);
+
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const handleClick = (type) => {
@@ -52,7 +54,7 @@ const Messages = () => {
               </CardHeader>
               <hr />
               <div className="row">
-                <div className="col ml-2">
+                <div className="col-md-3 ml-2">
                   <Dropdown isOpen={dropdownOpen} toggle={toggle} size="lg">
                     <DropdownToggle caret>Select Type</DropdownToggle>
                     <DropdownMenu>
@@ -67,23 +69,25 @@ const Messages = () => {
                 </div>
               </div>
               <Container>
-                {messages.map((message, index) => (
-                  <>
-                    <Row>
-                      <Col>
-                        <br />
-                        <pre>{message}</pre>
-                        <Button
-                          className="float-right"
-                          onClick={() => copyToClipBoard(message)}
-                        >
-                          Copy
-                        </Button>
-                      </Col>
-                    </Row>
-                    <hr />
-                  </>
-                ))}
+                {messages.map((message, index) => {
+                  return (
+                    <>
+                      <Row key={"" + index}>
+                        <Col>
+                          <br />
+                          <pre>{message}</pre>
+                          <Button
+                            className="float-right"
+                            onClick={() => copyToClipBoard(message)}
+                          >
+                            Copy
+                          </Button>
+                        </Col>
+                      </Row>
+                      <hr />
+                    </>
+                  );
+                })}
               </Container>
             </Card>
           </Col>

@@ -21,6 +21,7 @@ class DashboardSummaryCard extends React.Component {
     coSponsorIncome: 0,
     total_retail_profit: 0,
     zone: "",
+    zoneValue: "",
     bv: 0,
     bvTillDate: 0,
     walletBalance: 0,
@@ -123,6 +124,7 @@ class DashboardSummaryCard extends React.Component {
       if (response && response.data) {
         this.setState({
           zone: response.data.name,
+          zoneValue: response.data.value,
         });
       }
     });
@@ -148,6 +150,7 @@ class DashboardSummaryCard extends React.Component {
       coSponsorIncome,
       total_retail_profit,
       zone,
+      zoneValue,
       bv,
       bvTillDate,
       walletBalance,
@@ -172,7 +175,9 @@ class DashboardSummaryCard extends React.Component {
               <p>GBV TILL DATE : {totalGbv}</p>
               <p>CURRENT MONTH BV : {bv}</p>
               <p>TOTAL BV TILL DATE : {bvTillDate}</p>
-              <p>YOUR CURRENT ZONE : {zone}</p>
+              <p>
+                YOUR CURRENT ZONE : {zone} ({zoneValue}%)
+              </p>
               <p>PERSONAL NEW JOINING TILL DATE : {noCoSponsored}</p>
               <p>
                 <b>WALLET BALANCE : {walletBalance} RS </b>

@@ -21,7 +21,6 @@ const copyAdp = async () => {
       let overflow = 0;
       if (currMonthPbv < 500) {
         overflow = currMonthPbv;
-        currMonthPbv = 0;
       }
       const coSponsoredNo = await getCoSponsoredNo(adp);
       const coSponsorRoyality = await getCoSponsorRoyality(adp);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Paper,
@@ -15,7 +15,19 @@ import {
 import Search from "@material-ui/icons/Search";
 import Pagination from "react-js-pagination";
 import TableList from "../atoms/TableList";
+import { apiHandler } from "../../utils/apiConfig";
 const ADPTable = (props) => {
+  const [messageDefaults, setMessageDefaults] = useState([]);
+
+  useEffect(() => {
+    getAdpMessageDefaults();
+  }, []);
+
+  const getAdpMessageDefaults = async () => {
+    const res = await apiHandler.get(`/admin/get-message-lib-defaults`);
+    setMessageDefaults(res.data);
+  };
+
   return (
     <>
       <Grid container>
@@ -96,6 +108,7 @@ const ADPTable = (props) => {
                     adpId={row.adp_id}
                     serialNumber={i + 1 + (props.currentPage - 1) * 100}
                     firstname={row.firstname}
+                    lastname={row.lastname}
                     mobile={row.mobile}
                     email={row.email}
                     showMessages={row.show_messages}
@@ -112,6 +125,7 @@ const ADPTable = (props) => {
                     rowActionEnable={props.rowActionEnable}
                     actionDisableButton={row.actionDisableButton}
                     updateDashboard={props.updateDashboard}
+                    messageDefaults={messageDefaults}
                     // validationValue={props.validationValue}
                   />
                 ))}

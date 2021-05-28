@@ -110,14 +110,14 @@ const GET_ADP_NAME_BY_ADP_ID = (adp_id) => {
 };
 
 const LIST_ADP = (pageNumber) => {
-  return `SELECT adp_id, firstname, email, mobile, success, show_messages, (SELECT COUNT(*) as pages from tbl_adp) as count   FROM tbl_adp LIMIT ${
+  return `SELECT adp_id, firstname, lastname, email, mobile, success, show_messages, (SELECT COUNT(*) as pages from tbl_adp) as count   FROM tbl_adp LIMIT ${
     pageNumber ? 100 * (pageNumber - 1) : 0
   },100 `;
 };
 
-const UPDATE_ADP_PHONE_EMAIL = (adp_id, phone, email, showMessages) => {
+const UPDATE_ADP_PHONE_EMAIL = (adp_id, phone, email) => {
   return `UPDATE tbl_adp
-  SET mobile = '${phone}', email= '${email}', show_messages = ${showMessages}
+  SET mobile = '${phone}', email= '${email}'
   WHERE adp_id = '${adp_id}';`;
 };
 

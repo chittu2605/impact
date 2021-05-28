@@ -13,10 +13,9 @@ module.exports = (app) => {
     const phone = req.body.phone;
     const email = req.body.email;
     const password = req.body.password;
-    const showMessages = req.body.showMessages;
     if (!password) {
       connection.query(
-        UPDATE_ADP_PHONE_EMAIL(adp_id, phone, email, showMessages),
+        UPDATE_ADP_PHONE_EMAIL(adp_id, phone, email),
         async (error, results, fields) => {
           if (error) return res.sendStatus("401");
           return res.json({
