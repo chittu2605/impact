@@ -195,7 +195,7 @@ const AdpIncome = () => {
                               {income.overflow > 0
                                 ? 0
                                 : income.total_income +
-                                  income.champion_earnings +
+                                  income.co_sponsor_royality +
                                   income.prev_cycle_income}
                             </TableCell>
                             <TableCell>

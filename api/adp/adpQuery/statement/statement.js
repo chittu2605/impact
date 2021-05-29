@@ -34,7 +34,7 @@ const GET_CYCLE_INCOMES = (
   limit,
   count
 ) => `SELECT tcr.cycle_id, tcr.adp_id, ta.firstname, ta.lastname, tcr.total_income, 
-tcr.prev_cycle_income, tcr.champion_earnings, tcr.overflow FROM tbl_cycle_report tcr
+tcr.prev_cycle_income, tcr.co_sponsor_royality, tcr.overflow FROM tbl_cycle_report tcr
 JOIN tbl_adp ta ON tcr.adp_id = ta.adp_id 
 WHERE tcr.cycle_id = ${cycleId}  LIMIT ${limit},${count}`;
 

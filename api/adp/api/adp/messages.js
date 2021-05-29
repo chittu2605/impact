@@ -42,9 +42,9 @@ const getMessageLibDetails = (adpId) =>
     })
   );
 
-const getMessageLibDefaules = (adpId) =>
+const getMessageLibDefaults = () =>
   new Promise((resolve, reject) =>
-    connection.query(GET_MESSAGE_LIB_DEFAULTS(adpId), (error, results) => {
+    connection.query(GET_MESSAGE_LIB_DEFAULTS(), (error, results) => {
       if (!error) {
         resolve(results);
       } else {
@@ -144,7 +144,7 @@ module.exports = (app) => {
 
   app.get("/admin/get-message-lib-defaults", async (req, res) => {
     try {
-      const defaults = await getMessageLibDefaules(req.params.adpId);
+      const defaults = await getMessageLibDefaults();
       res.json(defaults);
     } catch (error) {
       console.log(error);

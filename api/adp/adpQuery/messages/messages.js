@@ -26,7 +26,7 @@ const GET_WHATSAPP_GROUPS = () => `SELECT id, name, link
 FROM tbl_whatsapp_groups;`;
 
 const GET_MESSAGE_LIB_DEFAULTS = () => `SELECT id, name, value
-FROM impact_prod.tbl_message_constants`;
+FROM tbl_message_constants`;
 
 module.exports.GET_MESSAGES_BY_TYPE = GET_MESSAGES_BY_TYPE;
 module.exports.GET_MESSAGE_LIB_DETAILS = GET_MESSAGE_LIB_DETAILS;
