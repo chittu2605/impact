@@ -29,17 +29,22 @@ const GET_CHILD_DETAILS_FOR_CYCLE = (
 JOIN tbl_adp ta USING (adp_id)
 WHERE ta.sponsor_id = ${adpId} AND tcr.cycle_id = ${cycleId}`;
 
-const GET_CYCLE_INCOMES = (
-  cycleId,
-  limit,
-  count
-) => `SELECT tcr.cycle_id, tcr.adp_id, ta.firstname, ta.lastname, tcr.total_income, 
+const GET_CYCLE_INCOMES = (includeZero, cycleId, limit, count) =>
+  `SELECT tcr.cycle_id, tcr.adp_id, ta.firstname, ta.lastname, tcr.total_income,
+  ta.mobile, ta.account_no, ta.branch, ta.bank_name, ta.ifs_code,
 tcr.prev_cycle_income, tcr.co_sponsor_royality, tcr.overflow FROM tbl_cycle_report tcr
 JOIN tbl_adp ta ON tcr.adp_id = ta.adp_id 
-WHERE tcr.cycle_id = ${cycleId}  LIMIT ${limit},${count}`;
+WHERE tcr.cycle_id = ${cycleId}` +
+  (includeZero == 0
+    ? ` AND tcr.overflow = 0 AND tcr.total_income + tcr.prev_cycle_income + tcr.co_sponsor_royality > 0`
+    : ``) +
+  (limit > -1 ? ` LIMIT ${limit},${count}` : "");
 
-const GET_TOTAL_INCOMES = (cycleId) =>
-  `SELECT count(tcr.cycle_id) AS total FROM tbl_cycle_report tcr WHERE tcr.cycle_id = ${cycleId}`;
+const GET_TOTAL_INCOMES = (cycleId, includeZero) =>
+  `SELECT count(tcr.cycle_id) AS total FROM tbl_cycle_report tcr WHERE tcr.cycle_id = ${cycleId}` +
+  (includeZero == 0
+    ? ` AND tcr.overflow = 0 AND tcr.total_income + tcr.prev_cycle_income + tcr.co_sponsor_royality > 0`
+    : ``);
 
 module.exports.GET_CYCLES = GET_CYCLES;
 module.exports.GET_ADP_DETAILS = GET_ADP_DETAILS;

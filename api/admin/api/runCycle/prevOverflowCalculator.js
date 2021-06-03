@@ -21,18 +21,14 @@ const calculateOverflow = async () => {
         workerData.cycleId,
         overFlowItem.adp_id
       );
-      let totalOverflow = cycleRecord.pbv + overFlowItem.overflow;
-      if (totalOverflow >= 500) {
-        totalOverflow = 0;
-      }
       const prevCycleIncome =
         overFlowItem.total_income +
         overFlowItem.prev_cycle_income +
         overFlowItem.co_sponsor_royality;
       const updateStatement = UPDATE_CYCLE_RECORD(
         cycleRecord.id,
-        ["prev_cycle_income", "overflow"],
-        [prevCycleIncome, totalOverflow]
+        ["prev_cycle_income"],
+        [prevCycleIncome]
       );
       dbStatements.push(updateStatement);
     }

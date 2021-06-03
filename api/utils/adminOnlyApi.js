@@ -22,6 +22,7 @@ const adminOnlyApi = [
   "/admin/get-cycle-incomes",
   "/admin/get-total-incomes",
   "/admin/adp-statement-details",
+  "/admin/download-statement",
 ];
 
 module.exports.adminOnlyApi = adminOnlyApi;

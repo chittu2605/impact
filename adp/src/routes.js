@@ -20,6 +20,13 @@ var dashRoutes = [
     displayInChildMode: true,
   },
   {
+    path: "/messages",
+    name: "MESSAGES",
+    icon: "ui-1_email-85",
+    component: Messages,
+    layout: "/adp",
+  },
+  {
     path: "/add-adp",
     name: "Add ADP",
     icon: "users_single-02",
@@ -82,13 +89,6 @@ var dashRoutes = [
     name: "Change Password",
     icon: "ui-1_lock-circle-open",
     component: ChangePassword,
-    layout: "/adp",
-  },
-  {
-    path: "/messages",
-    name: "MESSAGES",
-    icon: "ui-1_email-85",
-    component: Messages,
     layout: "/adp",
   },
 ];

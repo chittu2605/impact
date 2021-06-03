@@ -19,7 +19,10 @@ const useStyles = makeStyles({
     width: "100%",
   },
   container: {
-    maxHeight: 440,
+    maxHeight: 450,
+  },
+  blackColor: {
+    backgroundColor: "black",
   },
 });
 
@@ -65,7 +68,7 @@ const AdpStatementPopup = ({
       fullWidth
       maxWidth="xl"
     >
-      <DialogTitle id="adp-statement-dialog-title">ADP Statememt</DialogTitle>
+      <DialogTitle id="adp-statement-dialog-title">ADP Statement</DialogTitle>
       {statementDetails && (
         <Paper className={classes.root}>
           <Grid container spacing={3}>
@@ -105,7 +108,7 @@ const AdpStatementPopup = ({
                         {statementDetails.adpDetails.zone_value} %
                       </TableCell>
                       <TableCell>
-                        {adpCommision}
+                        {adpCommision + " "}
                         RS
                       </TableCell>
                     </TableRow>
@@ -150,96 +153,96 @@ const AdpStatementPopup = ({
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid container>
-              <Grid item xs={6} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  RETAIL PROFIT
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :0 RS
-                </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={6} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                RETAIL PROFIT
               </Grid>
-              <Grid item xs={6} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  CO-SPONSOR ROYALTY
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{statementDetails.adpDetails.co_sponsor_royality}RS
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  CHAMPION CLUB
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{statementDetails.adpDetails.champion_earnings}RS
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  1 + 1 = 11 CLUB
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{statementDetails.adpDetails.oneplus_earnings} RS
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  LEADERS CLUB
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{statementDetails.adpDetails.leaders_earnings} RS
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  INCOME FROM PULL
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{statementDetails.adpDetails.pull_income} RS
-                </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : 0 RS
               </Grid>
             </Grid>
-            <Grid container>
-              <Grid item xs={12} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  TOTAL INCOME
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{totalIncome} RS
-                </Grid>
+            <Grid item xs={6} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                CO-SPONSOR ROYALTY
               </Grid>
-              <Grid item xs={12} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  PULL INCOME DISBURSED
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :
-                  {totalIncome <= cycleDetails.pullThreshold
-                    ? 0
-                    : totalIncome - cycleDetails.pullThreshold}{" "}
-                  RS
-                </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {statementDetails.adpDetails.co_sponsor_royality + " "}RS
               </Grid>
-              <Grid item xs={12} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  INCOME FROM PREVIOUS CYCLE
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :{statementDetails.adpDetails.prev_cycle_income} RS
-                </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                CHAMPION CLUB
               </Grid>
-              <Grid item xs={12} container justify="center">
-                <Grid item xs={6} container justify="flex-end">
-                  NET COMMISION
-                </Grid>
-                <Grid item xs={6} container justify="flex-start">
-                  :
-                  {statementDetails.adpDetails.co_sponsor_royality +
-                    statementDetails.adpDetails.total_income +
-                    statementDetails.adpDetails.prev_cycle_income}{" "}
-                  RS
-                </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {statementDetails.adpDetails.champion_earnings + " "}RS
+              </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                1 + 1 = 11 CLUB
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {statementDetails.adpDetails.oneplus_earnings} RS
+              </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                LEADERS CLUB
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {statementDetails.adpDetails.leaders_earnings} RS
+              </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                INCOME FROM PULL
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {statementDetails.adpDetails.pull_income} RS
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={12} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                TOTAL INCOME
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {totalIncome} RS
+              </Grid>
+            </Grid>
+            <Grid item xs={12} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                PULL INCOME DISBURSED
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                :{" "}
+                {totalIncome <= cycleDetails.pullThreshold
+                  ? 0
+                  : totalIncome - cycleDetails.pullThreshold}{" "}
+                RS
+              </Grid>
+            </Grid>
+            <Grid item xs={12} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                INCOME FROM PREVIOUS CYCLE
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                : {statementDetails.adpDetails.prev_cycle_income} RS
+              </Grid>
+            </Grid>
+            <Grid item xs={12} container justify="center">
+              <Grid item xs={6} container justify="flex-end">
+                NET COMMISION
+              </Grid>
+              <Grid item xs={6} container justify="flex-start">
+                :{" "}
+                {statementDetails.adpDetails.co_sponsor_royality +
+                  statementDetails.adpDetails.total_income +
+                  statementDetails.adpDetails.prev_cycle_income}{" "}
+                RS
               </Grid>
             </Grid>
           </Grid>
