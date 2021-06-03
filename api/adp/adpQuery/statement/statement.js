@@ -35,16 +35,12 @@ const GET_CYCLE_INCOMES = (includeZero, cycleId, limit, count) =>
 tcr.prev_cycle_income, tcr.co_sponsor_royality, tcr.overflow FROM tbl_cycle_report tcr
 JOIN tbl_adp ta ON tcr.adp_id = ta.adp_id 
 WHERE tcr.cycle_id = ${cycleId}` +
-  (includeZero == 0
-    ? ` AND tcr.overflow = 0 AND tcr.total_income + tcr.prev_cycle_income + tcr.co_sponsor_royality > 0`
-    : ``) +
+  (includeZero == 0 ? ` AND tcr.pbv >= 500` : ``) +
   (limit > -1 ? ` LIMIT ${limit},${count}` : "");
 
 const GET_TOTAL_INCOMES = (cycleId, includeZero) =>
   `SELECT count(tcr.cycle_id) AS total FROM tbl_cycle_report tcr WHERE tcr.cycle_id = ${cycleId}` +
-  (includeZero == 0
-    ? ` AND tcr.overflow = 0 AND tcr.total_income + tcr.prev_cycle_income + tcr.co_sponsor_royality > 0`
-    : ``);
+  (includeZero == 0 ? ` AND tcr.pbv >= 500` : ``);
 
 module.exports.GET_CYCLES = GET_CYCLES;
 module.exports.GET_ADP_DETAILS = GET_ADP_DETAILS;
