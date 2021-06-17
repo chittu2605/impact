@@ -209,13 +209,13 @@ WITH RECURSIVE link AS(
   UNION ALL 
   SELECT tp2.adp_id, tp2.pbv, tp2.current_month_pbv, ta.date_created FROM tbl_pbv tp2 
   JOIN link l ON tp2.sponsor_id = l.adp_id JOIN tbl_adp ta ON tp2.adp_id = ta.adp_id)
-  SELECT IFNULL(SUM(pbv),0) AS totalGbv, IFNULL(SUM(current_month_pbv),0) AS gbv, 
-  SUM(CASE
-    WHEN date_created > (IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0))
-    THEN current_month_pbv
-    ELSE 0
-  END) AS newGbv FROM link
-`;
+  SELECT IFNULL(SUM(pbv),0) AS totalGbv, IFNULL(SUM(current_month_pbv),0) AS gbv,
+  (SELECT IFNULL(SUM(tp.current_month_pbv),0) FROM tbl_pbv tp 
+  JOIN tbl_adp ta USING (adp_id) 
+  WHERE ta.co_sponsor_id = ${adp_id} AND 
+  ta.date_created > (IFNULL((SELECT todate FROM tbl_cycledate 
+  ORDER BY id DESC LIMIT 1),0))) AS newGbv
+  FROM link`;
 
 const GET_ELIGIBLE_SPRINTS = () => `WITH RECURSIVE link
 AS(
@@ -392,7 +392,8 @@ ORDER BY total_points DESC, l.date_created LIMIT 0,${noRecords}`;
 const UPDATE_CYCLE_PULL_OVERFLOW = (amount, cycleId) =>
   `UPDATE tbl_cycledate SET pull_overflow = ${amount} WHERE id = ${cycleId}`;
 
-const INSERT_CYCLE_DATE = () => `INSERT INTO tbl_cycledate (fromdate, pull_threshold)
+const INSERT_CYCLE_DATE =
+  () => `INSERT INTO tbl_cycledate (fromdate, pull_threshold)
 VALUES((SELECT todate  FROM tbl_cycledate cd
 ORDER BY id DESC LIMIT 1), (SELECT max_value FROM tbl_planmanagement WHERE plan_name = "PULL"))`;
 
@@ -467,7 +468,8 @@ module.exports.GET_PBV_BY_ADP_ID = GET_PBV_BY_ADP_ID;
 module.exports.GET_ADP_GENERATED_BV = GET_ADP_GENERATED_BV;
 module.exports.GET_ALL_CHILD = GET_ALL_CHILD;
 module.exports.INSERT_CO_SPONSOR_ROYALTY = INSERT_CO_SPONSOR_ROYALTY;
-module.exports.SELECT_CO_SPONSOR_ROYALTY_MANAGEMENT = SELECT_CO_SPONSOR_ROYALTY_MANAGEMENT;
+module.exports.SELECT_CO_SPONSOR_ROYALTY_MANAGEMENT =
+  SELECT_CO_SPONSOR_ROYALTY_MANAGEMENT;
 module.exports.GET_CO_SPONSOR_INCOME = GET_CO_SPONSOR_INCOME;
 module.exports.GET_RETAIL_PROFIT = GET_RETAIL_PROFIT;
 module.exports.SELECT_PZI_MANAGEMENT = SELECT_PZI_MANAGEMENT;

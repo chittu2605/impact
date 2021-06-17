@@ -9,6 +9,7 @@ import OnePlusCard from "views/OnePlusCard";
 import ADPStatement from "views/ADPStatement";
 import ChangePassword from "views/ChangePassword";
 import Messages from "views/Messages";
+import EditProfile from "views/EditProfile";
 
 var dashRoutes = [
   {
@@ -31,6 +32,13 @@ var dashRoutes = [
     name: "Add ADP",
     icon: "users_single-02",
     component: AddADP,
+    layout: "/adp",
+  },
+  {
+    path: "/edit-profile",
+    name: "Edit Proile",
+    icon: "ui-2_settings-90",
+    component: EditProfile,
     layout: "/adp",
   },
   {

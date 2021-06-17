@@ -8,11 +8,34 @@ const { sendMail } = require("../../../utils/emailer");
 
 const connection = require("../../../dbConnect");
 const { getBvWeightage } = require("../../../functions/getPbv");
+const { UPDATE_ADP, GET_ADP_BY_ID } = require("../../adpQuery/adp/adp");
+
+updateAdp = (adpData) =>
+  new Promise((resolve, reject) =>
+    connection.query(UPDATE_ADP(adpData), (error, results, fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(true);
+      }
+    })
+  );
+
+const getAdpDetails = (adpId) =>
+  new Promise((resolve, reject) =>
+    connection.query(GET_ADP_BY_ID(adpId), (error, results) => {
+      if (!error && results.length) {
+        resolve(results[0]);
+      } else {
+        reject(error);
+      }
+    })
+  );
 
 module.exports = (app) => {
   const ADD_ADP = require("../../adpQuery/adp/adp").ADD_ADP;
-  const CREATE_ORDER = require("../../adpQuery/product/buyProduct")
-    .CREATE_ORDER;
+  const CREATE_ORDER =
+    require("../../adpQuery/product/buyProduct").CREATE_ORDER;
   const { updatePvb } = require("../createBvRow");
   const connection = require("../../../dbConnect");
   const bodyParser = require("body-parser");
@@ -103,6 +126,30 @@ module.exports = (app) => {
       }
     );
   });
+
+  app.get("/adp/get-adp-details", urlencodedParser, async (req, res) => {
+    try {
+      const adpId = req.user.adp_id;
+      const details = await getAdpDetails(adpId);
+      res.json(details);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+  });
+
+  app.post("/adp/update-adp", urlencodedParser, async (req, res) => {
+    try {
+      const adpId = req.user.adp_id;
+      const adpData = req.body;
+      adpData.adp_id = adpId;
+      await updateAdp(adpData);
+      res.sendStatus(200);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+  });
 };
 
 const sendAddAdpEmail = (name, email, adpId, password) => {
@@ -138,3 +185,5 @@ const sendAddAdpEmail = (name, email, adpId, password) => {
   };
   sendMail(options);
 };
+
+module.exports.getAdpDetails = getAdpDetails;

@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withRouter } from "react-router-dom";
 import { apiHandler } from "config/apiConfig";
+import { toast, ToastContainer } from "react-toastify";
 
 const style = {
   loginContainer: {
@@ -100,6 +101,7 @@ class Login extends React.Component {
       <div className="limiter">
         <GlobalStyle />
         <LoginContainer className="container-login100">
+          <ToastContainer />
           <BackgroundImage
             className="login100-more"
             // style={{
@@ -113,9 +115,12 @@ class Login extends React.Component {
 
             {showForgotForm ? (
               sentOtp ? (
-                <generateNewPassword />
+                <GenerateNewPassword that={this} />
               ) : (
-                <ForgotPasswordForm toggleForgot={this.toggleForgot} />
+                <ForgotPasswordForm
+                  toggleForgot={this.toggleForgot}
+                  that={this}
+                />
               )
             ) : (
               <LoginForm
@@ -260,27 +265,29 @@ const ForgotPasswordForm = (props) => {
     <Formik
       initialValues={{
         adpId: "",
-        mobile: "",
         email: "",
       }}
       validationSchema={Yup.object().shape({
-        adpId: Yup.number()
-          .positive("please enter number greater than 0")
-          .required("Required"),
-
-        mobile: Yup.number()
-          .required("Required")
-          .test(
-            "len",
-            "Must be exactly 10 digits",
-            (val) => val && val.toString().length === 10
-          ),
         email: Yup.string().email("Invalid email address"),
       })}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          setSubmitting(false);
-        }, 400);
+        setSubmitting(true);
+        submitChangePasswordRequest(values)
+          .then((response) => {
+            props.that.setState({ sentOtp: true });
+            setSubmitting(true);
+          })
+          .catch((error) => {
+            if (error.response.status === 409) {
+              toast("Multiple accounts exits with email, Please enter ADP Id");
+            } else if (error.response.status === 404) {
+              toast("No account found with ADP Id and Email");
+            } else {
+              toast("Unknown error");
+              console.log(error);
+            }
+            setSubmitting(false);
+          });
       }}
     >
       {({
@@ -306,22 +313,6 @@ const ForgotPasswordForm = (props) => {
               onBlur={handleBlur}
               className={
                 errors.adpId && touched.adpId
-                  ? "text-input error"
-                  : "text-input"
-              }
-            />
-          </div>
-
-          <div className="w-full text-center p-t-27 p-b-239">
-            <Input
-              label="Mobile Number"
-              id="mobile"
-              type="number"
-              value={values.mobile}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={
-                errors.mobile && touched.mobile
                   ? "text-input error"
                   : "text-input"
               }
@@ -361,7 +352,7 @@ const ForgotPasswordForm = (props) => {
   );
 };
 
-const generateNewPassword = (props) => {
+const GenerateNewPassword = (props) => {
   return (
     <Formik
       initialValues={{
@@ -374,20 +365,35 @@ const generateNewPassword = (props) => {
         adpId: Yup.number()
           .positive("please enter number greater than 0")
           .required("Required"),
-
-        mobile: Yup.number()
+        password: Yup.string().required("No password provided"),
+        otp: Yup.number()
           .required("Required")
           .test(
             "len",
-            "Must be exactly 10 digits",
-            (val) => val && val.toString().length === 10
+            "Must be exactly 4 digits",
+            (val) => val && val.toString().length === 4
           ),
-        email: Yup.string().email("Invalid email address"),
       })}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          setSubmitting(false);
-        }, 400);
+        setSubmitting(true);
+        if (values.password !== values.confirmPassword) {
+          toast("Password and confirm Passoword did not match");
+        } else {
+          const body = {
+            otp: values.otp,
+            adpId: values.adpId,
+            password: values.password,
+          };
+          validateOtpAndChangePassword(body)
+            .then((response) => {
+              props.that.toggleForgot();
+              toast("Password change success");
+            })
+            .catch((error) => {
+              toast("Unable to Set Password");
+            });
+        }
+        setSubmitting(false);
       }}
     >
       {({
@@ -453,7 +459,7 @@ const generateNewPassword = (props) => {
             <Input
               label="Confirm Password"
               id="confirmPassword"
-              type="confirmPassword"
+              type="password"
               value={values.confirmPassword}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -484,4 +490,12 @@ const generateNewPassword = (props) => {
 
 function validateToken() {
   return apiHandler.post("/validateToken");
+}
+
+function submitChangePasswordRequest(body) {
+  return apiHandler.post("/forgot-password", body);
+}
+
+function validateOtpAndChangePassword(body) {
+  return apiHandler.post("/validate-otp-change-password", body);
 }

@@ -1,6 +1,7 @@
 const TOTAL_TURNOVER = () =>
   `SELECT sum(after_discount * qty) AS ttv FROM tbl_order`;
-const MONTHLY_TURNOVER = () => `SELECT sum(after_discount * qty) AS mtv FROM tbl_order
+const MONTHLY_TURNOVER =
+  () => `SELECT sum(after_discount * qty) AS mtv FROM tbl_order
 WHERE 
 order_date > 
 IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
@@ -17,6 +18,7 @@ JOIN tbl_adp AS ta USING (adp_id)
 WHERE 
 ta.date_created > 
 IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT 1),0)`;
+
 const GET_CHAMPION_POINTS = (prevCycleLimit = 0) => `WITH RECURSIVE link AS(
   SELECT tp.adp_id, tp.sponsor_id, tp.pbv, tp.current_month_pbv, ta.date_created 
   FROM 
@@ -30,14 +32,14 @@ const GET_CHAMPION_POINTS = (prevCycleLimit = 0) => `WITH RECURSIVE link AS(
     JOIN tbl_adp ta ON t.adp_id = ta.adp_id 
 ), 
 gbv AS (SELECT sponsor_id, SUM(pbv) AS gbv FROM link GROUP BY sponsor_id),
-new_gbv AS (SELECT sponsor_id, SUM(current_month_pbv) AS new_gbv FROM link WHERE 
-date_created > IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)GROUP BY sponsor_id),
 champion_details AS (SELECT tp.adp_id, tp.pbv, tp.current_month_pbv, IFNULL(g.gbv,0) AS gbv,
-IFNULL(ng.new_gbv,0) AS current_month_gbv,
+(SELECT IFNULL(SUM(tp2.current_month_pbv),0) FROM tbl_pbv tp2 JOIN tbl_adp ta USING (adp_id) 
+  WHERE ta.co_sponsor_id = tp.adp_id AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate
+  ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS current_month_gbv,
 (SELECT count(ta.adp_id) FROM tbl_adp ta WHERE ta.co_sponsor_id = tp.adp_id 
 AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS new_co_sponsored,
 (SELECT count(ta.adp_id) FROM tbl_adp ta WHERE ta.co_sponsor_id = tp.adp_id) AS no_of_frontlines 
-FROM tbl_pbv tp LEFT JOIN gbv AS g ON tp.adp_id = g.sponsor_id LEFT JOIN new_gbv AS ng ON tp.adp_id = ng.sponsor_id)
+FROM tbl_pbv tp LEFT JOIN gbv AS g ON tp.adp_id = g.sponsor_id)
 SELECT SUM((CASE WHEN current_month_pbv >=5000 THEN current_month_pbv ELSE 0 END) + (CASE WHEN current_month_gbv >= 12000
 AND new_co_sponsored > 4 THEN current_month_gbv ELSE 0 END)) AS total_points, count(*) AS total_count
 FROM champion_details WHERE gbv>20000 AND no_of_frontlines>1 AND (current_month_pbv >=5000 
@@ -48,32 +50,32 @@ const GET_CHAMPION_PERCENT = () =>
 
 const GET_CHAMPION_QUALIFIERS = (offset, rowCount, prevCycleLimit = 0) =>
   `WITH RECURSIVE link AS(
-  SELECT tp.adp_id, tp.sponsor_id, tp.pbv, tp.current_month_pbv, ta.date_created
-  FROM 
-    tbl_pbv tp 
-    JOIN tbl_adp ta ON tp.adp_id = ta.adp_id 
-  UNION ALL 
-  SELECT t.adp_id, l.sponsor_id, t.pbv, t.current_month_pbv, ta.date_created 
-  FROM 
-    tbl_pbv t 
-    JOIN link l ON t.sponsor_id = l.adp_id
-    JOIN tbl_adp ta ON t.adp_id = ta.adp_id
-), 
-gbv AS (
-SELECT sponsor_id, SUM(pbv) AS gbv, SUM(current_month_pbv) AS current_month_gbv FROM link 
-  GROUP BY sponsor_id),
-new_gbv AS (SELECT sponsor_id, SUM(current_month_pbv) AS new_gbv FROM link WHERE 
-date_created > IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)GROUP BY sponsor_id),
-champion_details AS (SELECT tp.adp_id, tp.pbv, tp.current_month_pbv, IFNULL(g.gbv,0) AS gbv,
-IFNULL(ng.new_gbv,0) AS current_month_gbv, (SELECT count(ta.adp_id) FROM tbl_adp ta 
-WHERE ta.co_sponsor_id = tp.adp_id AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate
-ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS new_co_sponsored, (SELECT count(ta.adp_id) FROM tbl_adp ta
-WHERE ta.co_sponsor_id = tp.adp_id) AS no_of_frontlines FROM tbl_pbv tp 
-LEFT JOIN gbv AS g ON tp.adp_id = g.sponsor_id LEFT JOIN new_gbv AS ng ON tp.adp_id = ng.sponsor_id)
-SELECT ta.adp_id, ta.firstname, ta.lastname, c.current_month_pbv, c.current_month_gbv, c.new_co_sponsored
-FROM tbl_adp ta JOIN champion_details c USING (adp_id)
-WHERE (c.gbv >= 20000 AND c.no_of_frontlines > 1) AND (c.current_month_pbv >= 5000 OR (
-c.current_month_gbv >= 8000 AND c.new_co_sponsored > 4))` +
+    SELECT tp.adp_id, tp.sponsor_id, tp.pbv, tp.current_month_pbv, ta.date_created
+    FROM 
+      tbl_pbv tp 
+      JOIN tbl_adp ta ON tp.adp_id = ta.adp_id 
+    UNION ALL 
+    SELECT t.adp_id, l.sponsor_id, t.pbv, t.current_month_pbv, ta.date_created 
+    FROM 
+      tbl_pbv t 
+      JOIN link l ON t.sponsor_id = l.adp_id
+      JOIN tbl_adp ta ON t.adp_id = ta.adp_id
+  ), 
+  gbv AS (
+  SELECT sponsor_id, SUM(pbv) AS gbv, SUM(current_month_pbv) AS current_month_gbv FROM link 
+    GROUP BY sponsor_id),
+  champion_details AS (SELECT tp.adp_id, tp.pbv, tp.current_month_pbv, IFNULL(g.gbv,0) AS gbv,
+  (SELECT IFNULL(SUM(tp2.current_month_pbv),0) FROM tbl_pbv tp2 JOIN tbl_adp ta USING (adp_id) 
+  WHERE ta.co_sponsor_id = tp.adp_id AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate
+  ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS current_month_gbv, (SELECT count(ta.adp_id) FROM tbl_adp ta 
+  WHERE ta.co_sponsor_id = tp.adp_id AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate
+  ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS new_co_sponsored, (SELECT count(ta.adp_id) FROM tbl_adp ta
+  WHERE ta.sponsor_id = tp.adp_id) AS no_of_frontlines FROM tbl_pbv tp 
+  LEFT JOIN gbv AS g ON tp.adp_id = g.sponsor_id)
+  SELECT ta.adp_id, ta.firstname, ta.lastname, c.current_month_pbv, c.current_month_gbv, c.new_co_sponsored
+  FROM tbl_adp ta JOIN champion_details c USING (adp_id)
+  WHERE (c.gbv >= 20000 AND c.no_of_frontlines > 1) AND (c.current_month_pbv >= 5000 OR (
+  c.current_month_gbv >= 12000 AND c.new_co_sponsored > 4))` +
   (offset ? ` LIMIT ${offset},${rowCount}` : "");
 
 const GET_ONE_PLUS_PERCENT = () =>

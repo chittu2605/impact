@@ -64,6 +64,8 @@ const allowedAPiWithoutLogin = [
   "/get-adp-by-phone",
   "/admin/prev-cycle-end-date",
   "/admin/run-cycle",
+  "/adp/forgot-password",
+  "/adp/validate-otp-change-password",
 ];
 
 module.exports.authenticateToken = authenticateToken;

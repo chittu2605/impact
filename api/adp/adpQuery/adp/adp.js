@@ -99,6 +99,20 @@ VALUES
   `;
 };
 
+const UPDATE_ADP = (data) =>
+  `UPDATE tbl_adp
+  SET dob='${data.dob}', firstname='${data.firstname}', lastname='${data.lastname}', 
+  gender='${data.gender}', father_firstname='${data.father_firstname}', 
+  father_lastname='${data.father_lastname}', nominee_firstname='${data.nominee_firstname}', 
+  nominee_lastname='${data.nominee_lastname}', nominee_gender='${data.nominee_gender}', 
+  nominee_dob='${data.nominee_dob}', relation='${data.relation}', pan='${data.pan}', 
+  email='${data.email}', mobile='${data.mobile}', address_correspondence='${data.address_correspondence}', 
+  landmark='${data.landmark}', district='${data.district}', state='${data.state}', 
+  postal_code='${data.postal_code}', id_proof='${data.id_proof}', proof_address='${data.proof_address}', 
+  bank_name='${data.bank_name}', account_no='${data.account_no}', branch='${data.branch}',
+  ifs_code='${data.ifs_code}', account_type='${data.account_type}' 
+  WHERE adp_id=${data.adp_id}`;
+
 const GET_ADP_NAME_BY_ADP_ID = (adp_id) => {
   return `SELECT tbl_adp.firstname, tbl_adp.lastname FROM tbl_adp WHERE tbl_adp.adp_id = '${adp_id}'`;
 };
@@ -227,7 +241,12 @@ AS (
 )
 SELECT adp_id, firstname, lastname, sponsor_id, mobile, pan FROM link WHERE sponsor_id = ${adpId} AND ${field} LIKE '${term}%'`;
 
-const GET_ADP_BY_ID = (adpId) => `SELECT * FROM tbl_adp WHERE adp_id =${adpId}`;
+const GET_ADP_BY_ID = (
+  adpId
+) => `SELECT adp_id, sponsor_id, sponsor_name, co_sponsor_id, co_sponsor_name, dob, firstname, lastname, gender, father_firstname, 
+father_lastname, nominee_firstname, nominee_lastname, nominee_gender, nominee_dob, relation, pan, email, mobile, 
+address_correspondence, landmark, district, state, postal_code, id_proof, proof_address, bank_name, account_no, branch, 
+ifs_code, account_type, show_messages FROM tbl_adp WHERE adp_id= ${adpId}`;
 
 module.exports.SELECT_ADP_BY_ADP_ID = SELECT_ADP_BY_ADP_ID;
 module.exports.SELECT_ADP_NAME_BY_ADP_ID = SELECT_ADP_NAME_BY_ADP_ID;
@@ -235,7 +254,8 @@ module.exports.ADD_ADP = ADD_ADP;
 module.exports.GET_ADP_NAME_BY_ADP_ID = GET_ADP_NAME_BY_ADP_ID;
 module.exports.GET_PHONE_NUMBER_BY_ADP_ID = GET_PHONE_NUMBER_BY_ADP_ID;
 module.exports.GET_ADP_BY_PHONE = GET_ADP_BY_PHONE;
-module.exports.GET_ADP_SPONSOR_COSPONSOR_BY_ADP_ID = GET_ADP_SPONSOR_COSPONSOR_BY_ADP_ID;
+module.exports.GET_ADP_SPONSOR_COSPONSOR_BY_ADP_ID =
+  GET_ADP_SPONSOR_COSPONSOR_BY_ADP_ID;
 module.exports.ADD_ADP_LINE = ADD_ADP_LINE;
 module.exports.GET_CHILD_LINE = GET_CHILD_LINE;
 module.exports.GET_FIRST_LINE_CHILD_PBV = GET_FIRST_LINE_CHILD_PBV;
@@ -252,3 +272,4 @@ module.exports.GET_NO_CO_SPONSORED = GET_NO_CO_SPONSORED;
 module.exports.GET_NEW_CO_SPONSORED = GET_NEW_CO_SPONSORED;
 module.exports.SEARCH_ADP = SEARCH_ADP;
 module.exports.GET_ADP_BY_ID = GET_ADP_BY_ID;
+module.exports.UPDATE_ADP = UPDATE_ADP;

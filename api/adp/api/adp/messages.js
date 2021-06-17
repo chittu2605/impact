@@ -1,5 +1,4 @@
 const connection = require("../../../dbConnect");
-const { GET_ADP_BY_ID } = require("../../adpQuery/adp/adp");
 const {
   GET_MESSAGES_BY_TYPE,
   GET_MESSAGE_LIB_DETAILS,
@@ -8,17 +7,7 @@ const {
   GET_WHATSAPP_GROUPS,
   GET_MESSAGE_LIB_DEFAULTS,
 } = require("../../adpQuery/messages/messages");
-
-const getAdpDetails = (adpId) =>
-  new Promise((resolve, reject) =>
-    connection.query(GET_ADP_BY_ID(adpId), (error, results) => {
-      if (!error && results.length) {
-        resolve(results[0]);
-      } else {
-        reject(error);
-      }
-    })
-  );
+const { getAdpDetails } = require("./addAdp");
 
 const getMessagesByType = (type) =>
   new Promise((resolve, reject) =>

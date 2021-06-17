@@ -10,6 +10,10 @@ module.exports = (app) => {
     LOGIN_ADP,
     GET_CHILD_DETAILS,
     UPDATE_PASSWORD,
+    GET_ID_FOR_EMAIL,
+    GET_ACCOUNT_ON_ID_EMAIL,
+    INSERT_OTP,
+    GET_ADP_OTP,
   } = require("../../adpQuery/Login/login");
   //   const { LOGIN_ADP } = require("../../adpQuery/login/login");
   const connection = require("../../../dbConnect");
@@ -24,6 +28,33 @@ module.exports = (app) => {
       text: error,
     };
   };
+
+  const getIdFromEmail = (email) =>
+    new Promise((resolve, reject) => {
+      connection.query(GET_ID_FOR_EMAIL(email), (error, results, fields) => {
+        if (error) {
+          reject(error);
+        } else if (results.length > 1) {
+          resolve(0);
+        } else {
+          resolve(results[0].adp_id);
+        }
+      });
+    });
+
+  const getAdpAccount = (adpId, email) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        GET_ACCOUNT_ON_ID_EMAIL(adpId, email),
+        (error, results, fields) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results[0].count);
+          }
+        }
+      );
+    });
 
   const getChildDetails = (childId, adpId) =>
     new Promise((resolve, reject) =>
@@ -41,6 +72,64 @@ module.exports = (app) => {
         }
       )
     );
+
+  const updateOtp = (adpId, otp) =>
+    new Promise((resolve, reject) =>
+      connection.query(INSERT_OTP(adpId, otp), (error, results, fields) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(true);
+        }
+      })
+    );
+
+  let otpMailOptions = (to, adpId, otp) => {
+    return {
+      from: "support@iloveimpact.com",
+      to: to,
+      subject: "Impact Otp",
+      text: `Use otp ${otp} to change passowrd for adp ${adpId}`,
+    };
+  };
+
+  const sendOtpMail = (otp, adpId, email) => {
+    sendMail(otpMailOptions(email, adpId, otp));
+  };
+
+  const sendPasswordForgetOtpEmail = async (adpId, email) => {
+    const otp = (Math.floor(Math.random() * 10000) + 10000)
+      .toString()
+      .substring(1);
+    await updateOtp(adpId, otp);
+    sendOtpMail(otp, adpId, email);
+  };
+
+  const getOtpForADP = (adpId) =>
+    new Promise((resolve, reject) =>
+      connection.query(GET_ADP_OTP(adpId), (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results[0]);
+        }
+      })
+    );
+
+  const updatePassword = (adpId, password) =>
+    new Promise(async (resolve, reject) => {
+      const encryptedPassword = await passwordEncrypt(password);
+      connection.query(
+        UPDATE_PASSWORD(adpId, encryptedPassword),
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(200);
+          }
+        }
+      );
+    });
 
   app.post("/adp/login", urlencodedParser, async (req, res) => {
     const password = req.body.password;
@@ -170,23 +259,57 @@ module.exports = (app) => {
           adp.password
         );
         if (isPasswordValid) {
-          const encryptedPassword = await passwordEncrypt(newPassword);
-          connection.query(
-            UPDATE_PASSWORD(adpId, encryptedPassword),
-            (error, results) => {
-              if (error) {
-                console.log(error);
-                res.sendStatus(500);
-              } else {
-                res.sendStatus(200);
-              }
-            }
-          );
+          try {
+            await updatePassword(adpId, newPassword);
+            res.sendStatus(200);
+          } catch (error) {
+            res.sendStatus(401);
+          }
+          updatePassword;
         } else {
           res.sendStatus(401);
         }
       }
     });
+  });
+
+  app.post("/adp/forgot-password", async (req, res) => {
+    try {
+      let adpId = req.body.adpId;
+      const email = req.body.email;
+      if (!adpId || adpId == "") {
+        adpId = await getIdFromEmail(email);
+        if (adpId === 0) {
+          res.sendStatus(409);
+        } else {
+          sendPasswordForgetOtpEmail(adpId, email);
+          res.sendStatus(200);
+        }
+      } else {
+        const adpAccount = await getAdpAccount(adpId, email);
+        if (adpAccount) {
+          sendPasswordForgetOtpEmail(adpId, email);
+          res.sendStatus(200);
+        } else {
+          res.sendStatus(404);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  app.post("/adp/validate-otp-change-password", async (req, res) => {
+    const adpId = req.body.adpId;
+    const enteredOtp = req.body.otp;
+    const password = req.body.password;
+    const adpOtp = (await getOtpForADP(adpId)).otp;
+    if (enteredOtp === adpOtp) {
+      await updatePassword(adpId, password);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
   });
 
   app.post("/adp/logout", (req, res) => {
