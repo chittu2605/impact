@@ -119,7 +119,8 @@ const styles = {
         
     },
     vcb: {
-        color: "#848484",
+        color: "#e88657",
+        paddingBottom: "0.3rem"
     },
     mp:{
         fontSize: "12px",
@@ -311,14 +312,13 @@ class ProductCard extends React.Component {
                         )
                     }
 
-                    
-                    
+            
                     <CardSavedAmount>{!noDiscount && `YOU SAVE ${saving} ${selectedProductOption.currency}`}</CardSavedAmount>
                     {
                         (selectedProductOption.vdbd || selectedProductOption.vdba) && (selectedProductOption.vdbd + selectedProductOption.vdba) != "0" ? (
-                            <CardVDB style={{visibility: selectedProductOption.vdbd + selectedProductOption.vdba == 0 ? "hidden": "visible"}} dataToggle="tooltip" dataPlacement="bottom" title="Smart Mart Discount Debit">{`SMDD: ${selectedProductOption.currency} ${selectedProductOption.vdbd + selectedProductOption.vdba}`}</CardVDB>
+                            <CardVDB style={{visibility: (selectedProductOption.vdbd || 0) + (selectedProductOption.vdba || 0) != 0 ? "visible": "hidden"}} dataToggle="tooltip" dataPlacement="bottom" title="Smart Mart Discount Debit">{`SMDD: ${selectedProductOption.currency} ${selectedProductOption.vdbd + selectedProductOption.vdba}`}</CardVDB>
                         ) : (
-                            <CardVCB style={{visibility: selectedProductOption.vdbd + selectedProductOption.vdba == 0 ? "hidden": "visible"}} dataToggle="tooltip" dataPlacement="bottom" title="Smart Mart Discount Credit">{`SMDC: ${selectedProductOption.currency} ${selectedProductOption.vdbc}`}</CardVCB>
+                            <CardVCB style={{visibility: selectedProductOption.vdbc != 0 ? "visible": "hidden"}} dataToggle="tooltip" dataPlacement="bottom" title="Smart Mart Discount Credit">{`SMDC: ${selectedProductOption.currency} ${selectedProductOption.vdbc}`}</CardVCB>
                         )
                     }
                     {
