@@ -327,11 +327,7 @@ class ProductCard extends React.Component {
                         ) : (
                             selectedProductOption.max_purchase != null && selectedProductOption.max_purchase != 0 &&  <CardMP dataToggle="tooltip" dataPlacement="bottom" title="Maximum quantity you can purchase">{`MP: ${selectedProductOption.max_purchase}`}</CardMP>
                         )
-                    }
-                    {selectedProductOption.max_purchase != null && selectedProductOption.max_purchase != 0 &&  <CardMP dataToggle="tooltip" dataPlacement="bottom" title="Maximum quantity you can purchase">{`MP: ${selectedProductOption.max_purchase}`}</CardMP>}
-    
-                    
-                    
+                    }      
                     <Link onClick={() => {props.handleReadMoreclicked(props.productData)}}>Read more</Link>
                     
                     
