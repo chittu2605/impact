@@ -89,7 +89,7 @@ module.exports = (app) => {
       from: "support@iloveimpact.com",
       to: to,
       subject: "Impact Otp",
-      text: `Use otp ${otp} to change passowrd for adp ${adpId}`,
+      text: `Use otp ${otp} to change password for adp ${adpId}`,
     };
   };
 
