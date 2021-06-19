@@ -65,7 +65,6 @@ function Asynchronous(props) {
         },
       })
       .then((response) => {
-        debugger
         let results = response.data.results
         results.forEach((item) => {
           item.adp_id = item.adp_id.toString();

@@ -177,7 +177,6 @@ class ProductList extends React.Component {
             }
           }
           getProducts(body).then((response) => {
-            debugger
             let products = response.data.results;
             let categoryIds = getDistinctCategoryId(products);
             const {classes, className, franchiseProducts} = this.props;
@@ -318,7 +317,6 @@ class ProductList extends React.Component {
       })
 
       let rowKey = this.props.rowKey;
-      debugger
       if (result.length > 0) this.setSelectedDataForSample(result[0])
       this.setState({
         productList: result
@@ -332,7 +330,6 @@ class ProductList extends React.Component {
 
 
   setSelectedDataForSample = (product) => {
-    debugger
     let { categoryOptions, productTypeOptions } = this.state;
 
     let selectedCategory = categoryOptions.filter(function (el) {
