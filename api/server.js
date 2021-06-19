@@ -1,22 +1,12 @@
 var sslRedirect = require("heroku-ssl-redirect");
-// require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-// require('dotenv').config({ path: path.join(__dirname, '.env_test') });
-// require('dotenv').config({ path: path.join(__dirname, '.env') });
-
-if (process.argv[process.argv.length - 1] == "dev") {
-  require("dotenv").config({ path: path.join(__dirname, ".env") });
-  console.log(process.argv[process.argv.length - 1]);
-} else {
-  require("dotenv").config({ path: path.join(__dirname, ".env_test") });
-}
 
 const port = process.env.PORT || 4000;
 var cors = require("cors");
-const authenticateToken = require("./utils/authenticateToken")
-  .authenticateToken;
+const authenticateToken =
+  require("./utils/authenticateToken").authenticateToken;
 var expressStaticGzip = require("express-static-gzip");
 var compression = require("compression");
 
@@ -35,7 +25,8 @@ app.use(
       if (whitelist.indexOf(origin) === -1) {
         var msg =
           "The CORS policy for this site does not " +
-          "allow access from the specified Origin." + origin;
+          "allow access from the specified Origin." +
+          origin;
         return callback(new Error(msg), false);
       }
       return callback(null, true);

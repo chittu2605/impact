@@ -13,4 +13,4 @@
 
 const admin = require("./admin/index");
 const adp = require("./adp/index");
-const functions = require("./functions/index"); 
+const functions = require("./functions/index");
