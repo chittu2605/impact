@@ -251,7 +251,6 @@ class FranchiseDetailsForm extends React.Component {
 
       categoryIds &&
         categoryIds.forEach((elm, i) => {
-          debugger
           let rowKey = 0;
           if (franchiseRows.length == 0) {
             rowKey = franchiseRows.length + categoryIds.length - i;
@@ -268,7 +267,6 @@ class FranchiseDetailsForm extends React.Component {
                 if (franchiseProducts.length > 0) {
                   let isDuplicate = false;
                   franchiseProducts.forEach((existingProduct) => {
-                    debugger
                     if (existingProduct.product == product.product) {
                       isDuplicate = true
                     }
@@ -334,7 +332,6 @@ class FranchiseDetailsForm extends React.Component {
             });
           productRows.push(row);
         });
-      debugger
       this.setState(
         {
           rows: productRows,

@@ -49,7 +49,6 @@ class ProductCard extends React.Component {
     }
 
     componentDidMount = () => {
-        debugger
         let productOptionsDetails = this.props.product.details;
         let productOptions = [];
         let selectedProductOption = [];

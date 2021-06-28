@@ -26,7 +26,6 @@ class Franchise extends React.Component {
     }
 
     createFranchise = (body) => {
-        debugger
         addFranchise(body).then((response) => {
             if (body.franchise_id && body.editFranchise) {
                 toast("Sample Franchise Updated");
