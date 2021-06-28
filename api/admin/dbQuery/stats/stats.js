@@ -38,7 +38,7 @@ champion_details AS (SELECT tp.adp_id, tp.pbv, tp.current_month_pbv, IFNULL(g.gb
   ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS current_month_gbv,
 (SELECT count(ta.adp_id) FROM tbl_adp ta WHERE ta.co_sponsor_id = tp.adp_id 
 AND ta.date_created > IFNULL((SELECT todate FROM tbl_cycledate ORDER BY id DESC LIMIT ${prevCycleLimit},1),0)) AS new_co_sponsored,
-(SELECT count(ta.adp_id) FROM tbl_adp ta WHERE ta.co_sponsor_id = tp.adp_id) AS no_of_frontlines 
+(SELECT count(ta.adp_id) FROM tbl_adp ta WHERE ta.sponsor_id = tp.adp_id) AS no_of_frontlines 
 FROM tbl_pbv tp LEFT JOIN gbv AS g ON tp.adp_id = g.sponsor_id)
 SELECT SUM((CASE WHEN current_month_pbv >=5000 THEN current_month_pbv ELSE 0 END) + (CASE WHEN current_month_gbv >= 12000
 AND new_co_sponsored > 4 THEN current_month_gbv ELSE 0 END)) AS total_points, count(*) AS total_count

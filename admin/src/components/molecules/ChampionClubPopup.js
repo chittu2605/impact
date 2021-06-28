@@ -34,7 +34,6 @@ export const ChampionClubPopup = ({ open, onClose, rows }) => {
     setPage(0);
   };
 
-
   return (
     <Dialog
       onClose={() => onClose()}
@@ -68,7 +67,8 @@ export const ChampionClubPopup = ({ open, onClose, rows }) => {
               {tableRows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
-                  const metSecondCondition = row.new_co_sponsored > 4 && row.current_month_gbv >= 12000
+                  const metSecondCondition =
+                    row.new_co_sponsored > 4 && row.current_month_gbv >= 12000;
                   return (
                     <TableRow key={row.adp_id}>
                       <TableCell component="th" scope="row">
@@ -78,13 +78,15 @@ export const ChampionClubPopup = ({ open, onClose, rows }) => {
                         {row.firstname + " " + row.lastname}
                       </TableCell>
                       <TableCell style={{ width: 160 }}>
-                        {row.current_month_pbv > 5000 ? row.current_month_pbv : '-'}
+                        {row.current_month_pbv >= 5000
+                          ? row.current_month_pbv
+                          : "-"}
                       </TableCell>
                       <TableCell style={{ width: 160 }}>
-                        {metSecondCondition ? row.new_co_sponsored : '-'}
+                        {metSecondCondition ? row.new_co_sponsored : "-"}
                       </TableCell>
                       <TableCell style={{ width: 160 }}>
-                        {metSecondCondition ? row.current_month_gbv : '-'}
+                        {metSecondCondition ? row.current_month_gbv : "-"}
                       </TableCell>
                     </TableRow>
                   );
