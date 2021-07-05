@@ -96,6 +96,15 @@ const updateCurrentPbv = () => {
 module.exports = (app) => {
   app.post("/admin/run-cycle", async (req, res) => {
     try {
+      if (eligibleSprintIDs) {
+        createVouchers(eligibleSprintIDs, "SPRINT");
+      }
+      if (eligibleSprinters) {
+        generateSprinterVouchers(eligibleSprinters);
+      }
+      if (eligibleSprintIDs || adpMissingSprint) {
+        updateSprintQualifiedFlag([...eligibleSprintIDs, ...adpMissingSprint]);
+      }
       const prevCycleId = (await getPrevRunCycle()).id;
       const cycleId = await updateCycleHistory();
       const totalRecords = await getAdpCount();
@@ -135,15 +144,6 @@ module.exports = (app) => {
       const eligibleSprintIDs = await getEligibleSprintIDs();
       const eligibleSprinters = await getEligibleSprinters(eligibleSprintIDs);
       const adpMissingSprint = await getADPMissingSPrint();
-      if (eligibleSprintIDs) {
-        createVouchers(eligibleSprintIDs, "SPRINT");
-      }
-      if (eligibleSprinters) {
-        generateSprinterVouchers(eligibleSprinters);
-      }
-      if (eligibleSprintIDs || adpMissingSprint) {
-        updateSprintQualifiedFlag([...eligibleSprintIDs, ...adpMissingSprint]);
-      }
       await updateCurrentPbv();
       console.log("end at", new Date());
       res.sendStatus(200);

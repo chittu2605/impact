@@ -96,7 +96,7 @@ const GET_ONE_PLUS_CARD_DETAILS = () =>
 
 const GET_LEADERS_CLUB_QUALIFIERS = (offset, rowCount) =>
   `WITH RECURSIVE link AS (
-	SELECT adp_id,sponsor_id,current_month_pbv FROM tbl_Pbv
+	SELECT adp_id,sponsor_id,current_month_pbv FROM tbl_pbv
 	UNION ALL
 	SELECT tp.adp_id,l.sponsor_id,tp.current_month_pbv FROM tbl_pbv tp JOIN link l ON tp.sponsor_id = l.adp_id
 ),
@@ -126,7 +126,7 @@ l.line3_bv FROM line3 l JOIN tbl_adp ta USING (adp_id) JOIN gbv g ON g.sponsor_i
   (offset ? ` LIMIT ${offset},${rowCount}` : "");
 
 const GET_LEADERS_CLUB_POINTS = () => `WITH RECURSIVE link AS (
-	SELECT adp_id,sponsor_id,current_month_pbv FROM tbl_Pbv
+	SELECT adp_id,sponsor_id,current_month_pbv FROM tbl_pbv
 	UNION ALL
 	SELECT tp.adp_id,l.sponsor_id,tp.current_month_pbv FROM tbl_pbv tp JOIN link l ON tp.sponsor_id = l.adp_id
 ),
