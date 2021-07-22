@@ -173,26 +173,24 @@ class DashboardSummaryCard extends React.Component {
                     navigator.share({
                       text: `Namaste ${this.props.name}!
 
-                    Your Business Stats till date is as follows:
+Your Business Stats till date is as follows:
                     
-                    Current Month Repurchase (PBV) : ${
-                      pbv ? pbv : 0
-                    } (Ideal 2000 to 6000 PBV)
+Current Month Repurchase (PBV) : ${pbv ? pbv : 0} (Ideal 2000 to 6000 PBV)
                     
-                    Total PBV till date : ${totalPbv ? totalPbv : 0} 
+Total PBV till date : ${totalPbv ? totalPbv : 0} 
                     
-                    Current Month GBV : ${gbv}
+Current Month GBV : ${gbv}
                     
-                    GBV till date : ${totalGbv}
+GBV till date : ${totalGbv}
                     
-                    Current Month BV : ${bv}
+Current Month BV : ${bv}
                     
-                    Your Current Zone : ${zone} (${zoneValue}%)
+Your Current Zone : ${zone} (${zoneValue}%)
                     
-                    Personal New Joining till date : ${noCoSponsored}
+Personal New Joining till date : ${noCoSponsored}
                     
                     
-                    Wish you success!!!`,
+Wish you success!!!`,
                     });
                   }
                 }}

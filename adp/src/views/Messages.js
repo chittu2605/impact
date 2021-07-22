@@ -76,30 +76,12 @@ const Messages = () => {
                         <Col>
                           <br />
                           <pre>{message}</pre>
-                          <div className="float-right">
-                            <span
-                              style={{ cursor: "pointer" }}
-                              onClick={() => {
-                                if (navigator.share) {
-                                  navigator.share({
-                                    text: `${message}`,
-                                  });
-                                }
-                              }}
-                            >
-                              <i
-                                class="fa fa-share-alt"
-                                style={{
-                                  fontSize: "25px",
-                                  color: "black",
-                                  paddingRight: "10px",
-                                }}
-                              />
-                            </span>
-                            <Button onClick={() => copyToClipBoard(message)}>
-                              Copy
-                            </Button>
-                          </div>
+                          <Button
+                            className="float-right"
+                            onClick={() => copyToClipBoard(message)}
+                          >
+                            Copy
+                          </Button>
                         </Col>
                       </Row>
                       <hr />
