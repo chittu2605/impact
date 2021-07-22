@@ -2,6 +2,7 @@ import React from "react";
 import { Card } from "@material-ui/core";
 import { CardHeader, CardTitle, CardBody, CardFooter } from "reactstrap";
 import { apiHandler } from "config/apiConfig";
+import { connect } from "react-redux";
 
 class DashboardDefitiateCard extends React.Component {
   state = {
@@ -332,17 +333,17 @@ class DashboardDefitiateCard extends React.Component {
     if (newGbv < 12000) {
       championCoSponsorColor = "red";
       if (newGbv < 12000) {
-        championCoSponsorDeficit = 12000 - newGbv + " GBV required";
+        championCoSponsorDeficit = 12000 - newGbv + " GBV Required";
       }
     }
     if (newCoSponsored < 5) {
       if (newGbv < 12000) {
         championCoSponsorDeficit +=
-          " and " + (5 - newCoSponsored) + " Cosponsor(s) required";
+          " and " + (5 - newCoSponsored) + " Cosponsor(s) Required";
       } else {
         championCoSponsorColor = "red";
         championCoSponsorDeficit =
-          5 - newCoSponsored + " Cosponsor(s) required";
+          5 - newCoSponsored + " Cosponsor(s) Required";
       }
     }
 
@@ -352,6 +353,63 @@ class DashboardDefitiateCard extends React.Component {
           <h5 className="card-category" style={{ color: "white" }}></h5>
           <CardTitle tag="h4" style={{ color: "white" }}>
             Team Summary
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    text: `Namaste ${this.props.name}:
+
+                      *Your overall team performance in current month is as follows:*
+                      
+                      PERSONAL CO-SPONSORED : ${personalNewJoining}
+                      
+                      CURRENT MONTH TEAM NEW JOINING : ${teamNewJoin}
+                      
+                      TEAM SIZE : ${teamSize}
+                      
+                      FRONT LINES : ${frontLines}
+                      
+                      REPURCHASE PER MEMBER : ${Math.round(
+                        teamSize === 0 ? 0 : bv / teamSize
+                      )}
+                      
+                      JOINING PER MEMBER : ${parseFloat(
+                        teamSize === 0 ? 0 : teamNewJoin / teamSize
+                      ).toFixed(2)}
+                      
+                      RETAIL PROFIT : ${total_retail_profit} RS 
+                      
+                      CO SPONSOR ROYALTY : ${coSponsorIncome} RS 
+                      
+                      DEFICIT FOR ${deficitZone.toUpperCase()} ZONE : ${deficitValue}
+                      
+                      DEFICIT FOR CHAMPIONS CLUB : ${championDifference}
+                      
+                      CHAMPIONS CLUB CO-SPONSOR DEFICIT : ${championCoSponsorDeficit}
+                      
+                      DEFICIT FOR BLUE CARD : ${11000 - cardOverflow} BV ${
+                      noCoSponsored < 3
+                        ? 3 - noCoSponsored + " Cosponsor Required"
+                        : ""
+                    }
+                      
+                      TOTAL 1+1 CARD THIS MONTH : ${totalOnePlusCards}
+                      
+                      LEADER'S CLUB : ${leadersLine1BV} | ${leadersLine2BV} | ${leadersLine3BV}
+                      
+                      Wish you success and more team income by end of Business cycle!!!
+                      
+                      Take support from your upline leaders. Impact Team is there to support you.`,
+                  });
+                }
+              }}
+            >
+              <i
+                class="fa fa-share-alt"
+                style={{ fontSize: "30px", color: "white", float: "right" }}
+              />
+            </span>
           </CardTitle>
         </CardHeader>
         <CardBody>
@@ -402,7 +460,7 @@ class DashboardDefitiateCard extends React.Component {
               DEFICIT FOR BLUE CARD : {11000 - cardOverflow} BV{" "}
               {noCoSponsored < 3 ? (
                 <span style={{ color: "red" }}>
-                  ({3 - noCoSponsored} cosponsor required)
+                  ({3 - noCoSponsored} cosponsor Required)
                 </span>
               ) : (
                 <span />
@@ -428,7 +486,15 @@ class DashboardDefitiateCard extends React.Component {
   }
 }
 
-export default DashboardDefitiateCard;
+const mapStateToProps = (state) => {
+  return {
+    name: state.updateLoginStatus.name,
+  };
+};
+
+const connector = connect(mapStateToProps);
+
+export default connector(DashboardDefitiateCard);
 
 function getPbv() {
   return apiHandler.get("/pbv");

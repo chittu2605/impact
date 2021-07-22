@@ -9,6 +9,10 @@ const { sendMail } = require("../../../utils/emailer");
 const connection = require("../../../dbConnect");
 const { getBvWeightage } = require("../../../functions/getPbv");
 const { UPDATE_ADP, GET_ADP_BY_ID } = require("../../adpQuery/adp/adp");
+const {
+  debitSmartMart,
+  creditSmartMart,
+} = require("../smartMart/debitSmartMart");
 
 updateAdp = (adpData) =>
   new Promise((resolve, reject) =>
@@ -80,9 +84,21 @@ module.exports = (app) => {
           sponsor_id: adpData.sponsor_id,
           pbv: calculatedBv,
         };
-
+        updatePvb(pvbdata);
         products &&
           products.forEach(async (element, i) => {
+            let productDiscount =
+              (element.vdba + element.vdbd) * element.quantityAdded;
+            if (productDiscount > 0) {
+              if (smartMartBalance >= totalSmartMartDiscount) {
+                let debit = await debitSmartMart(userAdpId, productDiscount);
+              }
+            }
+
+            let productCredit = element.vdbc * element.quantityAdded;
+            if (productCredit > 0) {
+              let credit = await creditSmartMart(userAdpId, productCredit);
+            }
             connection.query(
               CREATE_ORDER(adp_id, element, bvWeightage, "NEW"),
               async (error, newFranchise, fields) => {
@@ -95,26 +111,9 @@ module.exports = (app) => {
                   adp_id,
                   password
                 );
-                // let msg = `Namaste ${adpData.firstname} ji!
-
-                // Welcome to Mission Impact!
-
-                // To view your account you can login from the following link,
-
-                // www.iloveimpact.com/impact
-
-                // Please login with following credentials.
-
-                // ID - ${adp_id}
-                // Password - ${password}
-
-                // Wish you success!
-
-                // IMPACT TEAM`;
-                // sendSmsByAdpId(adp_id, msg);
                 if (i === products.length - 1) {
                   let balance = await debitWallet(userAdpId, totalAmount);
-                  updatePvb(pvbdata);
+
                   return res.json({
                     status: "success",
                     balance: balance,

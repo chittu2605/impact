@@ -5,8 +5,8 @@ const {
 
 module.exports = (app) => {
   const ADD_ADP = require("../../adpQuery/adp/adp").ADD_ADP;
-  const CREATE_ORDER = require("../../adpQuery/product/buyProduct")
-    .CREATE_ORDER;
+  const CREATE_ORDER =
+    require("../../adpQuery/product/buyProduct").CREATE_ORDER;
   const { updatePvb } = require("../createBvRow");
   const connection = require("../../../dbConnect");
   const bodyParser = require("body-parser");
@@ -65,14 +65,15 @@ module.exports = (app) => {
             if (wallet && wallet[0].balance >= totalAmount) {
               products &&
                 products.forEach(async (element, i) => {
-                  let productDiscount = element.vdba + element.vdbd;
+                  let productDiscount =
+                    (element.vdba + element.vdbd) * element.quantityAdded;
                   if (productDiscount > 0) {
                     if (smartMartBalance >= totalSmartMartDiscount) {
                       let debit = await debitSmartMart(adp_id, productDiscount);
                     }
                   }
 
-                  let productCredit = element.vdbc;
+                  let productCredit = element.vdbc * element.quantityAdded;
                   if (productCredit > 0) {
                     let credit = await creditSmartMart(adp_id, productCredit);
                   }

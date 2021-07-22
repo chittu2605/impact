@@ -10,6 +10,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { apiHandler } from "config/apiConfig";
+import { connect } from "react-redux";
 import PullDetails from "./PullDetails";
 
 class DashboardSummaryCard extends React.Component {
@@ -165,6 +166,42 @@ class DashboardSummaryCard extends React.Component {
             <h5 className="card-category" style={{ color: "white" }}></h5>
             <CardTitle tag="h4" style={{ color: "white" }}>
               Summary
+              <span
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      text: `Namaste ${this.props.name}!
+
+                    Your Business Stats till date is as follows:
+                    
+                    Current Month Repurchase (PBV) : ${
+                      pbv ? pbv : 0
+                    } (Ideal 2000 to 6000 PBV)
+                    
+                    Total PBV till date : ${totalPbv ? totalPbv : 0} 
+                    
+                    Current Month GBV : ${gbv}
+                    
+                    GBV till date : ${totalGbv}
+                    
+                    Current Month BV : ${bv}
+                    
+                    Your Current Zone : ${zone} (${zoneValue}%)
+                    
+                    Personal New Joining till date : ${noCoSponsored}
+                    
+                    
+                    Wish you success!!!`,
+                    });
+                  }
+                }}
+              >
+                <i
+                  class="fa fa-share-alt"
+                  style={{ fontSize: "30px", color: "white", float: "right" }}
+                />
+              </span>
             </CardTitle>
           </CardHeader>
           <CardBody>
@@ -222,7 +259,15 @@ class DashboardSummaryCard extends React.Component {
   }
 }
 
-export default DashboardSummaryCard;
+const mapStateToProps = (state) => {
+  return {
+    name: state.updateLoginStatus.name,
+  };
+};
+
+const connector = connect(mapStateToProps);
+
+export default connector(DashboardSummaryCard);
 
 function getPbv() {
   return apiHandler.get("/pbv");

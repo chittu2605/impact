@@ -96,6 +96,9 @@ const updateCurrentPbv = () => {
 module.exports = (app) => {
   app.post("/admin/run-cycle", async (req, res) => {
     try {
+      const eligibleSprintIDs = await getEligibleSprintIDs();
+      const eligibleSprinters = await getEligibleSprinters(eligibleSprintIDs);
+      const adpMissingSprint = await getADPMissingSPrint();
       if (eligibleSprintIDs) {
         createVouchers(eligibleSprintIDs, "SPRINT");
       }
@@ -141,9 +144,6 @@ module.exports = (app) => {
       await adjustOnePlusEarnings(cycleId, totalOnePlusAdp);
       await expireCards(cycleId);
       await adjustPull(cycleId);
-      const eligibleSprintIDs = await getEligibleSprintIDs();
-      const eligibleSprinters = await getEligibleSprinters(eligibleSprintIDs);
-      const adpMissingSprint = await getADPMissingSPrint();
       await updateCurrentPbv();
       console.log("end at", new Date());
       res.sendStatus(200);
