@@ -107,9 +107,10 @@ const styles = {
     color: "#e88657",
     fontSize: "14px",
     // margin: "1rem",
-    [device.tablet]: {
-      marginBottom: "1rem",
-    },
+    // [device.tablet]: {
+    //   marginBottom: "1rem",
+    // },
+    // marginBottom: "0",
   },
   vcb: {
     color: "#e88657",
@@ -120,15 +121,6 @@ const styles = {
     margin: 0,
     // float: "left"
     textAlign: "center",
-    position: "absolute",
-    bottom: "38px",
-    left: "50%",
-
-    transform: "translate(-50%, 0)",
-
-    [device.tablet]: {
-      bottom: "42px",
-    },
   },
   discountStamp: {
     position: "absolute",
@@ -170,6 +162,8 @@ const styles = {
     },
   },
   link: {
+    marginLeft: "20px",
+    //  padding: 0,
     textAlign: "center",
     color: "blue",
     fontSize: "10px",
@@ -221,12 +215,12 @@ const CardUnit = styled("span")(styles.cardUnit);
 const CardMRP = styled("span")(styles.mrp);
 const CardPrice = styled("span")(styles.price);
 const CardSavedAmount = styled("p")(styles.savedText);
-const CardVDB = styled("p")(styles.vdb);
+const CardVDB = styled("div")(styles.vdb);
 const CardVCB = styled(CardVDB)(styles.vcb);
-const CardMP = styled("span")(styles.mp);
+const CardMP = styled("div")(styles.mp);
 const CardOnlyPrice = styled("span")(styles.onlyPrice);
 const CardDiscountStamp = styled("span")(styles.discountStamp);
-const Link = styled("p")(styles.link);
+const Link = styled("span")(styles.link);
 const CardBestPrice = styled(CardSavedAmount)(styles.bestPrice);
 const CardBestPriceWrapper = styled(CardSavedAmount)(styles.bestPriceWrapper);
 const StyledSelect = styled(Select)(styles.select);
@@ -283,38 +277,6 @@ class ProductCard extends React.Component {
         title={props.product}
         ref={forwardRef}
       >
-        <span
-          style={{ cursor: "pointer", float: "left" }}
-          onClick={() => {
-            if (navigator.share) {
-              navigator.share({
-                text: `Namaste!
-
-                  As a privilege customer, I saved ${saving} ${selectedProductOption.currency} while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket. 
-                  
-                  MRP : ${selectedProductOption.currency} ${selectedProductOption.price}
-                  Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}  😍
-                  
-                  I receive 5% to 50% discount on daily need products on every purchase. SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!!
-                  
-                  I am growing my team across India by sharing this benefit with everyone. BACHAT BHI! BUSINESS BHI!!!
-                  
-                  I am excited to share this opportunity of SAVINGS & INCOME with you. Please check videos to understand IMPACT SMARTMART CONCEPT by clicking link below,
-                  
-                  https://www.iloveimpact.com/video-gallery/`,
-              });
-            }
-          }}
-        >
-          <i
-            class="fa fa-share-alt"
-            style={{
-              fontSize: "20px",
-              color: "black",
-              padding: "10px 0 0 10px",
-            }}
-          />
-        </span>
         {!noDiscount && discountPercent != "0% OFF" && (
           <CardDiscountStamp>{discountPercent}</CardDiscountStamp>
         )}
@@ -403,6 +365,7 @@ class ProductCard extends React.Component {
               >{`MP: ${selectedProductOption.max_purchase}`}</CardMP>
             )
           )}
+          <div />
           <Link
             onClick={() => {
               props.handleReadMoreclicked(props.productData);
@@ -410,6 +373,41 @@ class ProductCard extends React.Component {
           >
             Read more
           </Link>
+          <span
+            style={{
+              cursor: "pointer",
+              //float: "right",
+            }}
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  text: `Namaste!
+
+                  As a privilege customer, I saved ${saving} ${selectedProductOption.currency} while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket. 
+                  
+                  MRP : ${selectedProductOption.currency} ${selectedProductOption.price}
+                  Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}  😍
+                  
+                  I receive 5% to 50% discount on daily need products on every purchase. SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!!
+                  
+                  I am growing my team across India by sharing this benefit with everyone. BACHAT BHI! BUSINESS BHI!!!
+                  
+                  I am excited to share this opportunity of SAVINGS & INCOME with you. Please check videos to understand IMPACT SMARTMART CONCEPT by clicking link below,
+                  
+                  https://www.iloveimpact.com/video-gallery/`,
+                });
+              }
+            }}
+          >
+            <i
+              class="fa fa-share-alt"
+              style={{
+                fontSize: "20px",
+                color: "black",
+                padding: "10px 0 0 10px",
+              }}
+            />
+          </span>
         </CardBody>
       </Card>
     );
