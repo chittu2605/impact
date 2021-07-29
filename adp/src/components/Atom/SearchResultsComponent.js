@@ -10,7 +10,7 @@ export const SearchResultsComponent = ({ data, onSelect }) => {
         width: "275px",
         height: "225px",
         backgroundColor: "white",
-        overFlow: "hidden",
+        overflow: "auto",
       }}
     >
       {data.map((elm) => (
