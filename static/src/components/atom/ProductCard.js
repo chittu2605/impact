@@ -390,8 +390,8 @@ class ProductCard extends React.Component {
 
 As a privilege customer, I saved ${saving} ${selectedProductOption.currency} while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket. 
                   
-MRP : ${selectedProductOption.currency} ${selectedProductOption.price}
-Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}  😍
+*MRP : ${selectedProductOption.currency} ${selectedProductOption.price}*
+*Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}*  😍
                   
 I receive 5% to 50% discount on daily need products on every purchase. SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!!
                   
