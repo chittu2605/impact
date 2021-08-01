@@ -184,6 +184,8 @@ Current Month GBV : ${gbv}
 GBV till date : ${totalGbv}
                     
 Current Month BV : ${bv}
+
+Total BV Till Date : ${bvTillDate}
                     
 Your Current Zone : ${zone} (${zoneValue}%)
                     
