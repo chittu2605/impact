@@ -388,16 +388,18 @@ class ProductCard extends React.Component {
                     : undefined,
                   text: `Namaste!
 
-As a privilege customer, I saved ${saving} ${selectedProductOption.currency} while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket. 
+As a privilege customer, *I saved ${saving} ${selectedProductOption.currency} 😊 while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket.* 👍🤝💪
                   
 *MRP : ${selectedProductOption.currency} ${selectedProductOption.price}*
 *Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}*  😍
                   
-I receive 5% to 50% discount on daily need products on every purchase. SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!!
+I receive 5% to 50% discount on daily need products on every purchase. 
+
+SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!! 🥰🥰🥰
                   
-I am growing my team across India by sharing this benefit with everyone. BACHAT BHI! BUSINESS BHI!!!
+I am growing my team across India by sharing this benefit with everyone. *BACHAT BHI! BUSINESS BHI!!!*
                   
-I am excited to share this opportunity of SAVINGS & INCOME with you. Please check videos to understand IMPACT SMARTMART CONCEPT by clicking link below,
+I am excited to share this opportunity of SAVINGS & INCOME with you. Please check videos to understand IMPACT SMARTMART CONCEPT by clicking link below, 👇
                   
 https://www.iloveimpact.com/video-gallery/`,
                 });
