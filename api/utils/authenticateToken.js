@@ -57,7 +57,7 @@ const allowedAPiWithoutLogin = [
   "/adp/logout",
   "/get-product-type",
   "/get-products-admin",
-  "/list-adp",
+  "/admin/list-adp",
   "/adp-name",
   "/sample-franchise",
   "/add-franchise",

@@ -1,16 +1,16 @@
 module.exports = (app) => {
-  const SELECT_ADP_BY_ADP_ID = require("../../dbQuery/adp/adpQuery")
-    .SELECT_ADP_BY_ADP_ID;
-  const SELECT_ADP_NAME_BY_ADP_ID = require("../../dbQuery/adp/adpQuery")
-    .SELECT_ADP_NAME_BY_ADP_ID;
-  const GET_ADP_NAME_BY_ADP_ID = require("../../dbQuery/adp/adpQuery")
-    .GET_ADP_NAME_BY_ADP_ID;
+  const SELECT_ADP_BY_ADP_ID =
+    require("../../dbQuery/adp/adpQuery").SELECT_ADP_BY_ADP_ID;
+  const SELECT_ADP_NAME_BY_ADP_ID =
+    require("../../dbQuery/adp/adpQuery").SELECT_ADP_NAME_BY_ADP_ID;
+  const GET_ADP_NAME_BY_ADP_ID =
+    require("../../dbQuery/adp/adpQuery").GET_ADP_NAME_BY_ADP_ID;
   const { LIST_ADP, GET_ADP_BY_PHONE } = require("../../dbQuery/adp/adpQuery");
   const connection = require("../../../dbConnect");
   const bodyParser = require("body-parser");
   const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-  app.get("/list-adp", urlencodedParser, async (req, res) => {
+  app.get("/admin/list-adp", urlencodedParser, async (req, res) => {
     const adp_subset = req.query.adp_subset;
     connection.query(
       SELECT_ADP_BY_ADP_ID(adp_subset),

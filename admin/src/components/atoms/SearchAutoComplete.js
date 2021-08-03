@@ -59,27 +59,27 @@ function Asynchronous(props) {
     // console.log(event.target.value)
     setLoading(true);
     axios
-      .get(`${window.API_URL}list-adp`, {
+      .get(`list-adp`, {
         params: {
           adp_subset: event.target.value,
         },
       })
       .then((response) => {
-        let results = response.data.results
+        let results = response.data.results;
         results.forEach((item) => {
           item.adp_id = item.adp_id.toString();
-        })
+        });
         // console.log(results)
 
         setOptions(results);
         setLoading(false);
-      })
-      // .catch((error) => {
-      //   console.log(error)
-      //   debugger
-      //   if (error.response.status === 403) { alert("Session timed out"); window.location.replace(window.location.origin)}
-      //   throw error;
-      // });
+      });
+    // .catch((error) => {
+    //   console.log(error)
+    //   debugger
+    //   if (error.response.status === 403) { alert("Session timed out"); window.location.replace(window.location.origin)}
+    //   throw error;
+    // });
   };
 
   const handleSelectAdp = (value) => {
