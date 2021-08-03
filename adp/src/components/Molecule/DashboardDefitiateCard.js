@@ -362,39 +362,39 @@ class DashboardDefitiateCard extends React.Component {
 
 *Your overall team performance in current month is as follows:*
                       
-PERSONAL CO-SPONSORED : ${personalNewJoining}
+PERSONAL CO-SPONSORED : *${personalNewJoining}*
                       
-CURRENT MONTH TEAM NEW JOINING : ${teamNewJoin}
+CURRENT MONTH TEAM NEW JOINING : *${teamNewJoin}*
                       
-TEAM SIZE : ${teamSize}
+TEAM SIZE : *${teamSize}*
                       
-FRONT LINES : ${frontLines}
+FRONT LINES : *${frontLines}*
                       
-REPURCHASE PER MEMBER : ${Math.round(teamSize === 0 ? 0 : bv / teamSize)}
+REPURCHASE PER MEMBER : *${Math.round(teamSize === 0 ? 0 : bv / teamSize)}*
                       
-JOINING PER MEMBER : ${parseFloat(
+JOINING PER MEMBER : *${parseFloat(
                       teamSize === 0 ? 0 : teamNewJoin / teamSize
-                    ).toFixed(2)}
+                    ).toFixed(2)}*
                       
-RETAIL PROFIT : ${total_retail_profit} RS 
+RETAIL PROFIT : *${total_retail_profit} RS*
                       
-CO SPONSOR ROYALTY : ${coSponsorIncome} RS 
+CO SPONSOR ROYALTY : *${coSponsorIncome} RS* 
                       
-DEFICIT FOR ${deficitZone.toUpperCase()} ZONE : ${deficitValue}
+DEFICIT FOR ${deficitZone.toUpperCase()} ZONE : *${deficitValue}*
                       
-DEFICIT FOR CHAMPIONS CLUB : ${championDifference}
+DEFICIT FOR CHAMPIONS CLUB : *${championDifference}*
                       
-CHAMPIONS CLUB CO-SPONSOR DEFICIT : ${championCoSponsorDeficit}
+CHAMPIONS CLUB CO-SPONSOR DEFICIT : *${championCoSponsorDeficit}*
                       
-DEFICIT FOR BLUE CARD : ${11000 - cardOverflow} BV ${
+DEFICIT FOR BLUE CARD : *${11000 - cardOverflow} BV ${
                       noCoSponsored < 3
                         ? 3 - noCoSponsored + " Cosponsor Required"
                         : ""
-                    }
+                    }*
                       
-TOTAL 1+1 CARD THIS MONTH : ${totalOnePlusCards}
+TOTAL 1+1 CARD THIS MONTH : *${totalOnePlusCards}*
                       
-LEADER'S CLUB : ${leadersLine1BV} | ${leadersLine2BV} | ${leadersLine3BV}
+LEADER'S CLUB : *${leadersLine1BV} | ${leadersLine2BV} | ${leadersLine3BV}*
                       
 Wish you success and more team income by end of Business cycle!!!
                       
