@@ -24,7 +24,7 @@ const GET_CYCLE_DETAILS_FOR_CARD = (cardId) =>
   WHERE card_id = ${cardId}`;
 
 const TOTAL_CARDS_FOR_MONTH = (adpId) =>
-  `SELECT count(id) AS noCards FROM tbl_card WHERE adp_id = ${adpId} AND expiry_cycle IS NULL`;
+  `SELECT sum(qty) AS noCards FROM tbl_card WHERE adp_id = ${adpId} AND expiry_cycle IS NULL`;
 
 const GET_VALID_CARDS = () =>
   `SELECT * FROM tbl_card WHERE AND expiry_cycle IS NULL`;
