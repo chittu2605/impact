@@ -65,6 +65,10 @@ module.exports = (app) => {
             if (wallet && wallet[0].balance >= totalAmount) {
               products &&
                 products.forEach(async (element, i) => {
+                  let productCredit = element.vdbc * element.quantityAdded;
+                  if (productCredit > 0) {
+                    let credit = await creditSmartMart(adp_id, productCredit);
+                  }
                   let productDiscount =
                     (element.vdba + element.vdbd) * element.quantityAdded;
                   if (productDiscount > 0) {
@@ -72,12 +76,6 @@ module.exports = (app) => {
                       let debit = await debitSmartMart(adp_id, productDiscount);
                     }
                   }
-
-                  let productCredit = element.vdbc * element.quantityAdded;
-                  if (productCredit > 0) {
-                    let credit = await creditSmartMart(adp_id, productCredit);
-                  }
-
                   connection.query(
                     CREATE_ORDER(adp_id, element, bvWeightage, "REPURCHASE"),
                     async (error, results, fields) => {

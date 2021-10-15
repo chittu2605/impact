@@ -428,11 +428,7 @@ class FranchiseDetailsForm extends React.Component {
               : Yup.string().required("Required"),
             franchisePhone: isSample || editSampleFranchise
               ? Yup.string()
-              : Yup.string().test(
-                  "len",
-                  "Must be exactly 10 digit",
-                  (val) => val.length === 10
-                ),
+              : Yup.string().length(10)
           })}
         >
           {(props) => {

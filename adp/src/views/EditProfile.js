@@ -111,6 +111,14 @@ const relationOption = [
     value: "Sister",
     label: "Sister",
   },
+  {
+    value: "Son",
+    label: "Son",
+  },
+  {
+    value: "Daughter",
+    label: "Daughter",
+  },
 ];
 
 const EditProfile = () => {

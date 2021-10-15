@@ -1,14 +1,19 @@
-const { DELETE_FRANCHISE_PRODUCT } = require("../../dbQuery/products/deleteProduct");
+const {
+  DELETE_FRANCHISE_PRODUCT,
+  DELETE_FRANCHISE_PRODUCT_QUANTITY_WITH_ID,
+  DELETE_FRANCHISE_PRODUCT_QUANTITY,
+} = require("../../dbQuery/products/deleteProduct");
+const { getProductsByFranchise } = require("../products/getProducts");
 
 module.exports = (app) => {
-  const ADD_FRANCHISE = require("../../dbQuery/franchise/franchiseQuery")
-    .ADD_FRANCHISE;
-  const INSERT_PRODUCT_FRANCHISE = require("../../dbQuery/products/productQuery")
-    .INSERT_PRODUCT_FRANCHISE;
-    const ADD_PRODUCT_FRANCHISE_QUANTITY = require("../../dbQuery/products/productQuery")
-    .ADD_PRODUCT_FRANCHISE_QUANTITY;
-  const UPDATE_USER_TYPE_TO_FRANCHISE = require("../../dbQuery/adp/adpQuery")
-    .UPDATE_USER_TYPE_TO_FRANCHISE;
+  const ADD_FRANCHISE =
+    require("../../dbQuery/franchise/franchiseQuery").ADD_FRANCHISE;
+  const INSERT_PRODUCT_FRANCHISE =
+    require("../../dbQuery/products/productQuery").INSERT_PRODUCT_FRANCHISE;
+  const ADD_PRODUCT_FRANCHISE_QUANTITY =
+    require("../../dbQuery/products/productQuery").ADD_PRODUCT_FRANCHISE_QUANTITY;
+  const UPDATE_USER_TYPE_TO_FRANCHISE =
+    require("../../dbQuery/adp/adpQuery").UPDATE_USER_TYPE_TO_FRANCHISE;
   const { SELECT_ADP_NAME_BY_ADP_ID } = require("../../dbQuery/adp/adpQuery");
   const connection = require("../../../dbConnect");
   const bodyParser = require("body-parser");
@@ -27,61 +32,55 @@ module.exports = (app) => {
     let isSample = req.body.isSample ? 1 : 0;
     isSample = editSampleFranchise ? 1 : isSample;
     if (franchise_id) {
-      // if (editSampleFranchise) {
-        connection.query( DELETE_FRANCHISE_PRODUCT(franchise_id), async (error, deleted, fields) => {
-
-          productList &&
-            productList.forEach((elm) => {
-              connection.query(
-                INSERT_PRODUCT_FRANCHISE(elm, franchise_id, franchiseCity, isSample),
-                async (error, data, fields) => {
-                  if (error) console.log(error);
-                  // console.log(INSERT_PRODUCT_FRANCHISE(elm, adp_id))
-                  if (error) return res.sendStatus("401");
-                    if (error) return res.sendStatus("401");
-                    elm.details && elm.details.forEach((item, i) => {
-                      connection.query( ADD_PRODUCT_FRANCHISE_QUANTITY(data.insertId, item ), async (error, data, fields) => {
-                        if (error) console.log(error);
-                        if (error) return res.sendStatus("401");
-                      })
-                    })
-                
-    
-                  
-                  
-                }
+      const existingProducts = await getProductsByFranchise(franchise_id);
+      const addedProducts = productList.filter(
+        (item) =>
+          !existingProducts.some((origItem) => origItem.product == item.product)
+      );
+      const deletedProducts = existingProducts.filter(
+        (origItem) =>
+          !productList.some((item) => origItem.product == item.product)
+      );
+      const deletedQuantities = [];
+      existingProducts.forEach((origItem) => {
+        origItem.details &&
+          origItem.details.forEach((origQtyIem) => {
+            const item = productList.filter(
+              (elm) => origItem.product == elm.product
+            )[0];
+            if (
+              item &&
+              item.details &&
+              !item.details.some((qtyItem) => qtyItem.id == origQtyIem.id)
+            ) {
+              deletedQuantities.push(origQtyIem);
+            }
+          });
+      });
+      deletedProducts.forEach((prod) => {
+        const id = prod.id;
+        connection.query(DELETE_FRANCHISE_PRODUCT_QUANTITY(id));
+        connection.query(DELETE_FRANCHISE_PRODUCT(id));
+      });
+      deletedQuantities.forEach((qty) => {
+        connection.query(DELETE_FRANCHISE_PRODUCT_QUANTITY_WITH_ID(qty.id));
+      });
+      addedProducts.forEach((prod) => {
+        connection.query(
+          INSERT_PRODUCT_FRANCHISE(prod, franchise_id, franchiseCity, isSample),
+          (error, result, fields) => {
+            prod.details &&
+              prod.details.forEach((qty) =>
+                connection.query(
+                  ADD_PRODUCT_FRANCHISE_QUANTITY(result.insertId, qty)
+                )
               );
-            });
-          })
-      // } else {
-
-          // productList &&
-          //   productList.forEach((elm) => {
-          //     connection.query(
-          //       INSERT_PRODUCT_FRANCHISE(elm, franchise_id, franchiseCity, isSample),
-          //       async (error, data, fields) => {
-          //         if (error) console.log(error);
-          //         // console.log(INSERT_PRODUCT_FRANCHISE(elm, adp_id))
-          //         if (error) return res.sendStatus("401");
-          //           if (error) return res.sendStatus("401");
-          //           elm.details && elm.details.forEach((item, i) => {
-          //             connection.query( ADD_PRODUCT_FRANCHISE_QUANTITY(data.insertId, item ), async (error, data, fields) => {
-          //               if (error) console.log(error);
-          //               if (error) return res.sendStatus("401");
-          //             })
-          //           })
-                
-    
-                  
-                  
-          //       }
-          //     );
-          //   });
-      // }
-      
-        return res.json({
-          status: "success",
-        });
+          }
+        );
+      });
+      return res.json({
+        status: "success",
+      });
     } else {
       connection.query(
         ADD_FRANCHISE(
@@ -118,12 +117,16 @@ module.exports = (app) => {
                       // console.log(INSERT_PRODUCT_FRANCHISE(elm, adp_id))
                       if (error) return res.sendStatus("401");
 
-                      elm.details && elm.details.forEach((item, i) => {
-                        connection.query( ADD_PRODUCT_FRANCHISE_QUANTITY(data.insertId, item ), async (error, data, fields) => {
-                          if (error) console.log(error);
-                          if (error) return res.sendStatus("401");
-                        })
-                      })
+                      elm.details &&
+                        elm.details.forEach((item, i) => {
+                          connection.query(
+                            ADD_PRODUCT_FRANCHISE_QUANTITY(data.insertId, item),
+                            async (error, data, fields) => {
+                              if (error) console.log(error);
+                              if (error) return res.sendStatus("401");
+                            }
+                          );
+                        });
                     }
                   );
                 });

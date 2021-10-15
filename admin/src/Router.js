@@ -20,6 +20,7 @@ import AdminDashboard from "./components/pages/AdminDashboard";
 import RunCycle from "./components/pages/RunCycle";
 import OrderList from "./components/pages/OrderList";
 import AdpIncome from "./components/pages/AdpIncome";
+import DebitSMBalance from "./components/pages/DebitSMBalance";
 function Router(props) {
   return (
     <BrowserRouter basename="/admin" history={history}>
@@ -38,6 +39,7 @@ function Router(props) {
       <Route path="/order-list" component={OrderList} />
       <Route path="/add-product" component={AddProduct} />
       <Route path="/add-wallet" component={AddWallet} />
+      <Route path="/debit-sm-balance" component={DebitSMBalance} />
       <Route path="/plan-management" component={PlanManagement} />
       <Route path="/generate-statement" component={GenerateStatement} />
       <Route path="/admin-dashboard" component={AdminDashboard} />

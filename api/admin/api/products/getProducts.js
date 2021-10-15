@@ -1,16 +1,16 @@
 module.exports = (app) => {
-  const SELECT_ALL_ADMIN_PRODUCTS = require("../../dbQuery/products/productQuery")
-    .SELECT_ALL_ADMIN_PRODUCTS;
-  const SELECT_PRODUCTS_BY_CITY = require("../../dbQuery/products/productQuery")
-    .SELECT_PRODUCTS_BY_CITY;
-  const SELECT_PRODUCT_BY_CITY_CATEGORY_SUB_CATEGORY = require("../../dbQuery/products/productQuery")
-    .SELECT_PRODUCT_BY_CITY_CATEGORY_SUB_CATEGORY;
-  const SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY = require("../../dbQuery/products/productQuery")
-    .SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY;
-  const SELECT_PRODUCT_BY_CITY_FRANCHISE_CATEGORY_SUB_CATEGORY = require("../../dbQuery/products/productQuery")
-    .SELECT_PRODUCT_BY_CITY_FRANCHISE_CATEGORY_SUB_CATEGORY;
-  const SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY_ADMIN = require("../../dbQuery/products/productQuery")
-    .SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY_ADMIN;
+  const SELECT_ALL_ADMIN_PRODUCTS =
+    require("../../dbQuery/products/productQuery").SELECT_ALL_ADMIN_PRODUCTS;
+  const SELECT_PRODUCTS_BY_CITY =
+    require("../../dbQuery/products/productQuery").SELECT_PRODUCTS_BY_CITY;
+  const SELECT_PRODUCT_BY_CITY_CATEGORY_SUB_CATEGORY =
+    require("../../dbQuery/products/productQuery").SELECT_PRODUCT_BY_CITY_CATEGORY_SUB_CATEGORY;
+  const SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY =
+    require("../../dbQuery/products/productQuery").SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY;
+  const SELECT_PRODUCT_BY_CITY_FRANCHISE_CATEGORY_SUB_CATEGORY =
+    require("../../dbQuery/products/productQuery").SELECT_PRODUCT_BY_CITY_FRANCHISE_CATEGORY_SUB_CATEGORY;
+  const SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY_ADMIN =
+    require("../../dbQuery/products/productQuery").SELECT_PRODUCT_BY_TYPE_CATEGORY_SUB_CATEGORY_ADMIN;
   const {
     SELECT_PRODUCTS_ADMIN,
     SELECT_PRODUCTS_BY_FRANCHISE_ID,
@@ -23,15 +23,37 @@ module.exports = (app) => {
   const bodyParser = require("body-parser");
   const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+  const getProductsByFranchise = (franchiseId) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        SELECT_PRODUCTS_BY_FRANCHISE_ID(franchiseId),
+        async (error, results, fields) => {
+          for (const [index, elm] of results.entries()) {
+            connection.query(
+              SELECT_FRANCHISE_PRODUCTS_QUANTITY(elm.id),
+              (error, type, fields) => {
+                elm.details = type;
+                if (index + 1 === results.length) {
+                  resolve(results);
+                }
+              }
+            );
+          }
+        }
+      );
+    });
+
   app.get("/get-all-products", urlencodedParser, async (req, res) => {
     const city = req.query.city;
     const categoryId = req.query.categoryId;
     const subCategoryId = req.query.subCategoryId;
     const productType = req.query.productType;
     const franchiseId = req.query.franchiseId;
+    const pageNo = req.query.pageNo;
 
     connection.query(
       SELECT_FRANCHISE_PRODUCT(
+        pageNo,
         productType,
         city,
         franchiseId,
@@ -85,9 +107,10 @@ module.exports = (app) => {
           subCategoryId
         ),
         async (error, results, fields) => {
-          console.log(error);
-          if (error) return res.sendStatus("401");
-
+          if (error) {
+            console.log(error);
+            return res.sendStatus("401");
+          }
           if (results.length === 0) {
             return res.json({
               results,
@@ -151,36 +174,11 @@ module.exports = (app) => {
 
   app.get("/get-products-by-franchise", urlencodedParser, async (req, res) => {
     const franchise_id = req.query.franchise_id;
-    connection.query(
-      SELECT_PRODUCTS_BY_FRANCHISE_ID(franchise_id),
-      async (error, results, fields) => {
-        if (error) return res.sendStatus("401");
-        // if (results.length === 0) return res.sendStatus("404");
-        // if (results.length == 0) {
-        //     return res.json({
-        //         results,
-        //         status: "success"
-        //     });
-        // }
-        results &&
-          results.forEach((elm, i) => {
-            connection.query(
-              SELECT_FRANCHISE_PRODUCTS_QUANTITY(elm.id),
-              async (error, type, fields) => {
-                elm.details = type;
-
-                if (type && i == results.length - 1) {
-                  setTimeout(() => {
-                    return res.json({
-                      results,
-                      status: "success",
-                    });
-                  }, 200);
-                }
-              }
-            );
-          });
-      }
-    );
+    const results = await getProductsByFranchise(franchise_id);
+    res.json({
+      results,
+      status: "success",
+    });
   });
+  module.exports.getProductsByFranchise = getProductsByFranchise;
 };

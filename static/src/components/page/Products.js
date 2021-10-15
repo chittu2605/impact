@@ -7,6 +7,8 @@ import Popup from "../molecule/Popup";
 import { apiHandler } from "../../config/apiConfig";
 import FranchiseDetails from "../atom/FranchiseDetails";
 import { device } from "../../constants/mediaQueries/device";
+import InfiniteScroll from 'react-infinite-scroller';
+
 const styles = {
   productContainer: {
     textAlign: "center",
@@ -27,7 +29,6 @@ const ProductWrapper = styled("div")(styles.productWrapper);
 
 class Products extends React.Component {
   state = {
-    products: [],
     cityOptions: [],
     selectedCity: {},
     categoryOptions: [],
@@ -41,7 +42,8 @@ class Products extends React.Component {
     showPopup: false,
     selectedProductType: [],
     productTypeOptions: [],
-
+    productCards:[],
+    hasMore: true,
   };
   componentDidMount() {
     // getProducts().then((response) => {
@@ -72,70 +74,23 @@ class Products extends React.Component {
     });
   };
 
-  handleChange = (type, value) => {
+  handleChange = (type, value, pageNo=0) => {
     if (type === "selectedCity") {
       this.setState({
         selectedFranchise: [],
       });
     }
+    if(type && value){
     this.setState(
       {
         [type]: value,
-      },
-      () => {
-        let {
-          products,
-          selectedCity,
-          selectedCategory,
-          selectedSubCategory,
-          selectedFranchise,
-          selectedProductType
-        } = this.state;
-        let body = {};
-        if (selectedCity.value) body.city = selectedCity.value;
-        if (selectedCategory.value) body.categoryId = selectedCategory.value;
-        if (selectedSubCategory.value)
-          body.subCategoryId = selectedSubCategory.value;
-        if (selectedFranchise.value) body.franchiseId = selectedFranchise.value;
-        if (selectedProductType.value) body.productType = selectedProductType.value;
-
-        if (type === "selectedCategory") {
-          this.setState(
-            {
-              selectedSubCategory: [],
-            },
-            () => {
-              this.subCategoryApiCall(value.value);
-            }
-          );
-        }
-
-        if (type === "selectedSubCategory") {
-        }
-
-        if (type === "selectedCity") {
-            this.setState({
-                selectedFranchise: [],
-                selectedCategory: [],
-                selectedSubCategory: [],
-
-            }, () => {
-                this.getFranchiseList(body);
-            })
-          
-        }
-
-        if (type === "selectedFranchise") {
-            this.setState({
-                selectedCategory: [],
-                selectedSubCategory: [],
-
-            })
-        }
-
-        this.getProductList(body);
-      }
-    );
+        hasMore: true,
+        productCards: []
+      }, () =>  this.getProductList(type, value, pageNo))
+    } 
+    else{
+      this.getProductList(type, value, pageNo)
+    }   
   };
 
   getCategoryList = () => {
@@ -190,11 +145,72 @@ class Products extends React.Component {
     });
   };
 
-  getProductList = (body) => {
+  getProductList = (type, value, pageNo) => {
+    let body = {}
+    let {
+      selectedCity,
+      selectedCategory,
+      selectedSubCategory,
+      selectedFranchise,
+      selectedProductType,
+    } = this.state;
+    if (selectedCity.value) body.city = selectedCity.value;
+    if (selectedCategory.value) body.categoryId = selectedCategory.value;
+    if (selectedSubCategory.value)
+      body.subCategoryId = selectedSubCategory.value;
+    if (selectedFranchise.value) body.franchiseId = selectedFranchise.value;
+    if (selectedProductType.value) body.productType = selectedProductType.value;
+    body.pageNo = pageNo
+    if (type === "selectedCategory") {
+      this.setState(
+        {
+          selectedSubCategory: [],
+        },
+        () => {
+          this.subCategoryApiCall(value.value);
+        }
+      );
+    }
+
+    if (type === "selectedSubCategory") {
+    }
+
+    if (type === "selectedCity") {
+        this.setState({
+            selectedFranchise: [],
+            selectedCategory: [],
+            selectedSubCategory: [],
+
+        }, () => {
+            this.getFranchiseList(body);
+        })
+      
+    }
+
+    if (type === "selectedFranchise") {
+        this.setState({
+            selectedCategory: [],
+            selectedSubCategory: [],
+
+        })
+    }
     getProducts(body).then((response) => {
+      if(response.data && response.data.results && response.data.results.length){
       this.setState({
-        products: response.data.results,
+        productCards: [...this.state.productCards ,...response.data.results.map(elm => <ProductCard
+          key={elm.id}
+          {...elm}
+          handleReadMoreclicked={() =>
+            this.handleReadMoreclicked(elm)
+          }
+        />)]
       });
+      if(response.data.results.length < 30){
+        this.setState({
+          hasMore:false
+        })
+      }
+    }
     });
   };
   handleReadMoreclicked = (data) => {
@@ -237,7 +253,8 @@ class Products extends React.Component {
       franchiseOptions,
       selectedFranchise,
       selectedProductType,
-      productTypeOptions
+      productTypeOptions,
+      productCards
     } = this.state;
     return (
       <ProductContainer className="container-fluid">
@@ -313,20 +330,20 @@ class Products extends React.Component {
         <FranchiseDetails selectedFranchise={selectedFranchise} />
 
         <ProductWrapper>
-          {products && products.length > 0
-            ? products &&
-              products.map((elm) => {
-                return (
-                  <ProductCard
-                    key={elm.id}
-                    {...elm}
-                    handleReadMoreclicked={() =>
-                      this.handleReadMoreclicked(elm)
-                    }
-                  />
-                );
-              })
-            : "Nothing to Show"}
+        {this.state.productCards && this.state.productCards.length > 0
+            ?
+             <InfiniteScroll
+        pageStart={0}
+        loadMore={(page) => {
+         this.handleChange(null,null,page);
+        }}
+        hasMore={this.state.hasMore}
+        loader={<div className="loader" key={0}>Loading ...</div>}
+        useWindow={false}
+    >
+        {this.state.productCards}
+    </InfiniteScroll>
+    : "Nothing to Show"}
         </ProductWrapper>
       </ProductContainer>
     );

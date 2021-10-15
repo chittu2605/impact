@@ -85,6 +85,8 @@ function ProductTable(props) {
                         <TableCell align="right">
                           Price After discount
                         </TableCell>
+                        <TableCell align="right">Unit Quantity</TableCell>
+                        <TableCell align="right">Unit</TableCell>
                         <TableCell align="right">Retail Profit</TableCell>
                         <TableCell align="right">Actual Price</TableCell>
                         <TableCell align="right">Business Volume</TableCell>
@@ -108,6 +110,10 @@ function ProductTable(props) {
                             <TableCell align="right">
                               {elm.after_discount}
                             </TableCell>
+                            <TableCell align="right">
+                              {elm.unit_quantity}
+                            </TableCell>
+                            <TableCell align="right">{elm.unit}</TableCell>
                             <TableCell align="right">
                               {elm.retail_profit}
                             </TableCell>

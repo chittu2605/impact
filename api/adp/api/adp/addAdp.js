@@ -12,10 +12,8 @@ const { UPDATE_ADP, GET_ADP_BY_ID } = require("../../adpQuery/adp/adp");
 const {
   debitSmartMart,
   creditSmartMart,
+  createSmartMartWallet,
 } = require("../smartMart/debitSmartMart");
-const {
-  CREATE_SMART_MART_BALANCE,
-} = require("../../adpQuery/smartMart/smartMart");
 
 updateAdp = (adpData) =>
   new Promise((resolve, reject) =>
@@ -35,18 +33,6 @@ const getAdpDetails = (adpId) =>
         resolve(results[0]);
       } else {
         reject(error);
-      }
-    })
-  );
-
-const createSmartMartWallet = async (adpId) =>
-  new Promise((resolve, reject) =>
-    connection.query(CREATE_SMART_MART_BALANCE(adpId), (error, results) => {
-      if (!error && results.length) {
-        resolve(results[0]);
-      } else {
-        console.log(error);
-        resolve(error);
       }
     })
   );
@@ -103,17 +89,14 @@ module.exports = (app) => {
         await createSmartMartWallet(adpId);
         products &&
           products.forEach(async (element, i) => {
-            let productDiscount =
-              (element.vdba + element.vdbd) * element.quantityAdded;
-            if (productDiscount > 0) {
-              if (smartMartBalance >= totalSmartMartDiscount) {
-                let debit = await debitSmartMart(adpId, productDiscount);
-              }
-            }
-
             let productCredit = element.vdbc * element.quantityAdded;
             if (productCredit > 0) {
               let credit = await creditSmartMart(adpId, productCredit);
+            }
+            let productDiscount =
+              (element.vdba + element.vdbd) * element.quantityAdded;
+            if (productDiscount > 0) {
+              let debit = await debitSmartMart(adpId, productDiscount);
             }
             connection.query(
               CREATE_ORDER(adp_id, element, bvWeightage, "NEW"),

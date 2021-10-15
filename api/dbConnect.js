@@ -1,4 +1,4 @@
-var mysql = require("mysql");
+var mysql = require("mysql2");
 const db_config = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,

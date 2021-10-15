@@ -207,7 +207,7 @@ const SELECT_FRANCHISE_PRODUCTS_QUANTITY = (productId) => {
     `
 }
 
-const SELECT_FRANCHISE_PRODUCT = (productType, city, franchiseId, categoryId, subCategoryId) => {
+const SELECT_FRANCHISE_PRODUCT = (pageNo, productType, city, franchiseId, categoryId, subCategoryId) => {
     if (productType && city && franchiseId && categoryId && subCategoryId) {
         return `SELECT * FROM tbl_product_franchise
         WHERE product_type = "${productType}"
@@ -215,33 +215,33 @@ const SELECT_FRANCHISE_PRODUCT = (productType, city, franchiseId, categoryId, su
         AND franchise_id = "${franchiseId}"
         AND category_id = "${categoryId}"
         AND sub_category_id = "${subCategoryId}"
-        AND is_sample = "0";`
+        AND is_sample = "0"  ${pageNo? "LIMIT " +  pageNo*30+", 30" : ""};`
     } else if (productType && city && franchiseId && categoryId) {
         return `SELECT * FROM tbl_product_franchise
         WHERE product_type = "${productType}"
         AND city = "${city}"
         AND franchise_id = "${franchiseId}"
         AND categoryId = "${categoryId}"
-        AND is_sample = "0";`
+        AND is_sample = "0"  ${pageNo? "LIMIT " +  pageNo*30+", 30" : ""};`
     } else if (productType && city && franchiseId) {
         return `SELECT * FROM tbl_product_franchise
         WHERE product_type = "${productType}"
         AND city = "${city}"
         AND franchise_id = "${franchiseId}"
-        AND is_sample = "0";`
+        AND is_sample = "0"  ${pageNo? "LIMIT " +  pageNo*30+", 30" : ""};`
     } else if (productType && city) {
         return `SELECT * FROM tbl_product_franchise
         WHERE product_type = "${productType}"
         AND city = "${city}"
-        AND is_sample = "0";`
+        AND is_sample = "0" ${pageNo? "LIMIT " +  pageNo*30+", 30" : ""};`
     } else if (productType) {
         return `SELECT * FROM tbl_product_franchise
         WHERE product_type = "${productType}"
-        AND is_sample = "0";`
+        AND is_sample = "0" ${pageNo? "LIMIT " +  pageNo*30+", 30" : ""};`
     } else if (city) {
         return `SELECT * FROM tbl_product_franchise
         WHERE city = "${city}"
-        AND is_sample = "0";`
+        AND is_sample = "0" ${pageNo? "LIMIT " +  pageNo*30+", 30" : ""};`
     }
     
 }

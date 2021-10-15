@@ -30,8 +30,10 @@ module.exports = (app) => {
     connection.query(
       SELECT_ADP_NAME_BY_ADP_ID(adp_id),
       async (error, results, fields) => {
-        console.log(error);
-        if (error) return res.sendStatus("401");
+        if (error) {
+          console.log(error);
+          return res.sendStatus("401");
+        }
         // if (results.length === 0) return res.sendStatus("404");
 
         return res.json({

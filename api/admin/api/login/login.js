@@ -2,10 +2,10 @@ const { updateLocale } = require("moment");
 const connection = require("../../../dbConnect");
 const { sendMail } = require("../../../utils/emailer");
 
-const passwordEncrypt = require("../../../utils/passwordEncrypt")
-  .passwordEncrypt;
-const passwordDecrypt = require("../../../utils/passwordEncrypt")
-  .passwordDecrypt;
+const passwordEncrypt =
+  require("../../../utils/passwordEncrypt").passwordEncrypt;
+const passwordDecrypt =
+  require("../../../utils/passwordEncrypt").passwordDecrypt;
 const {
   SELECT_USER_BY_USERNAME,
   INSERT_OTP,
@@ -61,10 +61,10 @@ module.exports = (app) => {
     connection.query(
       SELECT_USER_BY_USERNAME(username),
       async (error, results, fields) => {
-        console.log(error);
-        sendMail(mailOptions(error));
-
-        if (error) return res.sendStatus("401");
+        if (error) {
+          console.log(error);
+          return res.sendStatus("401");
+        }
         if (results.length === 0) return res.sendStatus("404");
         const hash = await passwordDecrypt(password, results[0].password).then(
           (result) => {

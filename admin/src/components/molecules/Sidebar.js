@@ -160,6 +160,11 @@ let sideBarList = [
       },
 
       {
+        label: "Debit Smartmart Balance",
+        url: "debit-sm-balance",
+        icon: <i class="fas fa-wallet"></i>,
+      },
+      {
         label: "Statement",
         url: "generate-statement",
         icon: <i class="fas fa-wallet"></i>,
