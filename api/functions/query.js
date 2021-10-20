@@ -170,11 +170,10 @@ const GET_ALL_ADP_ID = () => {
 };
 
 const GET_ALL_ADP_PBV_BY_CO_SPONSOR = (co_sponsor_id) => {
-  return `SELECT a.adp_id, sum(b.current_month_pbv) as totalPbv, a.co_sponsor_id FROM tbl_adp a
+  return `SELECT sum(b.current_month_pbv) as totalPbv FROM tbl_adp a
   INNER JOIN tbl_pbv b
   ON a.adp_id = b.adp_id
-  WHERE co_sponsor_id = "${co_sponsor_id}"
-  GROUP BY a.co_sponsor_id;`;
+  WHERE co_sponsor_id = "${co_sponsor_id}"`;
 };
 
 const GET_CO_SPONSOR_PLAN_VALUE = () => {

@@ -62,7 +62,11 @@ const getAdpGbv = (adpId) => {
           totalGbv,
         });
       } else {
-        resolve(results[0]);
+        resolve({
+          totalGbv: Number(results[0].totalGbv),
+          gbv: Number(results[0].gbv),
+          newGbv: Number(results[0].newGbv),
+        });
       }
     });
   });

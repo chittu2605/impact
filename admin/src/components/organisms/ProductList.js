@@ -15,11 +15,13 @@ import FranchiseProductTable from "../molecules/FranchiseProductTable";
 import { Button } from "@material-ui/core";
 import Example from "./Example";
 import DeleteIcon from "@material-ui/icons/Delete";
+import SaveIcon from "@material-ui/icons/Save";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { date } from "yup";
 import { apiHandler } from "../../utils/apiConfig";
+import { toast } from "react-toastify";
 
 const styles = {
   formInput: {
@@ -55,11 +57,11 @@ const styles = {
 };
 
 const columns = [
-  { key: "delete", name: "Action", width: 15 },
+  { key: "delete", name: "Delete", width: 15 },
+  { key: "save", name: "Save", width: 15 },
   // {key: "product", name: "Product Name", width: 200, editable: true},
   { key: "price", name: "Price", width: 80, editable: true, type: "number" },
   { key: "discount", name: "Discount", width: 100, editable: true },
-  { key: "unit", name: "Unit", width: 170, editable: false },
   { key: "unit_quantity", name: "Unit Quantity", width: 170, editable: false },
   { key: "unit", name: "Unit", width: 170, editable: false },
   { key: "retail_profit", name: "Retail Profit", width: 120, editable: true },
@@ -200,6 +202,35 @@ class ProductList extends React.Component {
                         onClick={(event) => {
                           event.stopPropagation();
                           this.removeProducts(obj.id, elm.id);
+                        }}
+                      />
+                    );
+                    elm.save = (
+                      <SaveIcon
+                        className={clsx(classes.deleteIcon, className)}
+                        onClick={() => {
+                          let body;
+                          for (const product of this.state.productList) {
+                            const detail =
+                              product.details &&
+                              product.details.find(
+                                (detail) => detail.id === elm.id
+                              );
+                            if (detail) {
+                              body = { ...detail };
+                              delete body.delete;
+                              break;
+                            }
+                          }
+                          apiHandler
+                            .post(`/edit-franchise-quantity`, body)
+                            .then((result) => {
+                              toast("Sucessfully Edited");
+                            })
+                            .catch((err) => {
+                              toast("Error Editing");
+                              console.log(err);
+                            });
                         }}
                       />
                     );
@@ -400,6 +431,33 @@ class ProductList extends React.Component {
                 onClick={(event) => {
                   event.stopPropagation();
                   this.removeProducts(obj.id, elm.id);
+                }}
+              />
+            );
+            elm.save = (
+              <SaveIcon
+                className={clsx(classes.deleteIcon, className)}
+                onClick={() => {
+                  let body;
+                  for (const product of this.state.productList) {
+                    const detail =
+                      product.details &&
+                      product.details.find((detail) => detail.id === elm.id);
+                    if (detail) {
+                      body = { ...detail };
+                      delete body.delete;
+                      break;
+                    }
+                  }
+                  apiHandler
+                    .post(`/edit-franchise-quantity`, body)
+                    .then((result) => {
+                      toast("Sucessfully Edited");
+                    })
+                    .catch((err) => {
+                      toast("Error Editing");
+                      console.log(err);
+                    });
                 }}
               />
             );

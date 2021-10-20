@@ -3,6 +3,9 @@ const {
   DELETE_FRANCHISE_PRODUCT_QUANTITY_WITH_ID,
   DELETE_FRANCHISE_PRODUCT_QUANTITY,
 } = require("../../dbQuery/products/deleteProduct");
+const {
+  UPDATE_PRODUCT_FRANCHISE_QUANTITY,
+} = require("../../dbQuery/products/productQuery");
 const { getProductsByFranchise } = require("../products/getProducts");
 
 module.exports = (app) => {
@@ -18,6 +21,30 @@ module.exports = (app) => {
   const connection = require("../../../dbConnect");
   const bodyParser = require("body-parser");
   const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+  const updateFranchiseQuantity = (qtyDetails) =>
+    new Promise((resolve, reject) =>
+      connection.query(
+        UPDATE_PRODUCT_FRANCHISE_QUANTITY(qtyDetails),
+        (error, results, fields) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(true);
+          }
+        }
+      )
+    );
+
+  app.post("/edit-franchise-quantity", urlencodedParser, async (req, res) => {
+    try {
+      await updateFranchiseQuantity(req.body);
+      res.sendStatus(200);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+  });
 
   app.post("/add-franchise", urlencodedParser, async (req, res) => {
     const adp_id = req.body.adp_id;
