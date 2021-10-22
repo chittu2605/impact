@@ -185,6 +185,7 @@ class DashboardDefitiateCard extends React.Component {
           deficitValue: response.data.deficitValue + " BV",
         });
       }
+      this.updateSprintDeficit();
     });
   };
 
@@ -380,7 +381,11 @@ RETAIL PROFIT : *${total_retail_profit} RS*
                       
 CO SPONSOR ROYALTY : *${coSponsorIncome} RS* 
                       
-DEFICIT FOR ${deficitZone.toUpperCase()} ZONE : *${deficitValue}*
+DEFICIT FOR ${deficitZone.toUpperCase()} ZONE : *${deficitValue}*${
+                      showSprintDeficit
+                        ? "\n\nSPRINT DEFICIT : *" + sprintDeficit + "*"
+                        : ""
+                    }
                       
 DEFICIT FOR CHAMPIONS CLUB : *${championDifference}*
                       
