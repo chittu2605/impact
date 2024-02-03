@@ -1,7 +1,7 @@
-import React, { useState, forwardRef } from "react";
+import React, { forwardRef } from "react";
+import Select from "react-select";
 import styled from "styled-components";
 import NotAvailable from "../../assets/images/image-not-available.jpg";
-import Select from "react-select";
 import { device } from "../../constants/mediaQueries/device";
 const styles = {
   card: {
@@ -379,30 +379,37 @@ class ProductCard extends React.Component {
             }}
             onClick={async () => {
               if (navigator.share) {
+                const text = `Namaste!
+
+As a privilege customer, *I saved ${saving} ${selectedProductOption.currency} 😊 while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket.* 👍🤝💪
+                                  
+*MRP : ${selectedProductOption.currency} ${selectedProductOption.price}*
+*Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}*  😍
+                                  
+I receive 5% to 50% discount on daily need products on every purchase. 
+                
+SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!! 🥰🥰🥰
+                                  
+I am growing my team across India by sharing this benefit with everyone. *BACHAT BHI! BUSINESS BHI!!!*
+                                  
+I am excited to share this opportunity of SAVINGS & INCOME with you. Please check videos to understand IMPACT SMARTMART CONCEPT by clicking link below, 👇
+                                  
+https://www.iloveimpact.com/video-gallery/`;
+
+                navigator.clipboard
+                  .writeText(text)
+                  .catch((err) => console.log(err));
                 let blob = props.imageUrl
                   ? await fetch(props.imageUrl).then((r) => r.blob())
                   : null;
-                navigator.share({
-                  files: blob
-                    ? [new File([blob], "image.jpg", { type: "image/jpeg" })]
-                    : undefined,
-                  text: `Namaste!
-
-As a privilege customer, *I saved ${saving} ${selectedProductOption.currency} 😊 while buying ${props.product} ${selectedProductOption.label} from Smartmart - My own National Online Supermarket.* 👍🤝💪
-                  
-*MRP : ${selectedProductOption.currency} ${selectedProductOption.price}*
-*Smartmart Price : ${selectedProductOption.currency} ${selectedProductOption.after_discount}*  😍
-                  
-I receive 5% to 50% discount on daily need products on every purchase. 
-
-SMARTMART IS ADDING SMILES ON EVERY PURCHASE!!! 🥰🥰🥰
-                  
-I am growing my team across India by sharing this benefit with everyone. *BACHAT BHI! BUSINESS BHI!!!*
-                  
-I am excited to share this opportunity of SAVINGS & INCOME with you. Please check videos to understand IMPACT SMARTMART CONCEPT by clicking link below, 👇
-                  
-https://www.iloveimpact.com/video-gallery/`,
-                });
+                navigator
+                  .share({
+                    files: blob
+                      ? [new File([blob], "image.jpg", { type: "image/jpeg" })]
+                      : undefined,
+                    text,
+                  })
+                  .catch((err) => console.log(err));
               }
             }}
           >

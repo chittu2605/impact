@@ -61,7 +61,7 @@ module.exports = (app) => {
       0
     );
     const bvWeightage = await getBvWeightage(currentBv);
-    let password = Math.random().toString().split(".")[1];
+    let password = generatePassword();
     let hashedPassword = await passwordEncrypt(password);
     connection.query(
       ADD_ADP(adpData, hashedPassword),
@@ -182,6 +182,15 @@ const sendAddAdpEmail = (name, email, adpId, password) => {
       IMPACT TEAM`,
   };
   sendMail(options);
+};
+
+const generatePassword = () => {
+  (charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
+    (retVal = "");
+  for (var i = 0, n = 10; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
 };
 
 module.exports.getAdpDetails = getAdpDetails;
