@@ -22,7 +22,10 @@ const calculateOnePlusClubEarnings = async () => {
       const updateStatement = UPDATE_CYCLE_RECORD(
         cycleRecord.id,
         ["oneplus_earnings", "total_income"],
-        [qualifier.earnings, cycleRecord.total_income + qualifier.earnings]
+        [
+          qualifier.earnings,
+          cycleRecord.total_income + Number(qualifier.earnings),
+        ]
       );
       dbStatements.push(updateStatement);
     }

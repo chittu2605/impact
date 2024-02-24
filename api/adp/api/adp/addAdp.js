@@ -187,7 +187,7 @@ const sendAddAdpEmail = (name, email, adpId, password) => {
 const generatePassword = () => {
   (charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
     (retVal = "");
-  for (var i = 0, n = 10; i < length; ++i) {
+  for (var i = 0, n = 10; i < 10; ++i) {
     retVal += charset.charAt(Math.floor(Math.random() * n));
   }
   return retVal;
