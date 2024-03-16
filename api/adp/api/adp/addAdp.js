@@ -185,12 +185,34 @@ const sendAddAdpEmail = (name, email, adpId, password) => {
 };
 
 const generatePassword = () => {
-  (charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
-    (retVal = "");
-  for (var i = 0, n = 10; i < 10; ++i) {
-    retVal += charset.charAt(Math.floor(Math.random() * n));
+  const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+  const digitChars = "0123456789";
+  const randomUppercase = uppercaseChars.charAt(
+    Math.floor(Math.random() * uppercaseChars.length)
+  );
+  const randomDigit = digitChars.charAt(
+    Math.floor(Math.random() * digitChars.length)
+  );
+  const remainingChars = uppercaseChars + lowercaseChars + digitChars;
+  let randomPassword = "";
+  for (let i = 0; i < 8; i++) {
+    const randomChar = remainingChars.charAt(
+      Math.floor(Math.random() * remainingChars.length)
+    );
+    randomPassword += randomChar;
   }
-  return retVal;
+  const uppercaseIndex = Math.floor(Math.random() * randomPassword.length);
+  const digitIndex = Math.floor(Math.random() * randomPassword.length);
+  randomPassword =
+    randomPassword.slice(0, uppercaseIndex) +
+    randomUppercase +
+    randomPassword.slice(uppercaseIndex);
+  randomPassword =
+    randomPassword.slice(0, digitIndex) +
+    randomDigit +
+    randomPassword.slice(digitIndex);
+  return randomPassword;
 };
 
 module.exports.getAdpDetails = getAdpDetails;
